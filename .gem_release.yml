@@ -1,0 +1,2 @@
+bump:
+  file: lib/ruby-next/version.rb
