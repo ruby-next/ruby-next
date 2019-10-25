@@ -28,6 +28,9 @@ Style/TrailingCommaInArrayLiteral:
 Style/TrailingCommaInHashLiteral:
   EnforcedStyleForMultiline: no_comma
 
+Style/Alias:
+  Enabled: false
+
 Layout/AlignParameters:
   EnforcedStyle: with_first_parameter
 

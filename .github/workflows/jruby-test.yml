@@ -1,0 +1,25 @@
+name: JRuby Build
+
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+
+jobs:
+  jruby-test:
+    runs-on: ubuntu-latest
+    container:
+      image: jruby:9.2.8
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install git
+      run: |
+        apt-get update
+        apt-get install -y --no-install-recommends git
+    - name: Download MSpec
+      run: |
+        git clone https://github.com/ruby/mspec.git mspec
+    - name: Run MSpec
+      run: |
+        mspec/bin/mspec

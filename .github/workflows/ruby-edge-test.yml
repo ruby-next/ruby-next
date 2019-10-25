@@ -1,0 +1,21 @@
+name: Edge Ruby Build
+
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+
+jobs:
+  ruby-edge-test:
+    runs-on: ubuntu-latest
+    container:
+      image: ruby:2.7-rc
+    steps:
+    - uses: actions/checkout@v1
+    - name: Download MSpec
+      run: |
+        git clone https://github.com/ruby/mspec.git mspec
+    - name: Run MSpec
+      run: |
+        mspec/bin/mspec
