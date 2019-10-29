@@ -1,7 +1,5 @@
 # source: https://github.com/ruby/spec/blob/master/core/kernel/shared/then.rb 
 
-using RubyNext
-
 # NOTE: `send(@method)` was changed to the direct `then` call to make it work in JRuby.
 #       See https://github.com/jruby/jruby/issues/5945
 describe :kernel_then, shared: true do

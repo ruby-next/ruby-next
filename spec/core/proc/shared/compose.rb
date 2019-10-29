@@ -1,7 +1,5 @@
 # source: https://github.com/ruby/spec/blob/master/core/proc/shared/compose.rb
 
-using RubyNext
-
 describe :proc_compose, shared: true do
   # Skip JRuby 'cause it doesn't support refinements in `send`
   # See https://github.com/jruby/jruby/issues/5945
