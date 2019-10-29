@@ -3,8 +3,6 @@
 require_relative '../../spec_helper'
 require_relative 'shared/compose'
 
-using RubyNext
-
 ruby_version_is "2.6" do
   describe "Proc#<<" do
     it "returns a Proc that is the composition of self and the passed Proc" do
