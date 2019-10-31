@@ -21,4 +21,7 @@ Gem::Specification.new do |s|
   s.required_ruby_version = ">= 2.5.0"
 
   s.require_paths = ["lib"]
+
+  s.add_development_dependency "parser", "~> 2.6.5.0"
+  s.add_development_dependency "unparser"
 end

@@ -12,7 +12,9 @@ AllCops:
     - 'vendor/**/*'
     - 'gemfiles/**/*'
     - 'spec/core/**/*'
+    - 'spec/language/**/*'
     - 'mspec/**/*'
+    - 'lib/ruby-next/language/ruby27.rb'
   DisplayCopNames: true
   TargetRubyVersion: 2.7
 
