@@ -3,19 +3,25 @@
 require "pathname"
 
 require "ruby-next"
+require "ruby-next/utils"
+require "ruby-next/language"
 
 module RubyNext
   # Module responsible for runtime transformations
   module Runtime
     class << self
+      include Utils
+
       attr_reader :load_dirs
 
       def load(path, wrap: false)
         contents = File.read(path)
         # inject `using RubyNext`
         contents.sub!(/^(\s*[^#\s].*)/, 'using RubyNext;\1')
-        # TODO: handle wrap
-        TOPLEVEL_BINDING.eval(contents, path)
+        # perform syntax transformations
+        new_contents = Language.transform(contents)
+        raise "RubyNext cannot handle `load(smth, wrap: true)`" if wrap
+        TOPLEVEL_BINDING.eval(new_contents, path)
         true
       end
 
@@ -24,24 +30,9 @@ module RubyNext
       end
 
       def feature_path(path)
-        if File.file?(relative = File.expand_path(path))
-          path = relative
-        end
-        path = "#{path}.rb" if File.extname(path).empty?
+        path = resolve_feature_path(path)
         return if File.extname(path) != ".rb"
-
-        unless Pathname.new(path).absolute?
-          loadpath = $LOAD_PATH.find do |lp|
-            File.file?(File.join(lp, path))
-          end
-
-          return if loadpath.nil?
-
-          path = File.join(loadpath, path)
-        end
-
         return unless transformable?(path)
-
         path
       end
 

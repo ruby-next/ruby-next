@@ -20,6 +20,10 @@ jobs:
     - name: Download MSpec
       run: |
         git clone https://github.com/ruby/mspec.git mspec
+    - name: Install deps
+      run: |
+        gem install bundler
+        bundle install --jobs 4 --retry 3
     - name: Run MSpec
       run: |
-        mspec/bin/mspec
+        bundle exec mspec/bin/mspec
