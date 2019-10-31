@@ -2,6 +2,8 @@
 
 ## master
 
+- Add method reference syntax support. ([@palkan][])
+
 - Add `Proc#<<` and `Proc#>>`. ([@palkan][])
 
 - Add `Kernel#then`. ([@palkan][])
