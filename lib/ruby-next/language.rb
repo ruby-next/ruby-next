@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-gem "parser", "~> 2.6.5.0"
+gem "parser"
 gem "unparser"
 
 require "ruby-next"

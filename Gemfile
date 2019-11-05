@@ -5,3 +5,7 @@ gemspec
 
 gem "pry-byebug", platform: :mri
 eval_gemfile "gemfiles/rubocop.gemfile"
+
+source "https://rubygems.pkg.github.com/ruby-next" do
+  gem "parser"
+end
