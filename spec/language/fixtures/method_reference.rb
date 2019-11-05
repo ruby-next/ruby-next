@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module MethodReference
   def self.positive?(num)
     num > 0
