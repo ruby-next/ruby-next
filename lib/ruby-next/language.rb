@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-gem "parser"
-gem "unparser"
+gem "parser", "~> 2.6.3.0"
+gem "unparser", "~> 0.4.5"
 
 require "ruby-next"
 using RubyNext
@@ -44,6 +44,9 @@ module RubyNext
     self.rewriters = []
 
     require "ruby-next/language/rewriters/base"
+
+    require "ruby-next/language/rewriters/pattern_matching"
+    rewriters << Rewriters::PatternMatching
 
     require "ruby-next/language/rewriters/method_reference"
     rewriters << Rewriters::MethodReference

@@ -68,7 +68,7 @@ module Kernel
 
   alias_method :require_relative_without_ruby_next, :require_relative
   def require_relative(path)
-    from = caller_locations(1..1).first.absolute_path
+    from = caller_locations(1..1).first.absolute_path || File.join(Dir.pwd, "main")
     realpath = File.absolute_path(
       File.join(
         File.dirname(File.absolute_path(from)),
@@ -91,5 +91,11 @@ module Kernel
   rescue => e
     warn "RubyNext failed to load '#{path}': #{e.message}"
     load_without_ruby_next(path)
+  end
+
+  alias_method :eval_without_ruby_next, :eval
+  def eval(source, *args)
+    new_source = RubyNext::Language.transform(source)
+    eval_without_ruby_next new_source, *args
   end
 end
