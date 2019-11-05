@@ -23,6 +23,8 @@ jobs:
       run: |
         git clone https://github.com/ruby/mspec.git mspec
     - name: Install deps
+      env:
+        BUNDLE_RUBYGEMS__PKG__GITHUB__COM: "palkan:${{ secrets.GITHUB_TOKEN }}"
       run: |
         gem install bundler
         bundle install --jobs 4 --retry 3
