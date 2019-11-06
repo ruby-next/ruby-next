@@ -15,4 +15,9 @@ describe "method reference .:" do
   it "works with to_proc" do
     [-1, 2, -3].select(&MethodReference.:positive?).should == [2]
   end
+
+  it "works with unary methods" do
+    m = 1.:-@
+    m.call.should == -1
+  end
 end
