@@ -45,10 +45,18 @@ module RubyNext
 
     require "ruby-next/language/rewriters/base"
 
-    require "ruby-next/language/rewriters/pattern_matching"
-    rewriters << Rewriters::PatternMatching
+    begin
+      Kernel.eval "case 0; in 0; true; else; 1; end"
+    rescue SyntaxError
+      require "ruby-next/language/rewriters/pattern_matching"
+      rewriters << Rewriters::PatternMatching
+    end
 
-    require "ruby-next/language/rewriters/method_reference"
-    rewriters << Rewriters::MethodReference
+    begin
+      Kernel.eval "Language.:transform"
+    rescue SyntaxError
+      require "ruby-next/language/rewriters/method_reference"
+      rewriters << Rewriters::MethodReference
+    end
   end
 end
