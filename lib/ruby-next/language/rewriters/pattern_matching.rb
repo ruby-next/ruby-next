@@ -2,6 +2,7 @@
 
 using RubyNext
 
+# TODO: how to add it at build time?
 class NoMatchingPatternError < RuntimeError
 end
 
@@ -56,25 +57,35 @@ module RubyNext
 
         def match_alt_to_if(node, _)
           children = node.children.map do |child|
-            s(:send,
-              s(:lvar, MATCHEE), :==, child)
+            if child.type == :match_var
+              match_var_truthy(child)
+            else
+              s(:send,
+                s(:lvar, MATCHEE), :===, child)
+            end
           end
           s(:or, *children)
         end
 
         def match_var_to_if(node, guard)
           if guard
-            # Generate (x = __matchee__).object_id && <guard>
-            # We use object_id 'cause it's always present and truthy
             s(:and,
-              s(:send, s(:lvasgn, node.children[0], s(:lvar, MATCHEE)), :object_id),
+              match_var_truthy(node),
               guard.children[0]).then do |expr|
               next expr unless guard.type == :unless_guard
               s(:send, expr, :!)
             end
           else
-            s(:lvasgn, node.children[0], s(:lvar, MATCHEE))
+            match_var(node)
           end
+        end
+
+        def match_as_to_if(node, guard)
+          s(:and,
+            s(:send,
+              s(:lvar, MATCHEE), :==, node.children[0]),
+            match_var_truthy(node.children[1])
+          )
         end
 
         def int_to_if(node, guard)
@@ -87,6 +98,17 @@ module RubyNext
             s(:const, nil, :NoMatchingPatternError),
             s(:send,
               s(:lvar, MATCHEE), :inspect))
+        end
+
+        def match_var(node)
+          s(:lvasgn, node.children[0], s(:lvar, MATCHEE))
+        end
+
+        def match_var_truthy(node)
+          s(:or,
+            match_var(node),
+            s(:true)
+          )
         end
       end
     end

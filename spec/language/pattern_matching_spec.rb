@@ -83,15 +83,14 @@ describe "pattern matching" do
       end
     end
 
-    # FIXME: ???
-    # assert_raise(NoMatchingPatternError) do
-    #   begin
-    #   ensure
-    #     case 0
-    #     in 1
-    #     end
-    #   end
-    # end
+    assert_raise(NoMatchingPatternError) do
+      begin
+      ensure
+        case 0
+        in 1
+        end
+      end
+    end
 
     assert_block do
       verbose, $VERBOSE = $VERBOSE, nil # suppress "warning: Pattern matching is experimental, and the behavior may change in future versions of Ruby!"
@@ -159,38 +158,38 @@ describe "pattern matching" do
     end
   end
 
-#   it "as_pattern" do
-#     assert_block do
-#       case 0
-#       in 0 => a
-#         a == 0
-#       end
-#     end
-#   end
+  it "as_pattern" do
+    assert_block do
+      case 0
+      in 0 => a
+        a == 0
+      end
+    end
+  end
 
-#   it "alternative_pattern" do
-#     assert_block do
-#       [0, 1].all? do |i|
-#         case i
-#         in 0 | 1
-#           true
-#         end
-#       end
-#     end
+  it "alternative_pattern" do
+    assert_block do
+      [0, 1].all? do |i|
+        case i
+        in 0 | 1
+          true
+        end
+      end
+    end
 
-#     assert_block do
-#       case 0
-#       in _ | _a
-#         true
-#       end
-#     end
+    assert_block do
+      case 0
+      in _ | _a
+        true
+      end
+    end
 
-#     assert_syntax_error(%q{
-#       case 0
-#       in a | 0
-#       end
-#     }, /illegal variable in alternative pattern/)
-#   end
+    assert_syntax_error(%q{
+      case 0
+      in a | 0
+      end
+    }, /illegal variable in alternative pattern/)
+  end
 
 #   it "var_pattern" do
 #     # NODE_DASGN_CURR
