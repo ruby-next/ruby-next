@@ -26,7 +26,7 @@ module RubyNext
       def initialize
         # Minimum supported RubyNext version
         @min_version = Gem::Version.new(MIN_SUPPORTED_VERSION)
-        @dirty == false
+        @dirty = false
       end
 
       # Called by rewriter when it performs transfomrations

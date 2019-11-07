@@ -22,6 +22,8 @@ Gem::Specification.new do |s|
 
   s.require_paths = ["lib"]
 
+  s.executables = ["ruby-next"]
+
   s.add_development_dependency "parser", "~> 2.6.3.101"
   s.add_development_dependency "unparser", "~> 0.4.5"
 end
