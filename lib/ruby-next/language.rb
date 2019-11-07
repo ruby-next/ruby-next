@@ -64,6 +64,9 @@ module RubyNext
 
     require "ruby-next/language/rewriters/base"
 
+    require "ruby-next/language/rewriters/endless_range"
+    rewriters << Rewriters::EndlessRange
+
     require "ruby-next/language/rewriters/pattern_matching"
     rewriters << Rewriters::PatternMatching
 
