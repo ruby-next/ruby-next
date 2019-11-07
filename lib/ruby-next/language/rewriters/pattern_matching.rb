@@ -11,11 +11,13 @@ module RubyNext
     module Rewriters
       class PatternMatching < Base
         SYNTAX_PROBE = "case 0; in 0; true; else; 1; end"
-        MIN_VERSION = "2.7.0"
+        MIN_VERSION = Gem::Version.new("2.7.0")
 
         MATCHEE = :__matchee__
 
         def on_case_match(node)
+          context.track! self
+
           matchee_ast =
             s(:lvasgn, MATCHEE, node.children[0])
 

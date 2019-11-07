@@ -5,9 +5,11 @@ module RubyNext
     module Rewriters
       class MethodReference < Base
         SYNTAX_PROBE = "Language.:transform"
-        MIN_VERSION = "2.7.0"
+        MIN_VERSION = Gem::Version.new("2.7.0")
 
         def on_meth_ref(node)
+          context.track! self
+
           receiver, mid = *node.children
 
           node.updated(

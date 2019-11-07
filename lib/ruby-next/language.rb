@@ -20,15 +20,39 @@ module RubyNext
     require "ruby-next/language/parser"
     require "unparser"
 
+    class TransformContext
+      attr_reader :min_version
+
+      def initialize
+        # Minimum supported RubyNext version
+        @min_version = Gem::Version.new(MIN_SUPPORTED_VERSION)
+        @dirty == false
+      end
+
+      # Called by rewriter when it performs transfomrations
+      def track!(rewriter)
+        @dirty = true
+
+        version = rewriter.class::MIN_VERSION
+        return unless version > min_version
+
+        @min_version = version
+      end
+
+      def dirty?
+        @dirty == true
+      end
+    end
+
     class << self
       attr_accessor :rewriters
 
-      def transform(source, rewriters: self.rewriters, eval: false)
+      def transform(source, rewriters: self.rewriters, eval: false, context: TransformContext.new)
         Parser.parse(source).then do |ast|
           rewriters.inject(ast) do |tree, rewriter|
-            rewriter.new.process(tree)
+            rewriter.new(context).process(tree)
           end.then do |new_ast|
-            next source if ast == new_ast
+            next source unless context.dirty?
 
             Unparser.unparse(new_ast)
           end
