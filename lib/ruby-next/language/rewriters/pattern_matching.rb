@@ -61,7 +61,7 @@ module RubyNext
               match_var_truthy(child)
             else
               s(:send,
-                s(:lvar, MATCHEE), :===, child)
+                s(:lvar, MATCHEE), :==, child)
             end
           end
           s(:or, *children)
@@ -69,28 +69,20 @@ module RubyNext
 
         def match_var_to_if(node, guard)
           if guard
-            s(:and,
-              match_var_truthy(node),
-              guard.children[0]).then do |expr|
-              next expr unless guard.type == :unless_guard
-              s(:send, expr, :!)
-            end
+            with_guard match_var_truthy(node), guard
           else
             match_var(node)
           end
         end
 
         def match_as_to_if(node, guard)
-          s(:and,
-            s(:send,
-              s(:lvar, MATCHEE), :==, node.children[0]),
-            match_var_truthy(node.children[1])
+          with_guard(
+            s(:and,
+              s(:send,
+                s(:lvar, MATCHEE), :==, node.children[0]),
+              match_var_truthy(node.children[1])),
+            guard
           )
-        end
-
-        def int_to_if(node, guard)
-          s(:send,
-            s(:lvar, MATCHEE), :==, node)
         end
 
         def no_matching_pattern
@@ -107,8 +99,33 @@ module RubyNext
         def match_var_truthy(node)
           s(:or,
             match_var(node),
-            s(:true)
-          )
+            s(:true)) # rubocop:disable Lint/BooleanSymbol
+        end
+
+        def with_guard(node, guard)
+          return node unless guard
+
+          s(:and,
+            node,
+            guard.children[0]).then do |expr|
+            next expr unless guard.type == :unless_guard
+            s(:send, expr, :!)
+          end
+        end
+
+        def eq_node(node, _)
+          s(:send,
+            s(:lvar, MATCHEE), :==, node)
+        end
+
+        def respond_to_missing?(mid, *)
+          return true if mid.match?(/_to_if$/)
+          super
+        end
+
+        def method_missing(mid, *args, &block)
+          return eq_node(*args) if mid.match?(/_to_if$/)
+          super
         end
       end
     end
