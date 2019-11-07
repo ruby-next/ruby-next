@@ -23,7 +23,7 @@ module RubyNext
     class << self
       attr_accessor :rewriters
 
-      def transform(source)
+      def transform(source, rewriters: self.rewriters, eval: false)
         Parser.parse(source).then do |ast|
           rewriters.inject(ast) do |tree, rewriter|
             rewriter.new.process(tree)
@@ -40,18 +40,10 @@ module RubyNext
 
     require "ruby-next/language/rewriters/base"
 
-    begin
-      Kernel.eval "case 0; in 0; true; else; 1; end"
-    rescue SyntaxError
-      require "ruby-next/language/rewriters/pattern_matching"
-      rewriters << Rewriters::PatternMatching
-    end
+    require "ruby-next/language/rewriters/pattern_matching"
+    rewriters << Rewriters::PatternMatching
 
-    begin
-      Kernel.eval "Language.:transform"
-    rescue SyntaxError
-      require "ruby-next/language/rewriters/method_reference"
-      rewriters << Rewriters::MethodReference
-    end
+    require "ruby-next/language/rewriters/method_reference"
+    rewriters << Rewriters::MethodReference
   end
 end
