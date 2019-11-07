@@ -2,6 +2,8 @@
 
 ## master
 
+- Add endless Range support. ([@palkan][])
+
 - Add method reference syntax support. ([@palkan][])
 
 - Add `Proc#<<` and `Proc#>>`. ([@palkan][])
