@@ -12,6 +12,9 @@ module RubyNext
   module Language
     # Module responsible for runtime transformations
     module Runtime
+      # Apply only rewriters required for the current version
+      REWRITERS = RubyNext::Language.rewriters.select(&:unsupported_syntax?)
+
       class << self
         include Utils
 
@@ -21,10 +24,14 @@ module RubyNext
           raise "RubyNext cannot handle `load(smth, wrap: true)`" if wrap
 
           contents = File.read(path)
-          new_contents = Language.transform(contents)
+          new_contents = transform contents
 
           TOPLEVEL_BINDING.eval(new_contents, path)
           true
+        end
+
+        def transform(contents, **options)
+          Language.transform(contents, rewriters: REWRITERS, **options)
         end
 
         def transformable?(path)
@@ -99,7 +106,7 @@ module Kernel
 
   alias_method :eval_without_ruby_next, :eval
   def eval(source, *args)
-    new_source = RubyNext::Language.transform(source)
+    new_source = RubyNext::Language::Runtime.transform(source, eval: true)
     eval_without_ruby_next new_source, *args
   end
 end

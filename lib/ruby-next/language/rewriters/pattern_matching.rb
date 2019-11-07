@@ -10,6 +10,9 @@ module RubyNext
   module Language
     module Rewriters
       class PatternMatching < Base
+        SYNTAX_PROBE = "case 0; in 0; true; else; 1; end"
+        MIN_VERSION = "2.7.0"
+
         MATCHEE = :__matchee__
 
         def on_case_match(node)
