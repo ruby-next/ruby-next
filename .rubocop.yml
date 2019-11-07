@@ -13,6 +13,7 @@ AllCops:
     - 'gemfiles/**/*'
     - 'spec/core/**/*'
     - 'spec/language/**/*'
+    - 'spec/cli/dummy/**/*'
     - 'mspec/**/*'
     - 'lib/ruby-next/language/ruby27.rb'
   DisplayCopNames: true
