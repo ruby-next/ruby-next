@@ -25,9 +25,18 @@ module RubyNext
           end
         end
 
+        def initialize(context)
+          @context = context
+          super()
+        end
+
         def s(type, *children)
           ::Parser::AST::Node.new(type, children)
         end
+
+        private
+
+        attr_reader :context
       end
     end
   end
