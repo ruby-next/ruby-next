@@ -24,19 +24,14 @@ module RubyNext
       attr_accessor :rewriters
 
       def transform(source)
-        buffer = ::Parser::Source::Buffer.new("<dynamic>")
-        buffer.source = source
-
         Parser.parse(source).then do |ast|
           rewriters.inject(ast) do |tree, rewriter|
             rewriter.new.process(tree)
           end.then do |new_ast|
-            [ast, new_ast]
-          end
-        end.then do |(ast, new_ast)|
-          return source if ast == new_ast
+            next source if ast == new_ast
 
-          Unparser.unparse(new_ast)
+            Unparser.unparse(new_ast)
+          end
         end
       end
     end
