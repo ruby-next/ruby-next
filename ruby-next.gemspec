@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
 
   s.license = "MIT"
 
-  s.files = `git ls-files README.md LICENSE.txt`.split
+  s.files = `git ls-files README.md LICENSE.txt lib bin`.split
   s.required_ruby_version = ">= 2.5.0"
 
   s.require_paths = ["lib"]
