@@ -352,15 +352,15 @@ END
 #     end
 #   end
 
-#   it "array_pattern" do
-#     assert_block do
-#       [[0], C.new([0])].all? do |i|
-#         case i
-#         in 0,;
-#           true
-#         end
-#       end
-#     end
+  it "array_pattern" do
+    # assert_block do
+    #   [[0], C.new([0])].all? do |i|
+    #     case i
+    #     in 0,;
+    #       true
+    #     end
+    #   end
+    # end
 
 #     assert_block do
 #       [[0, 1], C.new([0, 1])].all? do |i|
@@ -381,24 +381,24 @@ END
 #       end
 #     end
 
-#     assert_block do
-#       [[0, 1], C.new([0, 1])].all? do |i|
-#         case i
-#         in 0, 1
-#           true
-#         end
-#       end
-#     end
+    assert_block do
+      [[0, 1], C.new([0, 1])].all? do |i|
+        case i
+        in 0, 1
+          true
+        end
+      end
+    end
 
-#     assert_block do
-#       [[0], C.new([0])].all? do |i|
-#         case i
-#         in 0, 1
-#         else
-#           true
-#         end
-#       end
-#     end
+    assert_block do
+      [[0], C.new([0])].all? do |i|
+        case i
+        in 0, 1
+        else
+          true
+        end
+      end
+    end
 
 #     assert_block do
 #       [[], C.new([])].all? do |i|
@@ -543,12 +543,12 @@ END
 #       end
 #     end
 
-#     assert_block do
-#       case []
-#       in []
-#         true
-#       end
-#     end
+    # assert_block do
+    #   case []
+    #   in []
+    #     true
+    #   end
+    # end
 
 #     assert_block do
 #       case C.new([])
@@ -557,19 +557,26 @@ END
 #       end
 #     end
 
-#     assert_block do
-#       case [0]
-#       in [0]
-#         true
-#       end
-#     end
+    assert_block do
+      case [0]
+      in [0]
+        true
+      end
+    end
 
-#     assert_block do
-#       case C.new([0])
-#       in [0]
-#         true
-#       end
-#     end
+    assert_block do
+      case [1]
+      in [0 | 1]
+        true
+      end
+    end
+
+    assert_block do
+      case C.new([0])
+      in [0]
+        true
+      end
+    end
 
 #     assert_block do
 #       case [0]
@@ -680,7 +687,7 @@ END
 #         true
 #       end
 #     end
-#   end
+  end
 
 #   it "hash_pattern" do
 #     assert_block do

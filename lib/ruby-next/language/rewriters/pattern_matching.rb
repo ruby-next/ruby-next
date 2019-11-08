@@ -87,6 +87,10 @@ module RubyNext
         end
 
         def match_alt_array_element(node, index)
+          children = node.children.map do |child, i|
+            send :"#{child.type}_array_element", child, index
+          end
+          s(:or, *children)
         end
 
         def match_as_clause(node, matchee = s(:lvar, MATCHEE))
