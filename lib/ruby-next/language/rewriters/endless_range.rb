@@ -5,7 +5,7 @@ module RubyNext
     module Rewriters
       class EndlessRange < Base
         SYNTAX_PROBE = "[0, 1][1..]"
-        MIN_VERSION = Gem::Version.new("2.6.0")
+        MIN_SUPPORTED_VERSION = Gem::Version.new("2.6.0")
 
         def on_index(node)
           @current_index = node
