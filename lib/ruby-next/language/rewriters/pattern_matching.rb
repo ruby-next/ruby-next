@@ -65,8 +65,7 @@ module RubyNext
             if child.type == :match_var
               match_var_truthy(child)
             else
-              s(:send,
-                s(:lvar, MATCHEE), :==, child)
+              case_eq(child, s(:lvar, MATCHEE))
             end
           end
           s(:or, *children)
@@ -83,8 +82,7 @@ module RubyNext
         def match_as_to_if(node, guard)
           with_guard(
             s(:and,
-              s(:send,
-                s(:lvar, MATCHEE), :==, node.children[0]),
+              case_eq(node.children[0], s(:lvar, MATCHEE)),
               match_var_truthy(node.children[1])),
             guard
           )
@@ -118,9 +116,9 @@ module RubyNext
           end
         end
 
-        def eq_node(node, _)
+        def case_eq(left, right)
           s(:send,
-            s(:lvar, MATCHEE), :==, node)
+            left, :===, right)
         end
 
         def respond_to_missing?(mid, *)
@@ -129,7 +127,7 @@ module RubyNext
         end
 
         def method_missing(mid, *args, &block)
-          return eq_node(*args) if mid.match?(/_to_if$/)
+          return case_eq(args.first, s(:lvar, MATCHEE)) if mid.match?(/_to_if$/)
           super
         end
       end
