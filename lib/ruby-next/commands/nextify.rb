@@ -8,13 +8,12 @@ using RubyNext
 module RubyNext
   module Commands
     class Nextify < Base
-      RUBY_NEXT_DIR = ".rbnxt"
-
-      attr_reader :lib_path
+      attr_reader :lib_path, :min_version
 
       def run
         Dir[File.join(lib_path, "**/*.rb")].each do |entry|
-          transpile entry
+          contents = File.read(entry)
+          transpile entry, contents
         end
       end
 
@@ -24,6 +23,9 @@ module RubyNext
         end
 
         @lib_path = args[0]
+
+        # TODO: add options
+        @min_version = MIN_SUPPORTED_VERSION
 
         unless lib_path&.then(&File.method(:directory?))
           $stdout.puts optparser.help
@@ -35,24 +37,24 @@ module RubyNext
 
       private
 
-      def transpile(path)
-        contents = File.read(path)
+      def transpile(path, contents, version: min_version)
+        rewriters = Language.rewriters.select { |rw| rw.unsupported_version?(version) }
 
-        min_version = nil
+        context = Language::TransformContext.new
+        new_contents = Language.transform contents, context: context, rewriters: rewriters
 
-        target_versions.each do |version|
-          next if min_version && min_version > version
+        return unless context.dirty?
 
-          context = Language::TransformContext.new
-          rewriters = Language.rewriters.select { |rw| rw.unsupported_version?(version) }
+        versions = context.sorted_versions
+        version = versions.shift
 
-          new_contents = Language.transform contents, context: context, rewriters: rewriters
-          break unless context.dirty?
+        # First, store already transpiled contents in the minimum required version dir
+        save new_contents, path, version
 
-          min_version = context.min_version
+        return if versions.empty?
 
-          save new_contents, path, version
-        end
+        # Then, generate the source code for the next version
+        transpile path, contents, version: version
       end
 
       def save(contents, path, version)
@@ -66,15 +68,6 @@ module RubyNext
         FileUtils.mkdir_p File.dirname(next_path)
 
         File.write(next_path, contents)
-      end
-
-      # TODO: make this configurable
-      def target_versions
-        @target_versions ||=
-          [
-            Gem::Version.new("2.5.0"),
-            Gem::Version.new("2.6.0")
-          ]
       end
     end
   end

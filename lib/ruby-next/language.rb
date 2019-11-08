@@ -3,6 +3,8 @@
 gem "parser", "~> 2.6.3.0"
 gem "unparser", "~> 0.4.5"
 
+require "set"
+
 require "ruby-next"
 using RubyNext
 
@@ -18,29 +20,34 @@ module RubyNext
   #   - Generates a transpiled source code from the transformed AST (via the `unparser` gem)
   module Language
     require "ruby-next/language/parser"
-    require "unparser"
+    require "ruby-next/language/unparser"
 
     class TransformContext
-      attr_reader :min_version
+      attr_reader :versions
 
       def initialize
         # Minimum supported RubyNext version
-        @min_version = Gem::Version.new(MIN_SUPPORTED_VERSION)
+        @min_version = MIN_SUPPORTED_VERSION
         @dirty = false
+        @versions = Set.new
       end
 
       # Called by rewriter when it performs transfomrations
       def track!(rewriter)
         @dirty = true
-
-        version = rewriter.class::MIN_VERSION
-        return unless version > min_version
-
-        @min_version = version
+        versions << rewriter.class::MIN_SUPPORTED_VERSION
       end
 
       def dirty?
         @dirty == true
+      end
+
+      def min_version
+        versions.min
+      end
+
+      def sorted_versions
+        versions.to_a.sort
       end
     end
 
