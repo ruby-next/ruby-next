@@ -46,9 +46,11 @@ module RubyNext
 
         def build_in_pattern(clause, rest)
           [
-            send(
-              :"#{clause.children[0].type}_to_if",
-              clause.children[0], # pattern
+            with_guard(
+              send(
+                :"#{clause.children[0].type}_clause",
+                clause.children[0]
+              ),
               clause.children[1] # guard
             ),
             clause.children[2] || s(:nil) # expression
@@ -61,60 +63,46 @@ module RubyNext
           end
         end
 
-        def array_pattern_to_if(node, guard)
+        def array_pattern_clause(node)
           s(:and,
             deconstruct_node,
-            array_element(0, *node.children)
-          )
+            array_element(0, *node.children))
         end
 
         def array_element(index, head, *tail)
-          send("#{head.type}_to_arr", head, index).then do |node|
+          send("#{head.type}_array_element", head, index).then do |node|
             next node if tail.empty?
 
             s(:and,
               node,
-              array_element(index + 1, *tail)
-            )
+              array_element(index + 1, *tail))
           end
         end
 
-        def match_alt_to_if(node, _)
+        def match_alt_clause(node)
           children = node.children.map do |child|
-            if child.type == :match_var
-              match_var(child)
-            else
-              case_eq(child)
-            end
+            send :"#{child.type}_clause", child
           end
           s(:or, *children)
         end
 
-        def match_alt_to_arr(node, index)
-          
+        def match_alt_array_element(node, index)
         end
 
-        def match_as_to_if(node, guard)
-          with_guard(
-            s(:and,
-              case_eq(node.children[0]),
-              match_var(node.children[1])),
-            guard
-          )
+        def match_as_clause(node, matchee = s(:lvar, MATCHEE))
+          s(:and,
+            case_eq_clause(node.children[0]),
+            match_var_clause(node.children[1], matchee))
         end
 
-        def match_var_to_if(node, guard)
-          with_guard match_var(node), guard
-        end
-
-        def match_var(node, matchee = s(:lvar, MATCHEE))
+        def match_var_clause(node, matchee = s(:lvar, MATCHEE))
           s(:or,
             s(:lvasgn, node.children[0], matchee),
             s(:true)) # rubocop:disable Lint/BooleanSymbol
         end
 
-        def match_var_to_arr(node, index)
-          match_var node, arr_item_at(index)
+        def match_var_array_element(node, index)
+          match_var_clause node, arr_item_at(index)
         end
 
         def with_guard(node, guard)
@@ -128,12 +116,12 @@ module RubyNext
           end
         end
 
-        def case_eq(node)
+        def case_eq_clause(node)
           s(:send,
             node, :===, s(:lvar, MATCHEE))
         end
 
-        def case_eq_arr(node, index)
+        def case_eq_array_element(node, index)
           s(:send,
             node, :===, arr_item_at(index))
         end
@@ -157,13 +145,13 @@ module RubyNext
         end
 
         def respond_to_missing?(mid, *)
-          return true if mid.match?(/_to_(if|arr)$/)
+          return true if mid.match?(/_(clause|array_element)/)
           super
         end
 
         def method_missing(mid, *args, &block)
-          return case_eq(args.first) if mid.match?(/_to_if$/)
-          return case_eq_arr(*args) if mid.match?(/_to_arr$/)
+          return case_eq_clause(args.first) if mid.match?(/_clause$/)
+          return case_eq_array_element(*args) if mid.match?(/_array_element$/)
           super
         end
       end
