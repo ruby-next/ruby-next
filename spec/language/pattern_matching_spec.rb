@@ -310,28 +310,28 @@ describe "pattern matching" do
 #     end
 #   end
 
-#   it "constant_value_pattern" do
-#     assert_block do
-#       case 0
-#       in Integer
-#         true
-#       end
-#     end
+  it "constant_value_pattern" do
+    assert_block do
+      case 0
+      in Integer
+        true
+      end
+    end
 
-#     assert_block do
-#       case 0
-#       in Object::Integer
-#         true
-#       end
-#     end
+    assert_block do
+      case 0
+      in Object::Integer
+        true
+      end
+    end
 
-#     assert_block do
-#       case 0
-#       in ::Object::Integer
-#         true
-#       end
-#     end
-#   end
+    assert_block do
+      case 0
+      in ::Object::Integer
+        true
+      end
+    end
+  end
 
 #   it "pin_operator_value_pattern" do
 #     assert_block do
