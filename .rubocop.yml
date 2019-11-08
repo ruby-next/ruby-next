@@ -14,6 +14,7 @@ AllCops:
     - 'spec/core/**/*'
     - 'spec/language/**/*'
     - 'spec/cli/dummy/**/*'
+    - 'spec/integration/fixtures/**/*'
     - 'mspec/**/*'
     - 'lib/ruby-next/language/ruby27.rb'
   DisplayCopNames: true

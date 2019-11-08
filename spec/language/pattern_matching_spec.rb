@@ -191,124 +191,126 @@ describe "pattern matching" do
     }, /illegal variable in alternative pattern/)
   end
 
-#   it "var_pattern" do
-#     # NODE_DASGN_CURR
-#     assert_block do
-#       case [0, 1]
-#       in a, a
-#         a == 1
-#       end
-#     end
+  it "var_pattern" do
+    # NODE_DASGN_CURR
+    assert_block do
+      case [0, 1]
+      in a, a
+        a == 1
+      end
+    end
 
-#     # NODE_DASGN
-#     b = 0
-#     assert_block do
-#       case [0, 1]
-#       in b, b
-#         b == 1
-#       end
-#     end
+    # NODE_DASGN
+    b = 0
+    assert_block do
+      case [0, 1]
+      in b, b
+        b == 1
+      end
+    end
 
-#     # NODE_LASGN
-#     case [0, 1]
-#     in c, c
-#       assert_equal(1, c)
-#     else
-#       flunk
-#     end
+    # NODE_LASGN
+    case [0, 1]
+    in c, c
+      assert_equal(1, c)
+    else
+      flunk
+    end
 
-#     assert_syntax_error(%q{
-#       case 0
-#       in ^a
-#       end
-#     }, /no such local variable/)
-#   end
+    assert_syntax_error(%q{
+      case 0
+      in ^a
+      end
+    }, /no such local variable/)
+  end
 
-#   it "literal_value_pattern" do
-#     assert_block do
-#       case [nil, self, true, false]
-#       in [nil, self, true, false]
-#         true
-#       end
-#     end
+  it "literal_value_pattern" do
+    assert_block do
+      case [nil, self, true, false]
+      in [nil, self, true, false]
+        true
+      end
+    end
 
-#     assert_block do
-#       case [0d170, 0D170, 0xaa, 0xAa, 0xAA, 0Xaa, 0XAa, 0XaA, 0252, 0o252, 0O252]
-#       in [0d170, 0D170, 0xaa, 0xAa, 0xAA, 0Xaa, 0XAa, 0XaA, 0252, 0o252, 0O252]
-#         true
-#       end
+    assert_block do
+      case [0d170, 0D170, 0xaa, 0xAa, 0xAA, 0Xaa, 0XAa, 0XaA, 0252, 0o252, 0O252]
+      in [0d170, 0D170, 0xaa, 0xAa, 0xAA, 0Xaa, 0XAa, 0XaA, 0252, 0o252, 0O252]
+        true
+      end
 
-#       case [0b10101010, 0B10101010, 12r, 12.3r, 1i, 12.3ri]
-#       in [0b10101010, 0B10101010, 12r, 12.3r, 1i, 12.3ri]
-#         true
-#       end
-#     end
+      case [0b10101010, 0B10101010, 12r, 12.3r, 1i, 12.3ri]
+      in [0b10101010, 0B10101010, 12r, 12.3r, 1i, 12.3ri]
+        true
+      end
+    end
 
-#     assert_block do
-#       x = 'x'
-#       case ['a', 'a', x]
-#       in ['a', "a", "#{x}"]
-#         true
-#       end
-#     end
+    assert_block do
+      x = 'x'
+      case ['a', 'a', x]
+      in ['a', "a", "#{x}"]
+        true
+      end
+    end
 
-#     assert_block do
-#       case ["a\n"]
-#       in [<<END]
-# a
-# END
-#         true
-#       end
-#     end
+    assert_block do
+      case ["a\n"]
+      in [<<END]
+a
+END
+        true
+      end
+    end
 
-#     assert_block do
-#       case [:a, :"a"]
-#       in [:a, :"a"]
-#         true
-#       end
-#     end
+    assert_block do
+      case [:a, :"a"]
+      in [:a, :"a"]
+        true
+      end
+    end
 
-#     assert_block do
-#       case [0, 1, 2, 3, 4, 5]
-#       in [0..1, 0...2, 0.., 0..., (...5), (..5)]
-#         true
-#       end
-#     end
+    # TODO: beginless range
+    # assert_block do
+    #   case [0, 1, 2, 3, 4, 5]
+    #   in [0..1, 0...2, 0.., 0..., (...5), (..5)]
+    #     true
+    #   end
+    # end
 
-#     assert_syntax_error(%q{
-#       case 0
-#       in a..b
-#       end
-#     }, /unexpected/)
+    assert_syntax_error(%q{
+      case 0
+      in a..b
+      end
+    }, /unexpected/)
 
-#     assert_block do
-#       case 'abc'
-#       in /a/
-#         true
-#       end
-#     end
+    assert_block do
+      case 'abc'
+      in /a/
+        true
+      end
+    end
 
-#     assert_block do
-#       case 0
-#       in ->(i) { i == 0 }
-#         true
-#       end
-#     end
+    assert_block do
+      case 0
+      in ->(i) { i == 0 }
+        true
+      end
+    end
 
-#     assert_block do
-#       case [%(a), %q(a), %Q(a), %w(a), %W(a), %i(a), %I(a), %s(a), %x(echo a), %(), %q(), %Q(), %w(), %W(), %i(), %I(), %s(), 'a']
-#       in [%(a), %q(a), %Q(a), %w(a), %W(a), %i(a), %I(a), %s(a), %x(echo a), %(), %q(), %Q(), %w(), %W(), %i(), %I(), %s(), %r(a)]
-#         true
-#       end
-#     end
+    assert_block do
+      case [%(a), %q(a), %Q(a), %w(a), %W(a), %i(a), %I(a), %s(a), %x(echo a), %(), %q(), %Q(), %w(), %W(), %i(), %I(), %s(), 'a']
+      in [%(a), %q(a), %Q(a), %w(a), %W(a), %i(a), %I(a), %s(a), %x(echo a), %(), %q(), %Q(), %w(), %W(), %i(), %I(), %s(), %r(a)]
+        true
+      end
+    end
 
-#     assert_block do
-#       case [__FILE__, __LINE__ + 1, __ENCODING__]
-#       in [__FILE__, __LINE__, __ENCODING__]
-#         true
-#       end
-#     end
-#   end
+    # TODO: parser bug? https://github.com/whitequark/parser/pull/574#issuecomment-551946241
+    # assert_block do
+    #   case [__FILE__, __LINE__ + 1, __ENCODING__]
+    #   in [__FILE__, __LINE__, __ENCODING__]
+    #     true
+    #   end
+    # end
+  end
 
   it "constant_value_pattern" do
     assert_block do
