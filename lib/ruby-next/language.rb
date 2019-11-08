@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-gem "parser", "~> 2.6.3.0"
+gem "parser", "~> 2.6.3.100"
 gem "unparser", "~> 0.4.5"
 
 require "set"
