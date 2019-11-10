@@ -19,6 +19,8 @@ module RubyNext
         def on_case_match(node)
           context.track! self
 
+          @array_deconstructed = false
+
           matchee_ast =
             s(:lvasgn, MATCHEE, node.children[0])
 
@@ -131,9 +133,18 @@ module RubyNext
         end
 
         def deconstruct_node
-          s(:lvasgn, MATCHEE_ARR,
-            s(:send,
-              s(:lvar, MATCHEE), :deconstruct))
+          right = s(:send,
+            s(:lvar, MATCHEE), :deconstruct)
+
+          # only deconstruct once per case
+          if @array_deconstructed
+            s(:or_asgn,
+              s(:lvasgn, MATCHEE_ARR),
+              right)
+          else
+            @array_deconstructed = true
+            s(:lvasgn, MATCHEE_ARR, right)
+          end
         end
 
         def arr_item_at(index, arr = s(:lvar, MATCHEE_ARR))
