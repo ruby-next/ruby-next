@@ -22,6 +22,21 @@ module RubyNext
       def run
         raise NotImplementedError
       end
+
+      def log(msg)
+        return unless CLI.verbose
+        $stdout.puts msg
+      end
+
+      def base_parser
+        OptionParser.new do |opts|
+          yield opts
+
+          opts.on("-V", "Turn on verbose mode") do
+            CLI.verbose = true
+          end
+        end
+      end
     end
   end
 end

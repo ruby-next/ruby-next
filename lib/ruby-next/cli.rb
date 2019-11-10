@@ -9,6 +9,12 @@ require "ruby-next/commands/nextify"
 module RubyNext
   # Command line interface for RubyNext
   class CLI
+    class << self
+      attr_accessor :verbose
+    end
+
+    self.verbose = false
+
     COMMANDS = {
       "nextify" => Commands::Nextify
     }.freeze
@@ -31,14 +37,19 @@ module RubyNext
     private
 
     def maybe_print_version(args)
-      OptionParser.new do |opts|
-        opts.banner = "Usage: ruby-next COMMAND [options]"
+      args = args.dup
+      begin
+        OptionParser.new do |opts|
+          opts.banner = "Usage: ruby-next COMMAND [options]"
 
-        opts.on("-v", "--version", "Print version") do
-          STDOUT.puts RubyNext::VERSION
-          exit 0
-        end
-      end.parse!(args)
+          opts.on("-v", "--version", "Print version") do
+            STDOUT.puts RubyNext::VERSION
+            exit 0
+          end
+        end.parse!(args)
+      rescue OptionParser::InvalidOption
+        # skip and pass all args to the command's parser
+      end
     end
   end
 end
