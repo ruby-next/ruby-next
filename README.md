@@ -44,6 +44,34 @@ As follows, calling `require_relative` should be avoided.
 
 \* RubyNext doesn't avoid storing duplicates; instead, only the code for the earlier version is created and is assumed to be used with other versions. For example, if the transpiled code is the same for Ruby 2.5 and Ruby 2.6, only the `.rbnext/2.7/path/to/file.rb` is kept. That's why multiple entries are added to the `$LOAD_PATH` (`.rbnext/2.6` and `.rbnext/2.7` in the specified order for Ruby 2.5 and only `.rbnext/2.7` for Ruby 2.6).
 
+## CLI
+
+RubyNext ships with the command-line interface (`ruby-next`) which provides the following functionality:
+
+- `ruby-next nextify` — transpile file or directory into older Rubies (see, for example, the "Integrating into a gem development" section abobe).
+
+It has the following interface:
+
+```sh
+$ ruby-next nextify
+Usage: ruby-next nextify DIRECTORY_OR_FILE [options]
+    -o, --output=OUTPUT              Specify output directory or file
+        --min-version=VERSION        Specify the minimum Ruby version to support
+        --single-version             Only create one version of a file (for the earliest Ruby version)
+    -V                               Turn on verbose mode
+```
+
+The behaviour depends on whether you transpile a single file or a directory:
+
+- When transpiling a directory, the `.rbnext` subfolder is created within the target folder with subfolders for each supported Ruby versions (e.g., `.rbnext/2.6`, `.rbnext/2.7`). If you want to create only a signle version (the smallest), you can also pass `--single-version` flag. In that case no version directory is created (i.e., transpiled files go into `.rbnext`).
+
+- When transpiling a file and providing the output path as a _file_ path, only a single version is created. For example:
+
+```sh
+$ ruby-next nextify my_ruby.rb -o my_ruby_next.rb -V
+Generated: my_ruby_next.rb
+```
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at [https://github.com/ruby-next/ruby-next](ttps://github.com/ruby-next/ruby-next).
