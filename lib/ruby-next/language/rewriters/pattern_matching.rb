@@ -2,10 +2,6 @@
 
 using RubyNext
 
-# TODO: how to add it at build time?
-class NoMatchingPatternError < RuntimeError
-end
-
 module RubyNext
   module Language
     module Rewriters
@@ -18,6 +14,7 @@ module RubyNext
 
         def on_case_match(node)
           context.track! self
+          context.use_ruby_next!
 
           @array_deconstructed = false
 

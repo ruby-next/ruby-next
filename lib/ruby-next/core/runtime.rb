@@ -4,7 +4,7 @@
 RubyNext::Language.singleton_class.prepend(Module.new do
   def transform(contents, **hargs)
     # We cannot activate refinements in eval
-    contents.sub!(/^(\s*[^#\s].*)/, 'using RubyNext;\1') unless hargs[:eval]
+    RubyNext::Core.inject!(contents) unless hargs[:eval]
     super(contents, **hargs)
   end
 end)

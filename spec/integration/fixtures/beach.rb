@@ -1,10 +1,14 @@
+# source: https://learnyousomeerlang.com/syntax-in-functions#in-case-of
+
 def beach(*temperature)
   case temperature
-  in :celcius | :c, n if (n >= 20) and (n <= 45)
+  in :celcius | :c, (20..45)
     :favorable
-  in :kelvin | :k, n if (n >= 293) and (n <= 318)
+  in :kelvin | :k, (293..318)
     :scientifically_favorable
-  in :fahrenheit | :f, n if (n >= 68) and (n <= 113)
+  in :kelvin | :k, (5_778...)
+    :burning_on_the_sun
+  in :fahrenheit | :f, (68..113)
     :favorable_in_us
   else
     :avoid_beach
