@@ -23,13 +23,14 @@ module RubyNext
     require "ruby-next/language/unparser"
 
     class TransformContext
-      attr_reader :versions
+      attr_reader :versions, :use_ruby_next
 
       def initialize
         # Minimum supported RubyNext version
         @min_version = MIN_SUPPORTED_VERSION
         @dirty = false
         @versions = Set.new
+        @use_ruby_next = false
       end
 
       # Called by rewriter when it performs transfomrations
@@ -37,6 +38,12 @@ module RubyNext
         @dirty = true
         versions << rewriter.class::MIN_SUPPORTED_VERSION
       end
+
+      def use_ruby_next!
+        @use_ruby_next = true
+      end
+
+      alias use_ruby_next? use_ruby_next
 
       def dirty?
         @dirty == true
@@ -62,6 +69,10 @@ module RubyNext
             next source unless context.dirty?
 
             Unparser.unparse(new_ast)
+          end.then do |source|
+            next source if eval || !context.use_ruby_next?
+
+            Core.inject! source.dup
           end
         end
       end

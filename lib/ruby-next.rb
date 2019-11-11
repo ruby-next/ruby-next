@@ -9,5 +9,25 @@ module RubyNext
   # Where to store transpiled files (relative from the project LOAD_PATH, usually `lib/`)
   RUBY_NEXT_DIR = ".rbnext"
 
+  # Defines last minor version for every major version
+  LAST_MINOR_VERSIONS = {
+    2 => 7
+  }.freeze
+
+  class << self
+    def next_version(version = RUBY_VERSION)
+      major, minor = Gem::Version.new(version).segments.map(&:to_i)
+
+      nxt =
+        if LAST_MINOR_VERSIONS[major] == minor
+          "#{major + 1}.0.0"
+        else
+          "#{major}.#{minor + 1}.0"
+        end
+
+      Gem::Version.new(nxt)
+    end
+  end
+
   require_relative "ruby-next/core"
 end
