@@ -14,6 +14,7 @@ end
 
 require_relative "core/kernel/then"
 require_relative "core/proc/compose"
+require_relative "core/enumerable/tally"
 
 # Core extensions required for pattern matching
 require_relative "core/pattern_matching"
