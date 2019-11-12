@@ -24,4 +24,4 @@
 
 - [ ] I've added tests for this change
 - [ ] I've added a Changelog entry
-- [ ] I've updated a documentation
+- [ ] I've updated a documentation/SUPPORTED_FEATURES.md

@@ -16,6 +16,8 @@ Who might be interested in Ruby Next?
 Ruby Next also aims to help the community to assess new, _experimental_, MRI features by making it easier to play with them.
 That's why Ruby Next implements the `trunk` features as fast as possible.
 
+⚒ _The project is in active development phase. See the list of supported and planed features [here][features]._
+
 ## Table of contents
 
 TBD
@@ -56,9 +58,13 @@ using RubyNext
 
 Ruby Next only refines core classes if necessary, thus, this line wouldn't have any effect in the edge Ruby.
 
+[**The list of supported APIs.**][features_core]
+
 ## Transpiling, or using edge Ruby syntax features
 
 Ruby Next relies on its own version of the [parser][] gem hosted on Github Package Registry. That makes installation process a bit more complex than usually.
+
+[**The list of supported syntax features.**][features_syntax]
 
 ### Installing with Bundler
 
@@ -173,6 +179,9 @@ Bug reports and pull requests are welcome on GitHub at [https://github.com/ruby-
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
 
+[features]: ./SUPPORTED_FEATURES.md
+[features_core]: ./SUPPORTED_FEATURES.md#Core
+[features_syntax]: ./SUPPORTED_FEATURES.md#Syntax
 [mruby]: https://mruby.org
 [JRuby]: https://todo
 [TruffleRuby]: https://todo
