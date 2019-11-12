@@ -2,6 +2,8 @@
 
 ## master
 
+- Add `Enumerable#tally`. ([@palkan][])
+
 - Implement gem integration flow. ([@palkan][])
 
   - Transpile code via `ruby-next nextify`.
