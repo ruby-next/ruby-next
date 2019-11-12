@@ -9,9 +9,9 @@ Ruby Next is a tool for supporting modern/edge CRuby features (APIs and syntax) 
 
 Who might be interested in Ruby Next?
 
-- **Ruby gems maintainers** who want to write code using the latest Ruby verison but still support older ones.
+- **Ruby gems maintainers** who want to write code using the latest Ruby version but still support older ones.
 - **Application developers** who want to give new features a try without waiting for the final release (or, more often, for the first patch).
-- **Users of non-MRI implementaions** such as [mruby][], [JRuby][], [TruffleRuby][], [Opal][], [Artichoke][], [Prism][].
+- **Users of non-MRI implementations** such as [mruby][], [JRuby][], [TruffleRuby][], [Opal][], [Artichoke][], [Prism][].
 
 Ruby Next also aims to help the community to assess new, _experimental_, MRI features by making it easier to play with them.
 That's why Ruby Next implements the `trunk` features as fast as possible.
@@ -28,7 +28,7 @@ Core provides **polyfills** for Ruby core classes APIs via Refinements.
 Thus, polyfills are only available in compatible runtimes (MRI, JRuby, TruffleRuby).
 
 Language is responsible for **transpiling** edge Ruby syntax into older versions. It could be done
-programmaticaly or via CLI. It also could be done in runtime.
+programmatically or via CLI. It also could be done in runtime.
 
 ## Using only polyfills
 
@@ -124,7 +124,7 @@ due to the way feature resolving works in Ruby (scanning the `$LOAD_PATH` and ha
 
 Ruby Next ships with the command-line interface (`ruby-next`) which provides the following functionality:
 
-- `ruby-next nextify` — transpile file or directory into older Rubies (see, for example, the "Integrating into a gem development" section abobe).
+- `ruby-next nextify` — transpile file or directory into older Rubies (see, for example, the "Integrating into a gem development" section above).
 
 It has the following interface:
 
@@ -139,7 +139,7 @@ Usage: ruby-next nextify DIRECTORY_OR_FILE [options]
 
 The behaviour depends on whether you transpile a single file or a directory:
 
-- When transpiling a directory, the `.rbnext` subfolder is created within the target folder with subfolders for each supported Ruby versions (e.g., `.rbnext/2.6`, `.rbnext/2.7`). If you want to create only a signle version (the smallest), you can also pass `--single-version` flag. In that case no version directory is created (i.e., transpiled files go into `.rbnext`).
+- When transpiling a directory, the `.rbnext` subfolder is created within the target folder with subfolders for each supported Ruby versions (e.g., `.rbnext/2.6`, `.rbnext/2.7`). If you want to create only a single version (the smallest), you can also pass `--single-version` flag. In that case no version directory is created (i.e., transpiled files go into `.rbnext`).
 
 - When transpiling a file and providing the output path as a _file_ path, only a single version is created. For example:
 
