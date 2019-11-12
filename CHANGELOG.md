@@ -2,6 +2,8 @@
 
 ## master
 
+- Add `Enumerable#filter/filter!`. ([@palkan][])
+
 - Add multiple arguments support to `Hash#merge`. ([@palkan][])
 
 - Add `Array#intersection`, `Array#union`, `Array#difference`. ([@palkan][])
