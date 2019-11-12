@@ -18,7 +18,7 @@ module RubyNext
       class << self
         include Utils
 
-        attr_reader :load_dirs
+        attr_reader :watch_dirs
 
         def load(path, wrap: false)
           raise "RubyNext cannot handle `load(smth, wrap: true)`" if wrap
@@ -37,7 +37,7 @@ module RubyNext
         end
 
         def transformable?(path)
-          load_dirs.any? { |dir| path.start_with?(dir) }
+          watch_dirs.any? { |dir| path.start_with?(dir) }
         end
 
         def feature_path(path)
@@ -50,11 +50,10 @@ module RubyNext
 
         private
 
-        attr_writer :load_dirs
+        attr_writer :watch_dirs
       end
 
-      self.load_dirs = %w[app lib spec test].map { |path| File.join(Dir.pwd, path) }
-      load_dirs << Dir.pwd
+      self.watch_dirs = %w[app lib spec test].map { |path| File.join(Dir.pwd, path) }
     end
   end
 end
