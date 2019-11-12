@@ -2,6 +2,8 @@
 
 ## master
 
+- Add multiple arguments support to `Hash#merge`. ([@palkan][])
+
 - Add `Array#intersection`, `Array#union`, `Array#difference`. ([@palkan][])
 
 - Add `Enumerable#tally`. ([@palkan][])
