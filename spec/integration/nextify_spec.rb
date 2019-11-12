@@ -13,9 +13,9 @@ describe "ruby-next nextify" do
   it "generates valid ruby code" do
     run "bin/ruby-next nextify #{File.join(__dir__, "fixtures", "beach.rb")}"
 
-    version_dir = RubyNext.next_version.segments[0..1].join(".")
+    version_dir = RubyNext.next_version&.then { |v| v.segments[0..1].join(".") }
 
-    unless File.exist?(File.join(__dir__, "fixtures", ".rbnext", version_dir))
+    if version_dir.nil? || !File.exist?(File.join(__dir__, "fixtures", ".rbnext", version_dir))
       version_dir = Dir.children(File.join(__dir__, "fixtures", ".rbnext")).first
     end
 

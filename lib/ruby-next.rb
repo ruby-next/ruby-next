@@ -14,9 +14,13 @@ module RubyNext
     2 => 7
   }.freeze
 
+  LATEST_VERSION = [2, 7].freeze
+
   class << self
     def next_version(version = RUBY_VERSION)
       major, minor = Gem::Version.new(version).segments.map(&:to_i)
+
+      return if major >= LATEST_VERSION.first && minor >= LATEST_VERSION.last
 
       nxt =
         if LAST_MINOR_VERSIONS[major] == minor

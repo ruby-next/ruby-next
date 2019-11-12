@@ -104,10 +104,10 @@ This will produce `lib/.rbnext` folder containing the transpiled files, `lib/.rb
 ```ruby
 require "ruby-next/language/setup"
 
-RubyNext::Language.setup_for_gem
+RubyNext::Language.setup_gem_load_path
 ```
 
-The `setup_for_gem` does the following:
+The `setup_gem_load_path` does the following:
 
 - Resolves the current ruby version.
 - Checks whether there are directories corresponding to the current and earlier\* Ruby versions within the `.rbnext` folder.
