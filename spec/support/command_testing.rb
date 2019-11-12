@@ -11,7 +11,10 @@ module CommandTesting
           chdir: chdir || File.expand_path("../..", __dir__)
         )
 
-      err.should be_empty unless should_fail
+      status.success?.should == true unless should_fail
+      if ENV["CLI_DEBUG"]
+        puts "\n\nCOMMAND:\n#{command} #{opt_string}\n\nOUTPUT:\n#{output}\nERROR:\n#{err}\n"
+      end
       yield status, output, err if block_given?
     end
   end
