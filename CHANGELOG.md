@@ -2,6 +2,8 @@
 
 ## master
 
+- Add `Array#intersection`, `Array#union`, `Array#difference`. ([@palkan][])
+
 - Add `Enumerable#tally`. ([@palkan][])
 
 - Implement gem integration flow. ([@palkan][])
