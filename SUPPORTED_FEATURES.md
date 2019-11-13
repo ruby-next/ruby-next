@@ -46,7 +46,7 @@
 
 - (WIP) Pattern matching (`case ... in ... end`)
 
-- Method reference operator (`Module.:method`) ([#12125](https://bugs.ruby-lang.org/issues/12125), [#13581](https://bugs.ruby-lang.org/issues/13581))
+- **REVERTED IN RUBY ([#16275](https://bugs.ruby-lang.org/issues/16275))** Method reference operator (`Module.:method`) ([#12125](https://bugs.ruby-lang.org/issues/12125), [#13581](https://bugs.ruby-lang.org/issues/13581))
 
 - (TODO) Argument forwarding (`def a(...)`) ([#16253](https://bugs.ruby-lang.org/issues/13581))
 
