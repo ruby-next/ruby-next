@@ -183,10 +183,10 @@ The gem is available as open source under the terms of the [MIT License](https:/
 [features_core]: ./SUPPORTED_FEATURES.md#Core
 [features_syntax]: ./SUPPORTED_FEATURES.md#Syntax
 [mruby]: https://mruby.org
-[JRuby]: https://todo
-[TruffleRuby]: https://todo
-[Opal]: https://todo
-[Artichoke]: https://todo
-[Prism]: https://todo
+[JRuby]: https://www.jruby.org
+[TruffleRuby]: https://github.com/oracle/truffleruby
+[Opal]: https://opalrb.com
+[Artichoke]: https://github.com/artichoke/artichoke
+[Prism]: https://github.com/prism-rb/prism
 [parser]: https://github.com/whitequark/parser
 [Bootsnap]: https://github.com/Shopify/bootsnap
