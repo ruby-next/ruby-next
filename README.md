@@ -74,7 +74,7 @@ Then, add to your Gemfile:
 
 ```ruby
 source "https://rubygems.pkg.github.com/ruby-next" do
- gem "parser", "2.6.3.102"
+  gem "parser", "2.6.3.102"
 end
 
 gem "unparser", "~> 0.4.5"
@@ -133,10 +133,10 @@ It has the following interface:
 ```sh
 $ ruby-next nextify
 Usage: ruby-next nextify DIRECTORY_OR_FILE [options]
- -o, --output=OUTPUT Specify output directory or file
- --min-version=VERSION Specify the minimum Ruby version to support
- --single-version Only create one version of a file (for the earliest Ruby version)
- -V Turn on verbose mode
+    -o, --output=OUTPUT     Specify output directory or file
+    --min-version=VERSION   Specify the minimum Ruby version to support
+    --single-version        Only create one version of a file (for the earliest Ruby version)
+    -V                      Turn on verbose mode
 ```
 
 The behaviour depends on whether you transpile a single file or a directory:
