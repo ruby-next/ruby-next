@@ -26,7 +26,7 @@
 
 - `Array#intersection`
 
-- (TODO) `Enumerable#filter_map`
+- `Enumerable#filter_map`
 
 - (TODO) `Time#ceil`, `Time#floor`
 

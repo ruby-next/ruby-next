@@ -18,6 +18,7 @@ require_relative "core/proc/compose"
 
 require_relative "core/enumerable/tally"
 require_relative "core/enumerable/filter"
+require_relative "core/enumerable/filter_map"
 
 require_relative "core/array/difference_union_intersection"
 
