@@ -32,6 +32,15 @@ unless [].respond_to?(:filter_map)
       include RubyNext::Core::EnumerableFilterMap
     end
 
+    refine Enumerator::Lazy do
+      def filter_map
+        Enumerator::Lazy.new(self) do |yielder, *values|
+          result = yield(*values)
+          yielder << result if result
+        end
+      end
+    end
+
     # Refine Array seprately, 'cause refining modules is vulnerable to prepend:
     # - https://bugs.ruby-lang.org/issues/13446
     refine Array do

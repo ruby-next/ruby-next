@@ -28,5 +28,9 @@ ruby_version_is '2.7' do
     it 'is chainable' do
       @numerous.filter_map.with_index { |item, i| item * 2 if i > 3 }.should == [10, 12, 14, 16]
     end
+
+    it 'supports lazy' do
+      (1..15).lazy.filter_map { |v| v if v % 3 == 0 }.first(3).should == [3, 6, 9]
+    end
   end
 end
