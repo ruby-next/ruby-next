@@ -12,13 +12,35 @@ stderr = StringIO.new
 
 orig_stderr, $stderr = $stderr, stderr
 
+# Capture source code passed via `-e` option
+e_script = nil
+
+if $0 == "-e"
+  begin
+    TracePoint.new(:script_compiled) do |tp|
+      next unless tp.path == "-e"
+      e_script = tp.eval_script
+      tp.disable
+    end.enable
+  rescue ArgumentError
+    # script_compiled event is not supported
+  end
+end
+
 at_exit do
   $stderr = orig_stderr
 
-  if ($0 && File.exist?($0)) &&
-      (NoMethodError === $! || SyntaxError === $!)
-    load($0)
-    exit!(0)
+  if NoMethodError === $! || SyntaxError === $!
+    if $0 && File.exist?($0)
+      load($0)
+      exit!(0)
+    end
+
+    if e_script
+      new_e_script = RubyNext::Language::Runtime.transform(e_script)
+      TOPLEVEL_BINDING.eval(new_e_script, $0)
+      exit!(0)
+    end
   end
 
   puts(stderr.tap(&:rewind).read)

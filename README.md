@@ -176,9 +176,10 @@ ruby -ruby-next my_ruby_script.rb
 
 # or
 RUBYOPT="-ruby-next" ruby my_ruby_script.rb
-```
 
-**NOTE:** the code passed via `-e` option is not transformed by RubyNext.
+# in Ruby 2.6 (or if script_compiled TracePoint event is supported)
+ruby -ruby-next -e "puts [2, 4, 5].tally"
+```
 
 ## Contributing
 
