@@ -15,8 +15,12 @@ unless [].respond_to?(:tally)
   end
 
   RubyNext.module_eval do
-    refine Enumerable do
-      include RubyNext::Core::EnumerableTally
+    begin
+      refine Enumerable do
+        include RubyNext::Core::EnumerableTally
+      end
+    # Module refinements could be unsupported
+    rescue TypeError
     end
 
     # Refine Array seprately, 'cause refining modules is vulnerable to prepend:

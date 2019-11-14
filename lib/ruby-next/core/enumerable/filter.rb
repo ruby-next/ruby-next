@@ -2,8 +2,12 @@
 
 unless [].respond_to?(:filter)
   RubyNext.module_eval do
-    refine Enumerable do
-      alias filter select
+    begin
+      refine Enumerable do
+        alias filter select
+      end
+    # Module refinements could be unsupported
+    rescue TypeError
     end
 
     # Refine Array seprately, 'cause refining modules is vulnerable to prepend:

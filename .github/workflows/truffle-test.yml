@@ -1,0 +1,34 @@
+name: TruffleRuby Build
+
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+
+jobs:
+  truffle-test:
+    runs-on: ubuntu-latest
+    env:
+      TRUFFLERUBY_VERSION: 19.2.1
+      TRUFFLERUBY_RESILIENT_GEM_HOME: "true"
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install git
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends git
+    - name: Download MSpec
+      run: |
+        git clone https://github.com/ruby/mspec.git mspec
+    - name: Install Truffle and run tests
+      env:
+        BUNDLE_RUBYGEMS__PKG__GITHUB__COM: "palkan:${{ secrets.GITHUB_TOKEN }}"
+      run: |
+        sudo apt-get update
+        sudo apt-get install make clang llvm
+        curl -L https://github.com/oracle/truffleruby/releases/download/vm-$TRUFFLERUBY_VERSION/truffleruby-$TRUFFLERUBY_VERSION-linux-amd64.tar.gz | tar xz
+        export PATH="$PWD/truffleruby-$TRUFFLERUBY_VERSION-linux-amd64/bin:$PATH"
+        sudo $PWD/truffleruby-$TRUFFLERUBY_VERSION-linux-amd64/lib/truffle/post_install_hook.sh
+        bundle install --jobs 4 --retry 3
+        bundle exec mspec/bin/mspec
