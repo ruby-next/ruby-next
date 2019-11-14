@@ -14,3 +14,7 @@ def beach(*temperature)
     :avoid_beach
   end
 end
+
+if ARGV.size == 2
+  p beach(ARGV[0].to_sym, ARGV[1].to_i)
+end

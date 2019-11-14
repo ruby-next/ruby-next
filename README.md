@@ -167,6 +167,19 @@ We plan to add [Bootsnap][] integration in the future, which would allow us to a
 RubyNext::Language::Runtime.watch_dirs << "path/to/other/dir"
 ```
 
+## `uby-next`
+
+You can also enable runtime mode by requiring `uby-next` while running a Ruby executable:
+
+```sh
+ruby -ruby-next my_ruby_script.rb
+
+# or
+RUBYOPT="-ruby-next" ruby my_ruby_script.rb
+```
+
+**NOTE:** the code passed via `-e` option is not transformed by RubyNext.
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at [https://github.com/ruby-next/ruby-next](ttps://github.com/ruby-next/ruby-next).
