@@ -68,13 +68,44 @@ module RubyNext
             array_element(0, *node.children))
         end
 
+        alias array_pattern_with_tail_clause array_pattern_clause
+
         def array_element(index, head, *tail)
+          return array_match_rest(index, head, *tail) if head.type == :match_rest
+
           send("#{head.type}_array_element", head, index).then do |node|
             next node if tail.empty?
 
             s(:and,
               node,
               array_element(index + 1, *tail))
+          end
+        end
+
+        def array_match_rest(index, node, *tail)
+          child = node.children[0]
+          rest = arr_rest_items(index, tail.size).then do |r|
+            next r unless child
+            match_var_clause(
+              child,
+              r
+            )
+          end
+
+          return rest if tail.empty?
+
+          s(:and,
+            rest,
+            array_rest_element(*tail))
+        end
+
+        def array_rest_element(head, *tail)
+          send("#{head.type}_array_element", head, -(tail.size + 1)).then do |node|
+            next node if tail.empty?
+
+            s(:and,
+              node,
+              array_rest_element(*tail))
           end
         end
 
@@ -152,8 +183,16 @@ module RubyNext
         end
 
         def arr_item_at(index, arr = s(:lvar, MATCHEE_ARR))
+          index = s(:int, index) if index.is_a?(Integer)
+          s(:index, arr, index)
+        end
+
+        def arr_rest_items(index, size, arr = s(:lvar, MATCHEE_ARR))
           s(:index,
-            arr, s(:int, index))
+            arr,
+            s(:irange,
+              s(:int, index),
+              s(:int, -(size + 1))))
         end
 
         def no_matching_pattern

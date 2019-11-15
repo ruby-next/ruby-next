@@ -353,33 +353,33 @@ END
   end
 
   it "array_pattern" do
-    # assert_block do
-    #   [[0], C.new([0])].all? do |i|
-    #     case i
-    #     in 0,;
-    #       true
-    #     end
-    #   end
-    # end
+    assert_block do
+      [[0], C.new([0])].all? do |i|
+        case i
+        in 0,;
+          true
+        end
+      end
+    end
 
-#     assert_block do
-#       [[0, 1], C.new([0, 1])].all? do |i|
-#         case i
-#         in 0,;
-#           true
-#         end
-#       end
-#     end
+    assert_block do
+      [[0, 1], C.new([0, 1])].all? do |i|
+        case i
+        in 0,;
+          true
+        end
+      end
+    end
 
-#     assert_block do
-#       [[], C.new([])].all? do |i|
-#         case i
-#         in 0,;
-#         else
-#           true
-#         end
-#       end
-#     end
+    assert_block do
+      [[], C.new([])].all? do |i|
+        case i
+        in 0,;
+        else
+          true
+        end
+      end
+    end
 
     assert_block do
       [[0, 1], C.new([0, 1])].all? do |i|
@@ -400,88 +400,88 @@ END
       end
     end
 
-#     assert_block do
-#       [[], C.new([])].all? do |i|
-#         case i
-#         in *a
-#           a == []
-#         end
-#       end
-#     end
+    assert_block do
+      [[], C.new([])].all? do |i|
+        case i
+        in *a
+          a == []
+        end
+      end
+    end
 
-#     assert_block do
-#       [[0], C.new([0])].all? do |i|
-#         case i
-#         in *a
-#           a == [0]
-#         end
-#       end
-#     end
+    assert_block do
+      [[0], C.new([0])].all? do |i|
+        case i
+        in *a
+          a == [0]
+        end
+      end
+    end
 
-#     assert_block do
-#       [[0], C.new([0])].all? do |i|
-#         case i
-#         in *a, 0, 1
-#         else
-#           true
-#         end
-#       end
-#     end
+    assert_block do
+      [[0], C.new([0])].all? do |i|
+        case i
+        in *a, 0, 1
+        else
+          true
+        end
+      end
+    end
 
-#     assert_block do
-#       [[0, 1], C.new([0, 1])].all? do |i|
-#         case i
-#         in *a, 0, 1
-#           a == []
-#         end
-#       end
-#     end
+    assert_block do
+      [[0, 1], C.new([0, 1])].all? do |i|
+        case i
+        in *a, 0, 1
+          a == []
+        end
+      end
+    end
 
-#     assert_block do
-#       [[0, 1, 2], C.new([0, 1, 2])].all? do |i|
-#         case i
-#         in *a, 1, 2
-#           a == [0]
-#         end
-#       end
-#     end
+    assert_block do
+      [[0, 1, 2], C.new([0, 1, 2])].all? do |i|
+        case i
+        in *a, 1, 2
+          a == [0]
+        end
+      end
+    end
 
-#     assert_block do
-#       [[], C.new([])].all? do |i|
-#         case i
-#         in *;
-#           true
-#         end
-#       end
-#     end
+    assert_block do
+      [[], C.new([])].all? do |i|
+        case i
+        in *;
+          true
+        end
+      end
+    end
 
-#     assert_block do
-#       [[0], C.new([0])].all? do |i|
-#         case i
-#         in *, 0, 1
-#         else
-#           true
-#         end
-#       end
-#     end
+    assert_block do
+      [[0], C.new([0])].all? do |i|
+        case i
+        in *, 0, 1
+        else
+          true
+        end
+      end
+    end
 
-#     assert_block do
-#       [[0, 1], C.new([0, 1])].all? do |i|
-#         case i
-#         in *, 0, 1
-#           true
-#         end
-#       end
-#     end
+    assert_block do
+      [[0, 1], C.new([0, 1])].all? do |i|
+        case i
+        in *, 0, 1
+          true
+        end
+      end
+    end
 
-#     assert_block do
-#       [[0, 1, 2], C.new([0, 1, 2])].all? do |i|
-#         case i
-#         in *, 1, 2
-#           true
-#         end
-#       end
-#     end
+    assert_block do
+      [[0, 1, 2], C.new([0, 1, 2])].all? do |i|
+        case i
+        in *, 1, 2
+          true
+        end
+      end
+    end
 
 #     assert_block do
 #       case C.new([0])

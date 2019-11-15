@@ -26,7 +26,7 @@ module RubyNext
           contents = File.read(path)
           new_contents = transform contents
 
-          puts new_contents if ENV["RUBY_NEXT_DEBUG"] == "1"
+          puts source_with_lines(new_contents) if ENV["RUBY_NEXT_DEBUG"] == "1"
 
           TOPLEVEL_BINDING.eval(new_contents, path)
           true
