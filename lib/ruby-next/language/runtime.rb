@@ -58,7 +58,7 @@ module RubyNext
   end
 end
 
-# Patch Kernel to hijack require/require_relative/load
+# Patch Kernel to hijack require/require_relative/load/eval
 module Kernel
   module_function # rubocop:disable Style/ModuleFunction
 
@@ -109,5 +109,41 @@ module Kernel
   def eval(source, *args)
     new_source = RubyNext::Language::Runtime.transform(source, eval: true)
     eval_without_ruby_next new_source, *args
+  end
+end
+
+# Patch BasicObject to hijack instance_eval
+class BasicObject
+  alias_method :instance_eval_without_ruby_next, :instance_eval
+
+  def instance_eval(*args, &block)
+    return instance_eval_without_ruby_next(*args, &block) if block_given?
+
+    source = args.shift
+    new_source = ::RubyNext::Language::Runtime.transform(source, eval: true)
+    instance_eval_without_ruby_next new_source, *args
+  end
+end
+
+# Patch Module to hijack class_eval/module_eval
+class Module
+  alias_method :module_eval_without_ruby_next, :module_eval
+
+  def module_eval(*args, &block)
+    return module_eval_without_ruby_next(*args, &block) if block_given?
+
+    source = args.shift
+    new_source = ::RubyNext::Language::Runtime.transform(source, eval: true)
+    module_eval_without_ruby_next new_source, *args
+  end
+
+  alias_method :class_eval_without_ruby_next, :class_eval
+
+  def class_eval(*args, &block)
+    return class_eval_without_ruby_next(*args, &block) if block_given?
+
+    source = args.shift
+    new_source = ::RubyNext::Language::Runtime.transform(source, eval: true)
+    class_eval_without_ruby_next new_source, *args
   end
 end
