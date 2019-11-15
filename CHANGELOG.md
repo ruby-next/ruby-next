@@ -2,6 +2,8 @@
 
 ## master
 
+- Add numbered parameters. ([@palkan][])
+
 - Add arguments forwarding. ([@palkan][])
 
 - Add `Enumerable#filter_map`. ([@palkan][])

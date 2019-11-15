@@ -12,7 +12,7 @@ module RubyNext
             eval_mid = Kernel.respond_to?(:eval_without_ruby_next) ? :eval_without_ruby_next : :eval
             Kernel.send eval_mid, self::SYNTAX_PROBE
             false
-          rescue SyntaxError
+          rescue SyntaxError, NameError
             true
           ensure
             $VERBOSE = save_verbose
