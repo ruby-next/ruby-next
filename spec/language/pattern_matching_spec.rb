@@ -335,22 +335,22 @@ END
     end
   end
 
-#   it "pin_operator_value_pattern" do
-#     assert_block do
-#       a = /a/
-#       case 'abc'
-#       in ^a
-#         true
-#       end
-#     end
+  it "pin_operator_value_pattern" do
+    assert_block do
+      a = /a/
+      case 'abc'
+      in ^a
+        true
+      end
+    end
 
-#     assert_block do
-#       case [0, 0]
-#       in a, ^a
-#         a == 0
-#       end
-#     end
-#   end
+    assert_block do
+      case [0, 0]
+      in a, ^a
+        a == 0
+      end
+    end
+  end
 
   it "array_pattern" do
     # assert_block do

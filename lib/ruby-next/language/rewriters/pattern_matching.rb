@@ -108,6 +108,14 @@ module RubyNext
           match_var_clause node, arr_item_at(index)
         end
 
+        def pin_clause(node)
+          case_eq_clause node.children[0]
+        end
+
+        def pin_array_element(node, index)
+          case_eq_array_element node.children[0], index
+        end
+
         def with_guard(node, guard)
           return node unless guard
 
@@ -119,14 +127,13 @@ module RubyNext
           end
         end
 
-        def case_eq_clause(node)
+        def case_eq_clause(node, right = s(:lvar, MATCHEE))
           s(:send,
-            node, :===, s(:lvar, MATCHEE))
+            node, :===, right)
         end
 
         def case_eq_array_element(node, index)
-          s(:send,
-            node, :===, arr_item_at(index))
+          case_eq_clause(node, arr_item_at(index))
         end
 
         def deconstruct_node
