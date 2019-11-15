@@ -90,5 +90,8 @@ module RubyNext
 
     require "ruby-next/language/rewriters/method_reference"
     rewriters << Rewriters::MethodReference
+
+    require "ruby-next/language/rewriters/args_forward"
+    rewriters << Rewriters::ArgsForward
   end
 end

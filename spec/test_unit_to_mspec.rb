@@ -26,8 +26,11 @@ module TestUnitToMspec
       true.should == true
     end
 
-    def assert_valid_syntax(*)
-      true.should == true
+    alias assert_valid_syntax assert_syntax_error
+
+    # Let's skip for now
+    def assert_warning(*)
+      yield
     end
   end
 end
