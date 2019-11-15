@@ -202,8 +202,7 @@ module RubyNext
             s(:and,
               s(:or,
                 s(:lvasgn, MATCHEE_ARR, right),
-                s(:true) # rubocop:disable Lint/BooleanSymbol
-               ),
+                s(:true)), # rubocop:disable Lint/BooleanSymbol
               s(:or,
                 case_eq_clause(s(:const, nil, :Array), s(:lvar, MATCHEE_ARR)),
                 raise_error(:TypeError)))
