@@ -19,3 +19,19 @@ unless [].respond_to?(:deconstruct)
     end
   end
 end
+
+unless {}.respond_to?(:deconstruct_keys)
+  RubyNext.module_eval do
+    refine Hash do
+      def deconstruct_keys(_)
+        self
+      end
+    end
+
+    refine Struct do
+      def deconstruct_keys(_)
+        to_h
+      end
+    end
+  end
+end

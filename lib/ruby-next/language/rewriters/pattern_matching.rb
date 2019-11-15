@@ -11,12 +11,14 @@ module RubyNext
 
         MATCHEE = :__matchee__
         MATCHEE_ARR = :__matchee_arr__
+        MATCHEE_HASH = :__matchee_hash__
 
         def on_case_match(node)
           context.track! self
           context.use_ruby_next!
 
           @array_deconstructed = false
+          @hash_deconstructed = false
 
           matchee_ast =
             s(:lvasgn, MATCHEE, node.children[0])
@@ -62,6 +64,48 @@ module RubyNext
           end
         end
 
+        def const_pattern_clause(node)
+          const, pattern = *node.children
+
+          case_eq_clause(const).then do |node|
+            next node if pattern.nil?
+
+            s(:and,
+              node,
+              send(:"#{pattern.type}_clause", pattern))
+          end
+        end
+
+        def match_alt_clause(node)
+          children = node.children.map do |child|
+            send :"#{child.type}_clause", child
+          end
+          s(:or, *children)
+        end
+
+        def match_as_clause(node, matchee = s(:lvar, MATCHEE))
+          s(:and,
+            case_eq_clause(node.children[0]),
+            match_var_clause(node.children[1], matchee))
+        end
+
+        def match_var_clause(node, matchee = s(:lvar, MATCHEE))
+          s(:or,
+            s(:lvasgn, node.children[0], matchee),
+            s(:true)) # rubocop:disable Lint/BooleanSymbol
+        end
+
+        def pin_clause(node)
+          case_eq_clause node.children[0]
+        end
+
+        def case_eq_clause(node, right = s(:lvar, MATCHEE))
+          s(:send,
+            node, :===, right)
+        end
+
+        #=========== ARRAY PATTERN (START) ===============
+
         def array_pattern_clause(node)
           deconstruct_node.then do |dnode|
             right =
@@ -78,6 +122,27 @@ module RubyNext
         end
 
         alias array_pattern_with_tail_clause array_pattern_clause
+
+        def deconstruct_node
+          right = s(:send,
+            s(:lvar, MATCHEE), :deconstruct)
+
+          # only deconstruct once per case
+          if @array_deconstructed
+            s(:or_asgn,
+              s(:lvasgn, MATCHEE_ARR),
+              right)
+          else
+            @array_deconstructed = true
+            s(:and,
+              s(:or,
+                s(:lvasgn, MATCHEE_ARR, right),
+                s(:true)), # rubocop:disable Lint/BooleanSymbol
+              s(:or,
+                case_eq_clause(s(:const, nil, :Array), s(:lvar, MATCHEE_ARR)),
+                raise_error(:TypeError)))
+          end
+        end
 
         def array_element(index, head, *tail)
           return array_match_rest(index, head, *tail) if head.type == :match_rest
@@ -118,25 +183,6 @@ module RubyNext
           end
         end
 
-        def const_pattern_clause(node)
-          const, pattern = *node.children
-
-          case_eq_clause(const).then do |node|
-            next node if pattern.nil?
-
-            s(:and,
-              node,
-              send(:"#{pattern.type}_clause", pattern))
-          end
-        end
-
-        def match_alt_clause(node)
-          children = node.children.map do |child|
-            send :"#{child.type}_clause", child
-          end
-          s(:or, *children)
-        end
-
         def match_alt_array_element(node, index)
           children = node.children.map do |child, i|
             send :"#{child.type}_array_element", child, index
@@ -144,69 +190,16 @@ module RubyNext
           s(:or, *children)
         end
 
-        def match_as_clause(node, matchee = s(:lvar, MATCHEE))
-          s(:and,
-            case_eq_clause(node.children[0]),
-            match_var_clause(node.children[1], matchee))
-        end
-
-        def match_var_clause(node, matchee = s(:lvar, MATCHEE))
-          s(:or,
-            s(:lvasgn, node.children[0], matchee),
-            s(:true)) # rubocop:disable Lint/BooleanSymbol
-        end
-
         def match_var_array_element(node, index)
           match_var_clause node, arr_item_at(index)
-        end
-
-        def pin_clause(node)
-          case_eq_clause node.children[0]
         end
 
         def pin_array_element(node, index)
           case_eq_array_element node.children[0], index
         end
 
-        def with_guard(node, guard)
-          return node unless guard
-
-          s(:and,
-            node,
-            guard.children[0]).then do |expr|
-            next expr unless guard.type == :unless_guard
-            s(:send, expr, :!)
-          end
-        end
-
-        def case_eq_clause(node, right = s(:lvar, MATCHEE))
-          s(:send,
-            node, :===, right)
-        end
-
         def case_eq_array_element(node, index)
           case_eq_clause(node, arr_item_at(index))
-        end
-
-        def deconstruct_node
-          right = s(:send,
-            s(:lvar, MATCHEE), :deconstruct)
-
-          # only deconstruct once per case
-          if @array_deconstructed
-            s(:or_asgn,
-              s(:lvasgn, MATCHEE_ARR),
-              right)
-          else
-            @array_deconstructed = true
-            s(:and,
-              s(:or,
-                s(:lvasgn, MATCHEE_ARR, right),
-                s(:true)), # rubocop:disable Lint/BooleanSymbol
-              s(:or,
-                case_eq_clause(s(:const, nil, :Array), s(:lvar, MATCHEE_ARR)),
-                raise_error(:TypeError)))
-          end
         end
 
         def arr_item_at(index, arr = s(:lvar, MATCHEE_ARR))
@@ -220,6 +213,96 @@ module RubyNext
             s(:irange,
               s(:int, index),
               s(:int, -(size + 1))))
+        end
+
+        #=========== ARRAY PATTERN (END) ===============
+
+        #=========== HASH PATTERN (START) ===============
+
+        def hash_pattern_clause(node)
+          keys = hash_pattern_keys(node.children)
+
+          deconstruct_keys_node(keys).then do |dnode|
+            right =
+              if node.children.empty?
+                case_eq_clause(s(:hash), s(:lvar, MATCHEE_HASH))
+              else
+                hash_element(*node.children)
+              end
+
+            s(:and,
+              dnode,
+              right)
+          end
+        end
+
+        def hash_pattern_keys(children)
+          return s(:nil) if children.empty?
+
+          children.filter_map do |child|
+            send("#{child.type}_hash_key", child)
+          end.then { |keys| s(:array, *keys) }
+        end
+
+        def pair_hash_key(node)
+          node.children[0]
+        end
+
+        def deconstruct_keys_node(keys)
+          right = s(:send,
+            s(:lvar, MATCHEE), :deconstruct_keys, keys)
+
+          # only deconstruct once per case
+          if @hash_deconstructed
+            s(:or_asgn,
+              s(:lvasgn, MATCHEE_HASH),
+              right)
+          else
+            @hash_deconstructed = true
+            s(:and,
+              s(:or,
+                s(:lvasgn, MATCHEE_HASH, right),
+                s(:true)), # rubocop:disable Lint/BooleanSymbol
+              s(:or,
+                case_eq_clause(s(:const, nil, :Hash), s(:lvar, MATCHEE_HASH)),
+                raise_error(:TypeError)))
+          end
+        end
+
+        def hash_element(head, *tail)
+          # return array_match_rest(index, head, *tail) if head.type == :match_rest
+
+          send("#{head.type}_hash_element", head).then do |node|
+            next node if tail.empty?
+
+            s(:and,
+              node,
+              hash_element(*tail))
+          end
+        end
+
+        def pair_hash_element(node)
+          key, val = *node.children
+          case_eq_clause val, hash_value_at(key)
+        end
+
+        def hash_value_at(key, hash = s(:lvar, MATCHEE_HASH))
+          key = s(:sym, key) if key.is_a?(Symbol)
+          key = s(:str, key) if key.is_a?(String)
+          s(:index, hash, key)
+        end
+
+        #=========== HASH PATTERN (END) ===============
+
+        def with_guard(node, guard)
+          return node unless guard
+
+          s(:and,
+            node,
+            guard.children[0]).then do |expr|
+            next expr unless guard.type == :unless_guard
+            s(:send, expr, :!)
+          end
         end
 
         def no_matching_pattern

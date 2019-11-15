@@ -689,62 +689,62 @@ END
     end
   end
 
-#   it "hash_pattern" do
-#     assert_block do
-#       [{}, C.new({})].all? do |i|
-#         case i
-#         in a: 0
-#         else
-#           true
-#         end
-#       end
-#     end
+  it "hash_pattern" do
+    assert_block do
+      [{}, C.new({})].all? do |i|
+        case i
+        in a: 0
+        else
+          true
+        end
+      end
+    end
 
-#     assert_block do
-#       [{a: 0}, C.new({a: 0})].all? do |i|
-#         case i
-#         in a: 0
-#           true
-#         end
-#       end
-#     end
+    assert_block do
+      [{a: 0}, C.new({a: 0})].all? do |i|
+        case i
+        in a: 0
+          true
+        end
+      end
+    end
 
-#     assert_block do
-#       [{a: 0, b: 1}, C.new({a: 0, b: 1})].all? do |i|
-#         case i
-#         in a: 0
-#           true
-#         end
-#       end
-#     end
+    assert_block do
+      [{a: 0, b: 1}, C.new({a: 0, b: 1})].all? do |i|
+        case i
+        in a: 0
+          true
+        end
+      end
+    end
 
-#     assert_block do
-#       [{a: 0}, C.new({a: 0})].all? do |i|
-#         case i
-#         in a: 0, b: 1
-#         else
-#           true
-#         end
-#       end
-#     end
+    assert_block do
+      [{a: 0}, C.new({a: 0})].all? do |i|
+        case i
+        in a: 0, b: 1
+        else
+          true
+        end
+      end
+    end
 
-#     assert_block do
-#       [{a: 0, b: 1}, C.new({a: 0, b: 1})].all? do |i|
-#         case i
-#         in a: 0, b: 1
-#           true
-#         end
-#       end
-#     end
+    assert_block do
+      [{a: 0, b: 1}, C.new({a: 0, b: 1})].all? do |i|
+        case i
+        in a: 0, b: 1
+          true
+        end
+      end
+    end
 
-#     assert_block do
-#       [{a: 0, b: 1, c: 2}, C.new({a: 0, b: 1, c: 2})].all? do |i|
-#         case i
-#         in a: 0, b: 1
-#           true
-#         end
-#       end
-#     end
+    assert_block do
+      [{a: 0, b: 1, c: 2}, C.new({a: 0, b: 1, c: 2})].all? do |i|
+        case i
+        in a: 0, b: 1
+          true
+        end
+      end
+    end
 
 #     assert_block do
 #       [{}, C.new({})].all? do |i|
@@ -774,14 +774,14 @@ END
 #       end
 #     end
 
-#     assert_block do
-#       [{a: 0}, C.new({a: 0})].all? do |i|
-#         case i
-#         in "a": 0
-#           true
-#         end
-#       end
-#     end
+    assert_block do
+      [{a: 0}, C.new({a: 0})].all? do |i|
+        case i
+        in "a": 0
+          true
+        end
+      end
+    end
 
 #     assert_block do
 #       [{a: 0}, C.new({a: 0})].all? do |i|
@@ -894,127 +894,127 @@ END
 #       end
 #     end
 
-#     assert_block do
-#       case C.new({a: 0})
-#       in C(a: 0)
-#         true
-#       end
-#     end
+    assert_block do
+      case C.new({a: 0})
+      in C(a: 0)
+        true
+      end
+    end
 
-#     assert_block do
-#       case {a: 0}
-#       in C(a: 0)
-#       else
-#         true
-#       end
-#     end
+    assert_block do
+      case {a: 0}
+      in C(a: 0)
+      else
+        true
+      end
+    end
 
-#     assert_block do
-#       case C.new({a: 0})
-#       in C[a: 0]
-#         true
-#       end
-#     end
+    assert_block do
+      case C.new({a: 0})
+      in C[a: 0]
+        true
+      end
+    end
 
-#     assert_block do
-#       case {a: 0}
-#       in C[a: 0]
-#       else
-#         true
-#       end
-#     end
+    assert_block do
+      case {a: 0}
+      in C[a: 0]
+      else
+        true
+      end
+    end
 
-#     assert_block do
-#       [{}, C.new({})].all? do |i|
-#         case i
-#         in {a: 0}
-#         else
-#           true
-#         end
-#       end
-#     end
+    assert_block do
+      [{}, C.new({})].all? do |i|
+        case i
+        in {a: 0}
+        else
+          true
+        end
+      end
+    end
 
-#     assert_block do
-#       [{a: 0}, C.new({a: 0})].all? do |i|
-#         case i
-#         in {a: 0}
-#           true
-#         end
-#       end
-#     end
+    assert_block do
+      [{a: 0}, C.new({a: 0})].all? do |i|
+        case i
+        in {a: 0}
+          true
+        end
+      end
+    end
 
-#     assert_block do
-#       [{a: 0, b: 1}, C.new({a: 0, b: 1})].all? do |i|
-#         case i
-#         in {a: 0}
-#           true
-#         end
-#       end
-#     end
+    assert_block do
+      [{a: 0, b: 1}, C.new({a: 0, b: 1})].all? do |i|
+        case i
+        in {a: 0}
+          true
+        end
+      end
+    end
 
-#     assert_block do
-#       [{}, C.new({})].all? do |i|
-#         case i
-#         in {}
-#           true
-#         end
-#       end
-#     end
+    assert_block do
+      [{}, C.new({})].all? do |i|
+        case i
+        in {}
+          true
+        end
+      end
+    end
 
-#     assert_block do
-#       [{a: 0}, C.new({a: 0})].all? do |i|
-#         case i
-#         in {}
-#         else
-#           true
-#         end
-#       end
-#     end
+    assert_block do
+      [{a: 0}, C.new({a: 0})].all? do |i|
+        case i
+        in {}
+        else
+          true
+        end
+      end
+    end
 
-#     assert_syntax_error(%q{
-#       case _
-#       in a:, a:
-#       end
-#     }, /duplicated key name/)
+    assert_syntax_error(%q{
+      case _
+      in a:, a:
+      end
+    }, /duplicated key name/)
 
-#     assert_syntax_error(%q{
-#       case _
-#       in a?:
-#       end
-#     }, /key must be valid as local variables/)
+    assert_syntax_error(%q{
+      case _
+      in a?:
+      end
+    }, /key must be valid as local variables/)
 
-#     assert_block do
-#       case {a?: true}
-#       in a?: true
-#         true
-#       end
-#     end
+    assert_block do
+      case {a?: true}
+      in a?: true
+        true
+      end
+    end
 
-#     assert_syntax_error(%q{
-#       case _
-#       in "a-b":
-#       end
-#     }, /key must be valid as local variables/)
+    assert_syntax_error(%q{
+      case _
+      in "a-b":
+      end
+    }, /key must be valid as local variables/)
 
-#     assert_block do
-#       case {"a-b": true}
-#       in "a-b": true
-#         true
-#       end
-#     end
+    assert_block do
+      case {"a-b": true}
+      in "a-b": true
+        true
+      end
+    end
 
-#     assert_syntax_error(%q{
-#       case _
-#       in "#{a}": a
-#       end
-#     }, /symbol literal with interpolation is not allowed/)
+    assert_syntax_error(%q{
+      case _
+      in "#{a}": a
+      end
+    }, /symbol literal with interpolation is not allowed/)
 
-#     assert_syntax_error(%q{
-#       case _
-#       in "#{a}":
-#       end
-#     }, /symbol literal with interpolation is not allowed/)
-#   end
+    assert_syntax_error(%q{
+      case _
+      in "#{a}":
+      end
+    }, /symbol literal with interpolation is not allowed/)
+  end
 
   it "paren" do
     assert_block do
@@ -1071,26 +1071,26 @@ END
     end
   end
 
-#   it "deconstruct_keys" do
-#     assert_raise(TypeError) do
-#       case CTypeError.new
-#       in {}
-#       end
-#     end
+  it "deconstruct_keys" do
+    assert_raise(TypeError) do
+      case CTypeError.new
+      in {}
+      end
+    end
 
-#     assert_block do
-#       case {}
-#       in {}
-#         C.keys == nil
-#       end
-#     end
+    assert_block do
+      case {}
+      in {}
+        C.keys == nil
+      end
+    end
 
-#     assert_block do
-#       case C.new({a: 0, b: 0, c: 0})
-#       in {a: 0, b:}
-#         C.keys == [:a, :b]
-#       end
-#     end
+    # assert_block do
+    #   case C.new({a: 0, b: 0, c: 0})
+    #   in {a: 0, b:}
+    #     C.keys == [:a, :b]
+    #   end
+    # end
 
 #     assert_block do
 #       case C.new({a: 0, b: 0, c: 0})
@@ -1119,7 +1119,7 @@ END
 #         C.keys == nil
 #       end
 #     end
-#   end
+  end
 
 #   ################################################################
 
@@ -1183,18 +1183,18 @@ describe "pattern matching with refinements" do
       end
     end
 
-#     assert_block do
-#       case {}
-#       in {a: 0}
-#         true
-#       end
-#     end
+    assert_block do
+      case {}
+      in {a: 0}
+        true
+      end
+    end
 
-#     assert_block do
-#       case C1.new
-#       in C2(:C1)
-#         true
-#       end
-#     end
+    assert_block do
+      case C1.new
+      in C2(:C1)
+        true
+      end
+    end
   end
 end
