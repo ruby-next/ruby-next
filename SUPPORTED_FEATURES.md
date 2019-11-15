@@ -42,8 +42,6 @@
 
 ### 2.7
 
-- (TODO) Startless ranges (`..1` or `...1`) ([#14799](https://bugs.ruby-lang.org/issues/14799))
-
 - (Partial support, work in progress ⚒) Pattern matching (`case ... in ... end`)
 
 Hash pattern matching (`#deconstruct_keys`) is still in progress. Other features have been implemented.
@@ -52,4 +50,6 @@ Hash pattern matching (`#deconstruct_keys`) is still in progress. Other features
 
 - Arguments forwarding (`def a(...) b(...) end`) ([#16253](https://bugs.ruby-lang.org/issues/13581))
 
-- (TODO) Numbered parameters (`block { _1 }`)
+- Numbered parameters (`block { _1 }`)
+
+- (TODO) Startless ranges (`..1` or `...1`) ([#14799](https://bugs.ruby-lang.org/issues/14799))

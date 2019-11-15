@@ -93,5 +93,8 @@ module RubyNext
 
     require "ruby-next/language/rewriters/args_forward"
     rewriters << Rewriters::ArgsForward
+
+    require "ruby-next/language/rewriters/numbered_params"
+    rewriters << Rewriters::NumberedParams
   end
 end
