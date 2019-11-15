@@ -44,7 +44,9 @@
 
 - (TODO) Startless ranges (`..1` or `...1`) ([#14799](https://bugs.ruby-lang.org/issues/14799))
 
-- (WIP) Pattern matching (`case ... in ... end`)
+- (Partial support, work in progress ⚒) Pattern matching (`case ... in ... end`)
+
+Hash pattern matching (`#deconstruct_keys`) is still in progress. Other features have been implemented.
 
 - **REVERTED IN RUBY ([#16275](https://bugs.ruby-lang.org/issues/16275))** Method reference operator (`Module.:method`) ([#12125](https://bugs.ruby-lang.org/issues/12125), [#13581](https://bugs.ruby-lang.org/issues/13581))
 

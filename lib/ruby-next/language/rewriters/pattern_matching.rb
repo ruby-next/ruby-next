@@ -63,9 +63,18 @@ module RubyNext
         end
 
         def array_pattern_clause(node)
-          s(:and,
-            deconstruct_node,
-            array_element(0, *node.children))
+          deconstruct_node.then do |dnode|
+            right =
+              if node.children.empty?
+                case_eq_clause(s(:array), s(:lvar, MATCHEE_ARR))
+              else
+                array_element(0, *node.children)
+              end
+
+            s(:and,
+              dnode,
+              right)
+          end
         end
 
         alias array_pattern_with_tail_clause array_pattern_clause
@@ -106,6 +115,18 @@ module RubyNext
             s(:and,
               node,
               array_rest_element(*tail))
+          end
+        end
+
+        def const_pattern_clause(node)
+          const, pattern = *node.children
+
+          case_eq_clause(const).then do |node|
+            next node if pattern.nil?
+
+            s(:and,
+              node,
+              send(:"#{pattern.type}_clause", pattern))
           end
         end
 
@@ -178,7 +199,14 @@ module RubyNext
               right)
           else
             @array_deconstructed = true
-            s(:lvasgn, MATCHEE_ARR, right)
+            s(:and,
+              s(:or,
+                s(:lvasgn, MATCHEE_ARR, right),
+                s(:true) # rubocop:disable Lint/BooleanSymbol
+               ),
+              s(:or,
+                case_eq_clause(s(:const, nil, :Array), s(:lvar, MATCHEE_ARR)),
+                raise_error(:TypeError)))
           end
         end
 
@@ -196,8 +224,12 @@ module RubyNext
         end
 
         def no_matching_pattern
+          raise_error :NoMatchingPatternError
+        end
+
+        def raise_error(type)
           s(:send, s(:const, nil, :Kernel), :raise,
-            s(:const, nil, :NoMatchingPatternError),
+            s(:const, nil, type),
             s(:send,
               s(:lvar, MATCHEE), :inspect))
         end

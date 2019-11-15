@@ -483,79 +483,79 @@ END
       end
     end
 
-#     assert_block do
-#       case C.new([0])
-#       in C(0)
-#         true
-#       end
-#     end
+    assert_block do
+      case C.new([0])
+      in C(0)
+        true
+      end
+    end
 
-#     assert_block do
-#       case C.new([0])
-#       in Array(0)
-#       else
-#         true
-#       end
-#     end
+    assert_block do
+      case C.new([0])
+      in Array(0)
+      else
+        true
+      end
+    end
 
-#     assert_block do
-#       case C.new([])
-#       in C()
-#         true
-#       end
-#     end
+    assert_block do
+      case C.new([])
+      in C()
+        true
+      end
+    end
 
-#     assert_block do
-#       case C.new([])
-#       in Array()
-#       else
-#         true
-#       end
-#     end
+    assert_block do
+      case C.new([])
+      in Array()
+      else
+        true
+      end
+    end
 
-#     assert_block do
-#       case C.new([0])
-#       in C[0]
-#         true
-#       end
-#     end
+    assert_block do
+      case C.new([0])
+      in C[0]
+        true
+      end
+    end
 
-#     assert_block do
-#       case C.new([0])
-#       in Array[0]
-#       else
-#         true
-#       end
-#     end
+    assert_block do
+      case C.new([0])
+      in Array[0]
+      else
+        true
+      end
+    end
 
-#     assert_block do
-#       case C.new([])
-#       in C[]
-#         true
-#       end
-#     end
+    assert_block do
+      case C.new([])
+      in C[]
+        true
+      end
+    end
 
-#     assert_block do
-#       case C.new([])
-#       in Array[]
-#       else
-#         true
-#       end
-#     end
+    assert_block do
+      case C.new([])
+      in Array[]
+      else
+        true
+      end
+    end
 
-    # assert_block do
-    #   case []
-    #   in []
-    #     true
-    #   end
-    # end
+    assert_block do
+      case []
+      in []
+        true
+      end
+    end
 
-#     assert_block do
-#       case C.new([])
-#       in []
-#         true
-#       end
-#     end
+    assert_block do
+      case C.new([])
+      in []
+        true
+      end
+    end
 
     assert_block do
       case [0]
@@ -578,115 +578,115 @@ END
       end
     end
 
-#     assert_block do
-#       case [0]
-#       in [0,]
-#         true
-#       end
-#     end
+    assert_block do
+      case [0]
+      in [0,]
+        true
+      end
+    end
 
-#     assert_block do
-#       case [0, 1]
-#       in [0,]
-#         true
-#       end
-#     end
+    assert_block do
+      case [0, 1]
+      in [0,]
+        true
+      end
+    end
 
-#     assert_block do
-#       case []
-#       in [0, *a]
-#       else
-#         true
-#       end
-#     end
+    assert_block do
+      case []
+      in [0, *a]
+      else
+        true
+      end
+    end
 
-#     assert_block do
-#       case [0]
-#       in [0, *a]
-#         a == []
-#       end
-#     end
+    assert_block do
+      case [0]
+      in [0, *a]
+        a == []
+      end
+    end
 
-#     assert_block do
-#       case [0]
-#       in [0, *a, 1]
-#       else
-#         true
-#       end
-#     end
+    assert_block do
+      case [0]
+      in [0, *a, 1]
+      else
+        true
+      end
+    end
 
-#     assert_block do
-#       case [0, 1]
-#       in [0, *a, 1]
-#         a == []
-#       end
-#     end
+    assert_block do
+      case [0, 1]
+      in [0, *a, 1]
+        a == []
+      end
+    end
 
-#     assert_block do
-#       case [0, 1, 2]
-#       in [0, *a, 2]
-#         a == [1]
-#       end
-#     end
+    assert_block do
+      case [0, 1, 2]
+      in [0, *a, 2]
+        a == [1]
+      end
+    end
 
-#     assert_block do
-#       case []
-#       in [0, *]
-#       else
-#         true
-#       end
-#     end
+    assert_block do
+      case []
+      in [0, *]
+      else
+        true
+      end
+    end
 
-#     assert_block do
-#       case [0]
-#       in [0, *]
-#         true
-#       end
-#     end
+    assert_block do
+      case [0]
+      in [0, *]
+        true
+      end
+    end
 
-#     assert_block do
-#       case [0, 1]
-#       in [0, *]
-#         true
-#       end
-#     end
+    assert_block do
+      case [0, 1]
+      in [0, *]
+        true
+      end
+    end
 
-#     assert_block do
-#       case []
-#       in [0, *a]
-#       else
-#         true
-#       end
-#     end
+    assert_block do
+      case []
+      in [0, *a]
+      else
+        true
+      end
+    end
 
-#     assert_block do
-#       case [0]
-#       in [0, *a]
-#         a == []
-#       end
-#     end
+    assert_block do
+      case [0]
+      in [0, *a]
+        a == []
+      end
+    end
 
-#     assert_block do
-#       case [0, 1]
-#       in [0, *a]
-#         a == [1]
-#       end
-#     end
+    assert_block do
+      case [0, 1]
+      in [0, *a]
+        a == [1]
+      end
+    end
 
-#     assert_block do
-#       case [0]
-#       in [0, *, 1]
-#       else
-#         true
-#       end
-#     end
+    assert_block do
+      case [0]
+      in [0, *, 1]
+      else
+        true
+      end
+    end
 
-#     assert_block do
-#       case [0, 1]
-#       in [0, *, 1]
-#         true
-#       end
-#     end
+    assert_block do
+      case [0, 1]
+      in [0, *, 1]
+        true
+      end
+    end
   end
 
 #   it "hash_pattern" do
@@ -1016,60 +1016,60 @@ END
 #     }, /symbol literal with interpolation is not allowed/)
 #   end
 
-#   it "paren" do
-#     assert_block do
-#       case 0
-#       in (0)
-#         true
-#       end
-#     end
-#   end
+  it "paren" do
+    assert_block do
+      case 0
+      in (0)
+        true
+      end
+    end
+  end
 
-#   it "invalid_syntax" do
-#     assert_syntax_error(%q{
-#       case 0
-#       in a, b:
-#       end
-#     }, /unexpected/)
+  it "invalid_syntax" do
+    assert_syntax_error(%q{
+      case 0
+      in a, b:
+      end
+    }, /unexpected/)
 
-#     assert_syntax_error(%q{
-#       case 0
-#       in [a:]
-#       end
-#     }, /unexpected/)
+    assert_syntax_error(%q{
+      case 0
+      in [a:]
+      end
+    }, /unexpected/)
 
-#     assert_syntax_error(%q{
-#       case 0
-#       in {a}
-#       end
-#     }, /unexpected/)
+    assert_syntax_error(%q{
+      case 0
+      in {a}
+      end
+    }, /unexpected/)
 
-#     assert_syntax_error(%q{
-#       case 0
-#       in {0 => a}
-#       end
-#     }, /unexpected/)
-#   end
+    assert_syntax_error(%q{
+      case 0
+      in {0 => a}
+      end
+    }, /unexpected/)
+  end
 
 #   ################################################################
 
-#   class CTypeError
-#     def deconstruct
-#       nil
-#     end
+  class CTypeError
+    def deconstruct
+      nil
+    end
 
-#     def deconstruct_keys(keys)
-#       nil
-#     end
-#   end
+    def deconstruct_keys(keys)
+      nil
+    end
+  end
 
-#   it "deconstruct" do
-#     assert_raise(TypeError) do
-#       case CTypeError.new
-#       in []
-#       end
-#     end
-#   end
+  it "deconstruct" do
+    assert_raise(TypeError) do
+      case CTypeError.new
+      in []
+      end
+    end
+  end
 
 #   it "deconstruct_keys" do
 #     assert_raise(TypeError) do
@@ -1123,15 +1123,15 @@ END
 
 #   ################################################################
 
-#   it "struct" do
-#     assert_block do
-#       s = Struct.new(:a, :b)
-#       case s[0, 1]
-#       in 0, 1
-#         true
-#       end
-#     end
-#   end
+  it "struct" do
+    assert_block do
+      s = Struct.new(:a, :b)
+      case s[0, 1]
+      in 0, 1
+        true
+      end
+    end
+  end
 
 #   ################################################################
 
@@ -1174,14 +1174,14 @@ end
 
 using M
 
-# describe "pattern matching with refinements" do
-#   it "refinements" do
-#     assert_block do
-#       case []
-#       in [0]
-#         true
-#       end
-#     end
+describe "pattern matching with refinements" do
+  it "refinements" do
+    assert_block do
+      case []
+      in [0]
+        true
+      end
+    end
 
 #     assert_block do
 #       case {}
@@ -1196,5 +1196,5 @@ using M
 #         true
 #       end
 #     end
-#   end
-# end
+  end
+end
