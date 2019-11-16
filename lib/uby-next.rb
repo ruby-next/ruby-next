@@ -39,9 +39,11 @@ at_exit do
     end
 
     if $0 == "-e" && e_script.nil?
-      `ps axw`.split("\n").find { |ps| ps[/\A#{$$}/] }.then do |command|
+      `ps axw`.split("\n").find { |ps| ps[/\A\s*#{$$}/] }.then do |command|
         next unless command
-        command.match(/\-e(.*$)/)
+        command.tr! '\012', "\n"
+        command.tr! "\\", "\n"
+        command.match(/\-e(.*)/m)
       end.then do |matches|
         next unless matches
 
