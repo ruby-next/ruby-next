@@ -9,6 +9,7 @@ require "benchmark_driver"
 
 require "ruby-next/language"
 
+# Inspired by https://learnyousomeerlang.com/syntax-in-functions#in-case-of
 source = %{
 def beach(*temperature)
   case temperature
