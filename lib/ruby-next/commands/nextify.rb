@@ -24,7 +24,7 @@ module RubyNext
         optparser = base_parser do |opts|
           opts.banner = "Usage: ruby-next nextify DIRECTORY_OR_FILE [options]"
 
-          opts.on("-o", "--output=OUTPUT", "Specify output directory or file") do |val|
+          opts.on("-o", "--output=OUTPUT", "Specify output directory or file or stdout") do |val|
             @out_path = val
           end
 
@@ -79,6 +79,8 @@ module RubyNext
       end
 
       def save(contents, path, version)
+        return $stdout.puts(contents) if out_path == "stdout"
+
         paths = [Pathname.new(path).relative_path_from(Pathname.new(lib_path))]
 
         paths.unshift(version.segments[0..1].join(".")) unless single_version?
