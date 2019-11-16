@@ -629,6 +629,16 @@ END
       end
     end
 
+    # CUSTOM: multiple clauses
+    assert_block do
+      case [0, 1, 2]
+      in [0, 2, *a]
+        false
+      in [0, *a]
+        a == [1, 2]
+      end
+    end
+
     assert_block do
       case []
       in [0, *]
@@ -792,70 +802,81 @@ END
       end
     end
 
-#     assert_block do
-#       [{}, C.new({})].all? do |i|
-#         case i
-#         in **a
-#           a == {}
-#         end
-#       end
-#     end
+    assert_block do
+      [{}, C.new({})].all? do |i|
+        case i
+        in **a
+          a == {}
+        end
+      end
+    end
 
-#     assert_block do
-#       [{a: 0}, C.new({a: 0})].all? do |i|
-#         case i
-#         in **a
-#           a == {a: 0}
-#         end
-#       end
-#     end
+    assert_block do
+      [{a: 0}, C.new({a: 0})].all? do |i|
+        case i
+        in **a
+          a == {a: 0}
+        end
+      end
+    end
 
-#     assert_block do
-#       [{}, C.new({})].all? do |i|
-#         case i
-#         in **;
-#           true
-#         end
-#       end
-#     end
+    assert_block do
+      [{}, C.new({})].all? do |i|
+        case i
+        in **;
+          true
+        end
+      end
+    end
 
-#     assert_block do
-#       [{a: 0}, C.new({a: 0})].all? do |i|
-#         case i
-#         in **;
-#           true
-#         end
-#       end
-#     end
+    assert_block do
+      [{a: 0}, C.new({a: 0})].all? do |i|
+        case i
+        in **;
+          true
+        end
+      end
+    end
 
-#     assert_block do
-#       [{}, C.new({})].all? do |i|
-#         case i
-#         in a:, **b
-#         else
-#           true
-#         end
-#       end
-#     end
+    assert_block do
+      [{}, C.new({})].all? do |i|
+        case i
+        in a:, **b
+        else
+          true
+        end
+      end
+    end
 
-#     assert_block do
-#       [{a: 0}, C.new({a: 0})].all? do |i|
-#         case i
-#         in a:, **b
-#           a == 0 && b == {}
-#         end
-#       end
-#     end
+    assert_block do
+      [{a: 0}, C.new({a: 0})].all? do |i|
+        case i
+        in a:, **b
+          a == 0 && b == {}
+        end
+      end
+    end
 
-#     assert_block do
-#       [{a: 0, b: 1}, C.new({a: 0, b: 1})].all? do |i|
-#         case i
-#         in a:, **b
-#           a == 0 && b == {b: 1}
-#         end
-#       end
-#     end
+    assert_block do
+      [{a: 0, b: 1}, C.new({a: 0, b: 1})].all? do |i|
+        case i
+        in a:, **b
+          a == 0 && b == {b: 1}
+        end
+      end
+    end
 
+    # CUSTOM: multiple clauses
+    assert_block do
+      case {a: 0, b: 1}
+        in a: 1, **b
+          false
+        in a:, **b
+          a == 0 && b == {b: 1}
+        end
+     end
+
+#     # **nil is not supported by parser yet
 #     assert_block do
 #       [{}, C.new({})].all? do |i|
 #         case i

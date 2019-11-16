@@ -5,6 +5,32 @@ using RubyNext
 module RubyNext
   module Language
     module Rewriters
+      using(Module.new do
+        refine ::Parser::AST::Node do
+          def to_ast_node
+            self
+          end
+        end
+
+        refine String do
+          def to_ast_node
+            ::Parser::AST::Node.new(:str, [self])
+          end
+        end
+
+        refine Symbol do
+          def to_ast_node
+            ::Parser::AST::Node.new(:sym, [self])
+          end
+        end
+
+        refine Integer do
+          def to_ast_node
+            ::Parser::AST::Node.new(:int, [self])
+          end
+        end
+      end)
+
       class PatternMatching < Base
         SYNTAX_PROBE = "case 0; in 0; true; else; 1; end"
         MIN_SUPPORTED_VERSION = Gem::Version.new("2.7.0")
@@ -12,6 +38,7 @@ module RubyNext
         MATCHEE = :__matchee__
         MATCHEE_ARR = :__matchee_arr__
         MATCHEE_HASH = :__matchee_hash__
+        MATCHEE_HASH_SOURCE = :__matchee_hash_src__
 
         def on_case_match(node)
           context.track! self
@@ -115,6 +142,8 @@ module RubyNext
                 array_element(0, *node.children)
               end
 
+            return right if dnode.nil?
+
             s(:and,
               dnode,
               right)
@@ -124,24 +153,20 @@ module RubyNext
         alias array_pattern_with_tail_clause array_pattern_clause
 
         def deconstruct_node
+          # only deconstruct once per case
+          return if @array_deconstructed
+
           right = s(:send,
             s(:lvar, MATCHEE), :deconstruct)
 
-          # only deconstruct once per case
-          if @array_deconstructed
-            s(:or_asgn,
-              s(:lvasgn, MATCHEE_ARR),
-              right)
-          else
-            @array_deconstructed = true
-            s(:and,
-              s(:or,
-                s(:lvasgn, MATCHEE_ARR, right),
-                s(:true)), # rubocop:disable Lint/BooleanSymbol
-              s(:or,
-                case_eq_clause(s(:const, nil, :Array), s(:lvar, MATCHEE_ARR)),
-                raise_error(:TypeError)))
-          end
+          @array_deconstructed = true
+          s(:and,
+            s(:or,
+              s(:lvasgn, MATCHEE_ARR, right),
+              s(:true)), # rubocop:disable Lint/BooleanSymbol
+            s(:or,
+              case_eq_clause(s(:const, nil, :Array), s(:lvar, MATCHEE_ARR)),
+              raise_error(:TypeError)))
         end
 
         def array_element(index, head, *tail)
@@ -203,8 +228,7 @@ module RubyNext
         end
 
         def arr_item_at(index, arr = s(:lvar, MATCHEE_ARR))
-          index = s(:int, index) if index.is_a?(Integer)
-          s(:index, arr, index)
+          s(:index, arr, index.to_ast_node)
         end
 
         def arr_rest_items(index, size, arr = s(:lvar, MATCHEE_ARR))
@@ -230,6 +254,8 @@ module RubyNext
                 hash_element(*node.children)
               end
 
+            return dnode if right.nil?
+
             s(:and,
               dnode,
               right)
@@ -240,6 +266,8 @@ module RubyNext
           return s(:nil) if children.empty?
 
           children.filter_map do |child|
+            return s(:nil) if child.type == :match_rest
+
             send("#{child.type}_hash_key", child)
           end.then { |keys| s(:array, *keys) }
         end
@@ -253,24 +281,26 @@ module RubyNext
         end
 
         def deconstruct_keys_node(keys)
+          # Deconstruct once and use a copy of the hash for each pattern.
+          # We need a copy since we're using `#delete` to get values and rest.
+          hash_dup = s(:lvasgn, MATCHEE_HASH, s(:send, s(:lvar, MATCHEE_HASH_SOURCE), :dup))
+          # Create a copy of the original hash if already deconstructed
+          return hash_dup if @hash_deconstructed
+
+          @hash_deconstructed = true
+
           right = s(:send,
             s(:lvar, MATCHEE), :deconstruct_keys, keys)
 
-          # only deconstruct once per case
-          if @hash_deconstructed
-            s(:or_asgn,
-              s(:lvasgn, MATCHEE_HASH),
-              right)
-          else
-            @hash_deconstructed = true
+          s(:and,
+            s(:or,
+              s(:lvasgn, MATCHEE_HASH_SOURCE, right),
+              s(:true)), # rubocop:disable Lint/BooleanSymbol
             s(:and,
               s(:or,
-                s(:lvasgn, MATCHEE_HASH, right),
-                s(:true)), # rubocop:disable Lint/BooleanSymbol
-              s(:or,
-                case_eq_clause(s(:const, nil, :Hash), s(:lvar, MATCHEE_HASH)),
-                raise_error(:TypeError)))
-          end
+                case_eq_clause(s(:const, nil, :Hash), s(:lvar, MATCHEE_HASH_SOURCE)),
+                raise_error(:TypeError)),
+              hash_dup))
         end
 
         def hash_element(head, *tail)
@@ -279,9 +309,13 @@ module RubyNext
           send("#{head.type}_hash_element", head).then do |node|
             next node if tail.empty?
 
+            right = hash_element(*tail)
+
+            next node if right.nil?
+
             s(:and,
               node,
-              hash_element(*tail))
+              right)
           end
         end
 
@@ -298,19 +332,27 @@ module RubyNext
             match_var_clause(node, hash_value_at(key)))
         end
 
+        def match_rest_hash_element(node)
+          # case {}; in **; end
+          return if node.children.empty?
+
+          child = node.children[0]
+
+          raise ArgumentError, "Unknown hash match_rest child: #{child.type}" unless child.type == :match_var
+
+          match_var_clause(child, s(:lvar, MATCHEE_HASH))
+        end
+
         def hash_value_at(key, hash = s(:lvar, MATCHEE_HASH))
-          key = s(:sym, key) if key.is_a?(Symbol)
-          key = s(:str, key) if key.is_a?(String)
-          s(:index, hash, key)
+          s(:send,
+            hash, :delete,
+            key.to_ast_node)
         end
 
         def hash_has_key(key, hash = s(:lvar, MATCHEE_HASH))
-          key = s(:sym, key) if key.is_a?(Symbol)
-          key = s(:str, key) if key.is_a?(String)
-
           s(:send,
             hash, :key?,
-            key)
+            key.to_ast_node)
         end
 
         #=========== HASH PATTERN (END) ===============

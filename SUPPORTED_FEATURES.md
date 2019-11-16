@@ -42,9 +42,7 @@
 
 ### 2.7
 
-- (Partial support, work in progress ⚒) Pattern matching (`case ... in ... end`)
-
-Hash pattern matching (`#deconstruct_keys`) is still in progress. Other features have been implemented.
+- Pattern matching (`case ... in ... end`)
 
 - **REVERTED IN RUBY ([#16275](https://bugs.ruby-lang.org/issues/16275))** Method reference operator (`Module.:method`) ([#12125](https://bugs.ruby-lang.org/issues/12125), [#13581](https://bugs.ruby-lang.org/issues/13581))
 

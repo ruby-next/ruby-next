@@ -2,6 +2,8 @@
 
 ## master
 
+- Add pattern matching. ([@palkan][])
+
 - Add numbered parameters. ([@palkan][])
 
 - Add arguments forwarding. ([@palkan][])
