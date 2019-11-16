@@ -44,13 +44,18 @@ module RubyNext
           context.track! self
           context.use_ruby_next!
 
-          @array_deconstructed = false
-          @hash_deconstructed = false
+          @deconstructed = []
 
           matchee_ast =
             s(:lvasgn, MATCHEE, node.children[0])
 
-          ifs_ast = build_if_clause(node.children[1], node.children[2..-1])
+          ifs_ast = locals.with(
+            matchee: MATCHEE,
+            matchee_arr: MATCHEE_ARR,
+            matchee_hash: MATCHEE_HASH
+          ) do
+            build_if_clause(node.children[1], node.children[2..-1])
+          end
 
           node.updated(
             :begin,
@@ -110,15 +115,15 @@ module RubyNext
           s(:or, *children)
         end
 
-        def match_as_clause(node, matchee = s(:lvar, MATCHEE))
+        def match_as_clause(node)
           s(:and,
             case_eq_clause(node.children[0]),
-            match_var_clause(node.children[1], matchee))
+            match_var_clause(node.children[1], s(:lvar, locals[:matchee])))
         end
 
-        def match_var_clause(node, matchee = s(:lvar, MATCHEE))
+        def match_var_clause(node, left = s(:lvar, locals[:matchee]))
           s(:or,
-            s(:lvasgn, node.children[0], matchee),
+            s(:lvasgn, node.children[0], left),
             s(:true)) # rubocop:disable Lint/BooleanSymbol
         end
 
@@ -126,23 +131,35 @@ module RubyNext
           case_eq_clause node.children[0]
         end
 
-        def case_eq_clause(node, right = s(:lvar, MATCHEE))
+        def case_eq_clause(node, right = s(:lvar, locals[:matchee]))
           s(:send,
             node, :===, right)
         end
 
         #=========== ARRAY PATTERN (START) ===============
 
-        def array_pattern_clause(node)
-          deconstruct_node.then do |dnode|
+        def array_pattern_clause(node, matchee = s(:lvar, locals[:matchee]))
+          deconstruct_node(matchee).then do |dnode|
             right =
               if node.children.empty?
-                case_eq_clause(s(:array), s(:lvar, MATCHEE_ARR))
+                case_eq_clause(s(:array), s(:lvar, locals[:matchee_arr]))
               else
                 array_element(0, *node.children)
               end
 
-            return right if dnode.nil?
+            # already deconsrtructed
+            next right if dnode.nil?
+
+            # if there is no rest or tail, match the size first
+            unless node.type == :array_pattern_with_tail || node.children.any? { |n| n.type == :match_rest }
+              right =
+                s(:and,
+                  s(:send,
+                    node.children.size.to_ast_node,
+                    :==,
+                    s(:send, s(:lvar, locals[:matchee_arr]), :size)),
+                  right)
+            end
 
             s(:and,
               dnode,
@@ -152,20 +169,19 @@ module RubyNext
 
         alias array_pattern_with_tail_clause array_pattern_clause
 
-        def deconstruct_node
+        def deconstruct_node(matchee)
           # only deconstruct once per case
-          return if @array_deconstructed
+          return if deconstructed.include?(locals[:matchee_arr])
 
-          right = s(:send,
-            s(:lvar, MATCHEE), :deconstruct)
+          right = s(:send, matchee, :deconstruct)
 
-          @array_deconstructed = true
+          deconstructed << locals[:matchee_arr]
           s(:and,
             s(:or,
-              s(:lvasgn, MATCHEE_ARR, right),
+              s(:lvasgn, locals[:matchee_arr], right),
               s(:true)), # rubocop:disable Lint/BooleanSymbol
             s(:or,
-              case_eq_clause(s(:const, nil, :Array), s(:lvar, MATCHEE_ARR)),
+              case_eq_clause(s(:const, nil, :Array), s(:lvar, locals[:matchee_arr])),
               raise_error(:TypeError)))
         end
 
@@ -208,6 +224,13 @@ module RubyNext
           end
         end
 
+        def array_pattern_array_element(node, index)
+          element = arr_item_at(index)
+          locals.with(matchee_arr: :"#{MATCHEE_ARR}#{index}__") do
+            array_pattern_clause(node, element)
+          end
+        end
+
         def match_alt_array_element(node, index)
           children = node.children.map do |child, i|
             send :"#{child.type}_array_element", child, index
@@ -216,7 +239,7 @@ module RubyNext
         end
 
         def match_var_array_element(node, index)
-          match_var_clause node, arr_item_at(index)
+          match_var_clause(node, arr_item_at(index))
         end
 
         def pin_array_element(node, index)
@@ -227,11 +250,11 @@ module RubyNext
           case_eq_clause(node, arr_item_at(index))
         end
 
-        def arr_item_at(index, arr = s(:lvar, MATCHEE_ARR))
+        def arr_item_at(index, arr = s(:lvar, locals[:matchee_arr]))
           s(:index, arr, index.to_ast_node)
         end
 
-        def arr_rest_items(index, size, arr = s(:lvar, MATCHEE_ARR))
+        def arr_rest_items(index, size, arr = s(:lvar, locals[:matchee_arr]))
           s(:index,
             arr,
             s(:irange,
@@ -285,9 +308,9 @@ module RubyNext
           # We need a copy since we're using `#delete` to get values and rest.
           hash_dup = s(:lvasgn, MATCHEE_HASH, s(:send, s(:lvar, MATCHEE_HASH_SOURCE), :dup))
           # Create a copy of the original hash if already deconstructed
-          return hash_dup if @hash_deconstructed
+          return hash_dup if deconstructed.include?(locals[:matchee_hash])
 
-          @hash_deconstructed = true
+          deconstructed << locals[:matchee_hash]
 
           right = s(:send,
             s(:lvar, MATCHEE), :deconstruct_keys, keys)
@@ -389,6 +412,10 @@ module RubyNext
           return case_eq_array_element(*args) if mid.match?(/_array_element$/)
           super
         end
+
+        private
+
+        attr_reader :deconstructed
       end
     end
   end
