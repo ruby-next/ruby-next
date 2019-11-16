@@ -2,6 +2,8 @@
 
 ## master
 
+## 0.1.0 (2019-11-16)
+
 - Add pattern matching. ([@palkan][])
 
 - Add numbered parameters. ([@palkan][])
