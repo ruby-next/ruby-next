@@ -25,6 +25,10 @@ module RubyNext
             end
           end
 
+          def key?(name)
+            !!fetch(name) { false }
+          end
+
           def fetch(name)
             ind = -1
 

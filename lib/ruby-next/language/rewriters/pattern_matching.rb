@@ -266,6 +266,10 @@ module RubyNext
         #=========== HASH PATTERN (START) ===============
 
         def hash_pattern_clause(node, matchee = s(:lvar, locals[:matchee]))
+          # Optimization: avoid hash modifications when not needed
+          # (we use #dup and #delete when "reading" values when **rest is present
+          # to assign the rest of the hash copy to it)
+          @hash_match_rest = node.children.any? { |child| child.type == :match_rest }
           keys = hash_pattern_keys(node.children)
 
           deconstruct_keys_node(keys, matchee).then do |dnode|
@@ -303,9 +307,14 @@ module RubyNext
         end
 
         def deconstruct_keys_node(keys, matchee = s(:lvar, locals[:matchee]))
-          # Deconstruct once and use a copy of the hash for each pattern.
-          # We need a copy since we're using `#delete` to get values and rest.
-          hash_dup = s(:lvasgn, locals[:hash], s(:send, s(:lvar, locals[:hash, :src]), :dup))
+          # Deconstruct once and use a copy of the hash for each pattern if we need **rest.
+          hash_dup =
+            if @hash_match_rest
+              s(:lvasgn, locals[:hash], s(:send, s(:lvar, locals[:hash, :src]), :dup))
+            else
+              s(:lvasgn, locals[:hash], s(:lvar, locals[:hash, :src]))
+            end
+
           # Create a copy of the original hash if already deconstructed
           return hash_dup if deconstructed.include?(locals[:hash])
 
@@ -391,11 +400,17 @@ module RubyNext
         end
 
         def hash_value_at(key, hash = s(:lvar, locals[:hash]))
-          s(:lvar, locals.fetch(:hash_element) do
-                     return s(:send,
-                       hash, :delete,
-                       key.to_ast_node)
-                   end)
+          return s(:lvar, locals.fetch(:hash_element)) if locals.key?(:hash_element)
+
+          if @hash_match_rest
+            s(:send,
+              hash, :delete,
+              key.to_ast_node)
+          else
+            s(:index,
+              hash,
+              key.to_ast_node)
+          end
         end
 
         def hash_has_key(key, hash = s(:lvar, locals[:hash]))
