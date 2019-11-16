@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+using RubyNext
+
 module RubyNext
   module Language
     module Rewriters
@@ -16,13 +18,25 @@ module RubyNext
             yield.tap { stacks.pop }
           end
 
-          def [](name)
+          def [](name, suffix = nil)
+            fetch(name).then do |name|
+              next name unless suffix
+              :"#{name}#{suffix}__"
+            end
+          end
+
+          def fetch(name)
             ind = -1
 
             loop do
-              return stacks[ind][name] if stacks[ind].key?(name)
+              break stacks[ind][name] if stacks[ind].key?(name)
               ind -= 1
-              raise ArgumentError, "Local var not found in scope: #{name}" if stacks[ind].nil?
+              break if stacks[ind].nil?
+            end.then do |name|
+              next name unless name.nil?
+
+              return yield if block_given?
+              raise ArgumentError, "Local var not found in scope: #{name}"
             end
           end
         end

@@ -15,4 +15,15 @@ describe "language features (via -ruby-next)" do
       output.should include("\"2 [3]\"\n")
     end
   end
+
+  it "nested hash pattern matching" do
+    run(
+      "ruby -I#{File.join(__dir__, "../../lib")} -ruby-next #{File.join(__dir__, "fixtures", "display_name.rb")} "
+    ) do |_status, output, _err|
+      output.should include("\"Tae Noppakun Wongsrinoppakun\"\n")
+      output.should include("\"Guest\"\n")
+      output.should include("\"Homey Simmy\"\n")
+      output.should include("\"Bart S.\"\n")
+    end
+  end
 end

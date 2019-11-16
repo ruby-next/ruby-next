@@ -38,7 +38,6 @@ module RubyNext
         MATCHEE = :__matchee__
         MATCHEE_ARR = :__matchee_arr__
         MATCHEE_HASH = :__matchee_hash__
-        MATCHEE_HASH_SOURCE = :__matchee_hash_src__
 
         def on_case_match(node)
           context.track! self
@@ -51,8 +50,8 @@ module RubyNext
 
           ifs_ast = locals.with(
             matchee: MATCHEE,
-            matchee_arr: MATCHEE_ARR,
-            matchee_hash: MATCHEE_HASH
+            arr: MATCHEE_ARR,
+            hash: MATCHEE_HASH
           ) do
             build_if_clause(node.children[1], node.children[2..-1])
           end
@@ -142,7 +141,7 @@ module RubyNext
           deconstruct_node(matchee).then do |dnode|
             right =
               if node.children.empty?
-                case_eq_clause(s(:array), s(:lvar, locals[:matchee_arr]))
+                case_eq_clause(s(:array), s(:lvar, locals[:arr]))
               else
                 array_element(0, *node.children)
               end
@@ -157,7 +156,7 @@ module RubyNext
                   s(:send,
                     node.children.size.to_ast_node,
                     :==,
-                    s(:send, s(:lvar, locals[:matchee_arr]), :size)),
+                    s(:send, s(:lvar, locals[:arr]), :size)),
                   right)
             end
 
@@ -171,17 +170,17 @@ module RubyNext
 
         def deconstruct_node(matchee)
           # only deconstruct once per case
-          return if deconstructed.include?(locals[:matchee_arr])
+          return if deconstructed.include?(locals[:arr])
 
           right = s(:send, matchee, :deconstruct)
 
-          deconstructed << locals[:matchee_arr]
+          deconstructed << locals[:arr]
           s(:and,
             s(:or,
-              s(:lvasgn, locals[:matchee_arr], right),
+              s(:lvasgn, locals[:arr], right),
               s(:true)), # rubocop:disable Lint/BooleanSymbol
             s(:or,
-              case_eq_clause(s(:const, nil, :Array), s(:lvar, locals[:matchee_arr])),
+              case_eq_clause(s(:const, nil, :Array), s(:lvar, locals[:arr])),
               raise_error(:TypeError)))
         end
 
@@ -226,7 +225,7 @@ module RubyNext
 
         def array_pattern_array_element(node, index)
           element = arr_item_at(index)
-          locals.with(matchee_arr: :"#{MATCHEE_ARR}#{index}__") do
+          locals.with(arr: locals[:arr, index]) do
             array_pattern_clause(node, element)
           end
         end
@@ -250,11 +249,11 @@ module RubyNext
           case_eq_clause(node, arr_item_at(index))
         end
 
-        def arr_item_at(index, arr = s(:lvar, locals[:matchee_arr]))
+        def arr_item_at(index, arr = s(:lvar, locals[:arr]))
           s(:index, arr, index.to_ast_node)
         end
 
-        def arr_rest_items(index, size, arr = s(:lvar, locals[:matchee_arr]))
+        def arr_rest_items(index, size, arr = s(:lvar, locals[:arr]))
           s(:index,
             arr,
             s(:irange,
@@ -266,13 +265,13 @@ module RubyNext
 
         #=========== HASH PATTERN (START) ===============
 
-        def hash_pattern_clause(node)
+        def hash_pattern_clause(node, matchee = s(:lvar, locals[:matchee]))
           keys = hash_pattern_keys(node.children)
 
-          deconstruct_keys_node(keys).then do |dnode|
+          deconstruct_keys_node(keys, matchee).then do |dnode|
             right =
               if node.children.empty?
-                case_eq_clause(s(:hash), s(:lvar, MATCHEE_HASH))
+                case_eq_clause(s(:hash), s(:lvar, locals[:hash]))
               else
                 hash_element(*node.children)
               end
@@ -303,32 +302,37 @@ module RubyNext
           s(:sym, node.children[0])
         end
 
-        def deconstruct_keys_node(keys)
+        def deconstruct_keys_node(keys, matchee = s(:lvar, locals[:matchee]))
           # Deconstruct once and use a copy of the hash for each pattern.
           # We need a copy since we're using `#delete` to get values and rest.
-          hash_dup = s(:lvasgn, MATCHEE_HASH, s(:send, s(:lvar, MATCHEE_HASH_SOURCE), :dup))
+          hash_dup = s(:lvasgn, locals[:hash], s(:send, s(:lvar, locals[:hash, :src]), :dup))
           # Create a copy of the original hash if already deconstructed
-          return hash_dup if deconstructed.include?(locals[:matchee_hash])
+          return hash_dup if deconstructed.include?(locals[:hash])
 
-          deconstructed << locals[:matchee_hash]
+          deconstructed << locals[:hash]
 
           right = s(:send,
-            s(:lvar, MATCHEE), :deconstruct_keys, keys)
+            matchee, :deconstruct_keys, keys)
 
           s(:and,
             s(:or,
-              s(:lvasgn, MATCHEE_HASH_SOURCE, right),
+              s(:lvasgn, locals[:hash, :src], right),
               s(:true)), # rubocop:disable Lint/BooleanSymbol
             s(:and,
               s(:or,
-                case_eq_clause(s(:const, nil, :Hash), s(:lvar, MATCHEE_HASH_SOURCE)),
+                case_eq_clause(s(:const, nil, :Hash), s(:lvar, locals[:hash, :src])),
                 raise_error(:TypeError)),
               hash_dup))
         end
 
-        def hash_element(head, *tail)
-          # return array_match_rest(index, head, *tail) if head.type == :match_rest
+        def hash_pattern_hash_element(node, key)
+          element = hash_value_at(key)
+          locals.with(hash: locals[:hash, deconstructed.size]) do
+            hash_pattern_clause(node, element)
+          end
+        end
 
+        def hash_element(head, *tail)
           send("#{head.type}_hash_element", head).then do |node|
             next node if tail.empty?
 
@@ -342,20 +346,36 @@ module RubyNext
           end
         end
 
-        def pair_hash_element(node)
+        def pair_hash_element(node, _key = nil)
           key, val = *node.children
-          case_eq_clause val, hash_value_at(key)
+          send("#{val.type}_hash_element", val, key)
         end
 
-        def match_var_hash_element(node)
-          key = node.children[0]
+        def match_alt_hash_element(node, key)
+          element_node = s(:lvasgn, locals[:hash, :el], hash_value_at(key))
+
+          children = locals.with(hash_element: locals[:hash, :el]) do
+            node.children.map do |child, i|
+              send :"#{child.type}_hash_element", child, key
+            end
+          end
+
+          s(:and,
+            s(:or,
+              element_node,
+              s(:true)), # rubocop:disable Lint/BooleanSymbol
+            s(:or, *children))
+        end
+
+        def match_var_hash_element(node, key = nil)
+          key ||= node.children[0]
           # We need to check whether key is present first
           s(:and,
             hash_has_key(key),
             match_var_clause(node, hash_value_at(key)))
         end
 
-        def match_rest_hash_element(node)
+        def match_rest_hash_element(node, _key = nil)
           # case {}; in **; end
           return if node.children.empty?
 
@@ -363,16 +383,22 @@ module RubyNext
 
           raise ArgumentError, "Unknown hash match_rest child: #{child.type}" unless child.type == :match_var
 
-          match_var_clause(child, s(:lvar, MATCHEE_HASH))
+          match_var_clause(child, s(:lvar, locals[:hash]))
         end
 
-        def hash_value_at(key, hash = s(:lvar, MATCHEE_HASH))
-          s(:send,
-            hash, :delete,
-            key.to_ast_node)
+        def case_eq_hash_element(node, key)
+          case_eq_clause node, hash_value_at(key)
         end
 
-        def hash_has_key(key, hash = s(:lvar, MATCHEE_HASH))
+        def hash_value_at(key, hash = s(:lvar, locals[:hash]))
+          s(:lvar, locals.fetch(:hash_element) do
+                     return s(:send,
+                       hash, :delete,
+                       key.to_ast_node)
+                   end)
+        end
+
+        def hash_has_key(key, hash = s(:lvar, locals[:hash]))
           s(:send,
             hash, :key?,
             key.to_ast_node)
@@ -399,7 +425,7 @@ module RubyNext
           s(:send, s(:const, nil, :Kernel), :raise,
             s(:const, nil, type),
             s(:send,
-              s(:lvar, MATCHEE), :inspect))
+              s(:lvar, locals[:matchee]), :inspect))
         end
 
         def respond_to_missing?(mid, *)
@@ -410,6 +436,7 @@ module RubyNext
         def method_missing(mid, *args, &block)
           return case_eq_clause(args.first) if mid.match?(/_clause$/)
           return case_eq_array_element(*args) if mid.match?(/_array_element$/)
+          return case_eq_hash_element(*args) if mid.match?(/_hash_element$/)
           super
         end
 
