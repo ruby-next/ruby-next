@@ -28,6 +28,8 @@ Thus, polyfills are only available in compatible runtimes (MRI, JRuby, TruffleRu
 Language is responsible for **transpiling** edge Ruby syntax into older versions. It could be done
 programmatically or via CLI. It also could be done in runtime.
 
+Currently, Ruby Next supports Ruby versions 2.5+ (including JRuby 9.2.8+).
+
 ## Using only polyfills
 
 First, install a gem:
