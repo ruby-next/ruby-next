@@ -16,7 +16,7 @@ Who might be interested in Ruby Next?
 Ruby Next also aims to help the community to assess new, _experimental_, MRI features by making it easier to play with them.
 That's why Ruby Next implements the `trunk` features as fast as possible.
 
-_See the list of supported and planed features [here][features]. Feel free to pick a TODO and make it live!_
+_⚡️ The project is in early alpha stage and looking for the first adopters. Main functionality has been implemented (see [the list][features]) but APIs could change in the future._
 
 ## Overview
 
