@@ -16,7 +16,7 @@ Who might be interested in Ruby Next?
 Ruby Next also aims to help the community to assess new, _experimental_, MRI features by making it easier to play with them.
 That's why Ruby Next implements the `trunk` features as fast as possible.
 
-⚒ _The project is in active development phase. See the list of supported and planed features [here][features]._
+_See the list of supported and planed features [here][features]. Feel free to pick a TODO and make it live!_
 
 ## Overview
 
@@ -177,7 +177,7 @@ ruby -ruby-next my_ruby_script.rb
 # or
 RUBYOPT="-ruby-next" ruby my_ruby_script.rb
 
-# in Ruby 2.6 (or if script_compiled TracePoint event is supported)
+# or
 ruby -ruby-next -e "puts [2, 4, 5].tally"
 ```
 

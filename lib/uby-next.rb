@@ -3,6 +3,8 @@
 require "ruby-next/language/runtime"
 require "ruby-next/core/runtime"
 
+using RubyNext
+
 RubyNext::Language::Runtime.watch_dirs << Dir.pwd
 
 require "stringio"
@@ -34,6 +36,23 @@ at_exit do
     if $0 && File.exist?($0)
       load($0)
       exit!(0)
+    end
+
+    if $0 == "-e" && e_script.nil?
+      `ps axw`.split("\n").find { |ps| ps[/\A#{$$}/] }.then do |command|
+        next unless command
+        command.match(/\-e(.*$)/)
+      end.then do |matches|
+        next unless matches
+
+        args = ["-e", matches[1]]
+        require "optparse"
+        OptionParser.new do |o|
+          o.on("-e SOURCE") do |v|
+            e_script = v
+          end
+        end.parse!(args)
+      end
     end
 
     if e_script
