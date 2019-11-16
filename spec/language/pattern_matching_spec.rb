@@ -746,33 +746,33 @@ END
       end
     end
 
-#     assert_block do
-#       [{}, C.new({})].all? do |i|
-#         case i
-#         in a:
-#         else
-#           true
-#         end
-#       end
-#     end
+    assert_block do
+      [{}, C.new({})].all? do |i|
+        case i
+        in a:
+        else
+          true
+        end
+      end
+    end
 
-#     assert_block do
-#       [{a: 0}, C.new({a: 0})].all? do |i|
-#         case i
-#         in a:
-#           a == 0
-#         end
-#       end
-#     end
+    assert_block do
+      [{a: 0}, C.new({a: 0})].all? do |i|
+        case i
+        in a:
+          a == 0
+        end
+      end
+    end
 
-#     assert_block do
-#       [{a: 0, b: 1}, C.new({a: 0, b: 1})].all? do |i|
-#         case i
-#         in a:
-#           a == 0
-#         end
-#       end
-#     end
+    assert_block do
+      [{a: 0, b: 1}, C.new({a: 0, b: 1})].all? do |i|
+        case i
+        in a:
+          a == 0
+        end
+      end
+    end
 
     assert_block do
       [{a: 0}, C.new({a: 0})].all? do |i|
@@ -783,14 +783,14 @@ END
       end
     end
 
-#     assert_block do
-#       [{a: 0}, C.new({a: 0})].all? do |i|
-#         case i
-#         in "a":;
-#           a == 0
-#         end
-#       end
-#     end
+    assert_block do
+      [{a: 0}, C.new({a: 0})].all? do |i|
+        case i
+        in "a":;
+          a == 0
+        end
+      end
+    end
 
 #     assert_block do
 #       [{}, C.new({})].all? do |i|
@@ -1081,16 +1081,16 @@ END
     assert_block do
       case {}
       in {}
-        C.keys == nil
+        true
       end
     end
 
-    # assert_block do
-    #   case C.new({a: 0, b: 0, c: 0})
-    #   in {a: 0, b:}
-    #     C.keys == [:a, :b]
-    #   end
-    # end
+    assert_block do
+      case C.new({a: 0, b: 0, c: 0})
+      in {a: 0, b:}
+        C.keys == [:a, :b]
+      end
+    end
 
 #     assert_block do
 #       case C.new({a: 0, b: 0, c: 0})

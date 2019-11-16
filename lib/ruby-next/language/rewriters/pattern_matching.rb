@@ -248,6 +248,10 @@ module RubyNext
           node.children[0]
         end
 
+        def match_var_hash_key(node)
+          s(:sym, node.children[0])
+        end
+
         def deconstruct_keys_node(keys)
           right = s(:send,
             s(:lvar, MATCHEE), :deconstruct_keys, keys)
@@ -286,10 +290,27 @@ module RubyNext
           case_eq_clause val, hash_value_at(key)
         end
 
+        def match_var_hash_element(node)
+          key = node.children[0]
+          # We need to check whether key is present first
+          s(:and,
+            hash_has_key(key),
+            match_var_clause(node, hash_value_at(key)))
+        end
+
         def hash_value_at(key, hash = s(:lvar, MATCHEE_HASH))
           key = s(:sym, key) if key.is_a?(Symbol)
           key = s(:str, key) if key.is_a?(String)
           s(:index, hash, key)
+        end
+
+        def hash_has_key(key, hash = s(:lvar, MATCHEE_HASH))
+          key = s(:sym, key) if key.is_a?(Symbol)
+          key = s(:str, key) if key.is_a?(String)
+
+          s(:send,
+            hash, :key?,
+            key)
         end
 
         #=========== HASH PATTERN (END) ===============
