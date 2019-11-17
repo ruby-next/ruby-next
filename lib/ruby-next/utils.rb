@@ -16,17 +16,12 @@ module RubyNext
 
         path = "#{path}.rb" if File.extname(path).empty?
 
-        unless Pathname.new(path).absolute?
-          loadpath = $LOAD_PATH.find do |lp|
-            File.file?(File.join(lp, path))
-          end
+        return path if Pathname.new(path).absolute?
 
-          return if loadpath.nil?
-
-          path = File.join(loadpath, path)
+        $LOAD_PATH.find do |lp|
+          lpath = File.join(lp, path)
+          return lpath if File.file?(lpath)
         end
-
-        path
       end
     end
 
