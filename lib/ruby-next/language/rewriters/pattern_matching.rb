@@ -230,6 +230,13 @@ module RubyNext
           end
         end
 
+        def hash_pattern_array_element(node, index)
+          element = arr_item_at(index)
+          locals.with(hash: locals[:arr, index]) do
+            hash_pattern_clause(node, element)
+          end
+        end
+
         def match_alt_array_element(node, index)
           children = node.children.map do |child, i|
             send :"#{child.type}_array_element", child, index
@@ -338,6 +345,13 @@ module RubyNext
           element = hash_value_at(key)
           locals.with(hash: locals[:hash, deconstructed.size]) do
             hash_pattern_clause(node, element)
+          end
+        end
+
+        def array_pattern_hash_element(node, key)
+          element = hash_value_at(key)
+          locals.with(arr: locals[:hash, deconstructed.size]) do
+            array_pattern_clause(node, element)
           end
         end
 

@@ -26,4 +26,13 @@ describe "language features (via -ruby-next)" do
       output.should include("\"Bart S.\"\n")
     end
   end
+
+  it "array in hash in pattern matching" do
+    run(
+      "ruby -rjson -I#{File.join(__dir__, "../../lib")} -ruby-next #{File.join(__dir__, "fixtures", "array_in_hash_pattern.rb")} " \
+      "'{\"name\":\"Alice\",\"children\":[{\"name\":\"Bob\",\"age\":30}]}'"
+    ) do |_status, output, _err|
+      output.should include("Bob age is 30")
+    end
+  end
 end
