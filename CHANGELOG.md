@@ -2,6 +2,8 @@
 
 ## master
 
+## 0.1.0 (2019-11-18)
+
 - Support hash pattern in array and vice versa. ([@palkan][])
 
 - Handle multile `-e` in `uby-next`. ([@palkan][])
