@@ -76,7 +76,7 @@ Then, add to your Gemfile:
 
 ```ruby
 source "https://rubygems.pkg.github.com/ruby-next" do
-  gem "parser", "2.6.3.103"
+  gem "parser", "2.6.3.105"
 end
 
 gem "unparser", "~> 0.4.5"
