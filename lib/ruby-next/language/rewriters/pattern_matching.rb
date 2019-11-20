@@ -35,9 +35,9 @@ module RubyNext
         SYNTAX_PROBE = "case 0; in 0; true; else; 1; end"
         MIN_SUPPORTED_VERSION = Gem::Version.new("2.7.0")
 
-        MATCHEE = :__matchee__
-        MATCHEE_ARR = :__matchee_arr__
-        MATCHEE_HASH = :__matchee_hash__
+        MATCHEE = :__m__
+        MATCHEE_ARR = :__m_arr__
+        MATCHEE_HASH = :__m_hash__
 
         def on_case_match(node)
           context.track! self
@@ -276,7 +276,7 @@ module RubyNext
           # Optimization: avoid hash modifications when not needed
           # (we use #dup and #delete when "reading" values when **rest is present
           # to assign the rest of the hash copy to it)
-          @hash_match_rest = node.children.any? { |child| child.type == :match_rest }
+          @hash_match_rest = node.children.any? { |child| child.type == :match_rest || child.type == :match_nil_pattern }
           keys = hash_pattern_keys(node.children)
 
           deconstruct_keys_node(keys, matchee).then do |dnode|
@@ -299,7 +299,9 @@ module RubyNext
           return s(:nil) if children.empty?
 
           children.filter_map do |child|
-            return s(:nil) if child.type == :match_rest
+            # Skip ** without var
+            next if child.type == :match_rest && child.children.empty?
+            return s(:nil) if child.type == :match_rest || child.type == :match_nil_pattern
 
             send("#{child.type}_hash_key", child)
           end.then { |keys| s(:array, *keys) }
@@ -396,6 +398,13 @@ module RubyNext
           s(:and,
             hash_has_key(key),
             match_var_clause(node, hash_value_at(key)))
+        end
+
+        def match_nil_pattern_hash_element(node, _key = nil)
+          s(:send,
+            s(:lvar, locals[:hash]),
+            :empty?
+          )
         end
 
         def match_rest_hash_element(node, _key = nil)
