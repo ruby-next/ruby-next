@@ -1186,11 +1186,17 @@ END
 
   ################################################################
 
-#   it "modifier_in" do
-#     assert_equal true, (1 in a)
-#     assert_equal 1, a
-#     assert_valid_syntax "p(({} in a:), a:\n 1)"
-#   end
+  it "modifier_in" do
+    assert_equal true, (1 in a)
+    assert_equal 1, a
+    assert_valid_syntax "p(({} in {a:}), a:\n 1)"
+    assert_syntax_error(%q{
+      1 in a, b
+    }, /unexpected/, '[ruby-core:95098]')
+    assert_syntax_error(%q{
+      1 in a:
+    }, /unexpected/, '[ruby-core:95098]')
+  end
 end
 
 
@@ -1214,6 +1220,33 @@ describe "custom tests" do
       in a:, **b
         a == 0 && b == {b: 1}
       end
+  end
+
+  # in with hash
+  assert_block do
+    {a: [0, 1, 2]} in {a:}
+    a == [0, 1, 2]
+  end
+
+  # in with hash and array rest
+  assert_block do
+    {a: [0, 1, 2]} in {a: [0, *r]}
+    r == [1, 2]
+  end
+
+  # non-matching in
+  assert_block do
+    if 0 in 1 | 2
+      flunk
+    else
+      true
+    end
+  end
+
+  # non-matching with match var
+  assert_block do
+    {a:0, b: 1} in {c:, **nil}
+    c.nil?
   end
 end
 
