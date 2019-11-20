@@ -18,6 +18,11 @@ That's why Ruby Next implements the `trunk` features as fast as possible.
 
 _⚡️ The project is in early alpha stage and looking for the first adopters. Main functionality has been implemented (see [the list][features]) but APIs could change in the future._
 
+
+## Links
+
+- [Ruby Next: Make old Rubies quack like a new one](https://noti.st/palkan/j3i2Dr/ruby-next-make-old-rubies-quack-like-a-new-one) (RubyConf 2019)
+
 ## Overview
 
 Ruby Next consists of two parts: **core** and **language**.
