@@ -194,25 +194,25 @@ describe "pattern matching" do
   it "var_pattern" do
     # NODE_DASGN_CURR
     assert_block do
-      case [0, 1]
-      in a, a
-        a == 1
+      case 0
+      in a
+        a == 0
       end
     end
 
     # NODE_DASGN
     b = 0
     assert_block do
-      case [0, 1]
-      in b, b
+      case 1
+      in b
         b == 1
       end
     end
 
     # NODE_LASGN
-    case [0, 1]
-    in c, c
-      assert_equal(1, c)
+    case 0
+    in c
+      assert_equal(0, c)
     else
       flunk
     end
@@ -222,6 +222,58 @@ describe "pattern matching" do
       in ^a
       end
     }, /no such local variable/)
+
+    assert_syntax_error(%q{
+      case 0
+      in a, a
+      end
+    }, /duplicated variable name/)
+
+    assert_block do
+      case [0, 1, 2, 3]
+      in _, _, _a, _a
+        true
+      end
+    end
+
+    assert_syntax_error(%q{
+      case 0
+      in a, {a:}
+      end
+    }, /duplicated variable name/)
+
+    assert_syntax_error(%q{
+      case 0
+      in a, {"a":}
+      end
+    }, /duplicated variable name/)
+
+    # TODO: support rucursive pattern matching
+    # assert_block do
+    #   case [0, "1"]
+    #   in a, "#{case 1; in a; a; end}"
+    #     true
+    #   end
+    # end
+
+    assert_syntax_error(%q{
+      case [0, "1"]
+      in a, "#{case 1; in a; a; end}", a
+      end
+    }, /duplicated variable name/)
+
+    assert_block do
+      case 0
+      in a
+        true
+      in a
+        flunk
+      end
+    end
+
+    assert_syntax_error(%q{
+      0 in [a, a]
+    }, /duplicated variable name/)
   end
 
   it "literal_value_pattern" do
@@ -268,7 +320,7 @@ END
       end
     end
 
-    # TODO: beginless range
+    # TODO: support beginless range
     # assert_block do
     #   case [0, 1, 2, 3, 4, 5]
     #   in [0..1, 0...2, 0.., 0..., (...5), (..5)]
@@ -303,13 +355,12 @@ END
       end
     end
 
-    # TODO: parser bug? https://github.com/whitequark/parser/pull/574#issuecomment-551946241
-    # assert_block do
-    #   case [__FILE__, __LINE__ + 1, __ENCODING__]
-    #   in [__FILE__, __LINE__, __ENCODING__]
-    #     true
-    #   end
-    # end
+    assert_block do
+      case [__FILE__, __LINE__ + 1, __ENCODING__]
+      in [__FILE__, __LINE__, __ENCODING__]
+        true
+      end
+    end
   end
 
   it "constant_value_pattern" do
@@ -629,16 +680,6 @@ END
       end
     end
 
-    # CUSTOM: multiple clauses
-    assert_block do
-      case [0, 1, 2]
-      in [0, 2, *a]
-        false
-      in [0, *a]
-        a == [1, 2]
-      end
-    end
-
     assert_block do
       case []
       in [0, *]
@@ -866,54 +907,43 @@ END
       end
     end
 
-    # CUSTOM: multiple clauses
     assert_block do
-      case {a: 0, b: 1}
-        in a: 1, **b
-          false
-        in a:, **b
-          a == 0 && b == {b: 1}
+      [{}, C.new({})].all? do |i|
+        case i
+        in **nil
+          true
         end
-     end
+      end
+    end
 
-#     # **nil is not supported by parser yet
-#     assert_block do
-#       [{}, C.new({})].all? do |i|
-#         case i
-#         in **nil
-#           true
-#         end
-#       end
-#     end
+    assert_block do
+      [{a: 0}, C.new({a: 0})].all? do |i|
+        case i
+        in **nil
+        else
+          true
+        end
+      end
+    end
 
-#     assert_block do
-#       [{a: 0}, C.new({a: 0})].all? do |i|
-#         case i
-#         in **nil
-#         else
-#           true
-#         end
-#       end
-#     end
+    assert_block do
+      [{a: 0}, C.new({a: 0})].all? do |i|
+        case i
+        in a:, **nil
+          true
+        end
+      end
+    end
 
-#     assert_block do
-#       [{a: 0}, C.new({a: 0})].all? do |i|
-#         case i
-#         in a:, **nil
-#           true
-#         end
-#       end
-#     end
-
-#     assert_block do
-#       [{a: 0, b: 1}, C.new({a: 0, b: 1})].all? do |i|
-#         case i
-#         in a:, **nil
-#         else
-#           true
-#         end
-#       end
-#     end
+    assert_block do
+      [{a: 0, b: 1}, C.new({a: 0, b: 1})].all? do |i|
+        case i
+        in a:, **nil
+        else
+          true
+        end
+      end
+    end
 
     assert_block do
       case C.new({a: 0})
@@ -1113,33 +1143,33 @@ END
       end
     end
 
-#     assert_block do
-#       case C.new({a: 0, b: 0, c: 0})
-#       in {a: 0, b:, **}
-#         C.keys == [:a, :b]
-#       end
-#     end
+    assert_block do
+      case C.new({a: 0, b: 0, c: 0})
+      in {a: 0, b:, **}
+        C.keys == [:a, :b]
+      end
+    end
 
-#     assert_block do
-#       case C.new({a: 0, b: 0, c: 0})
-#       in {a: 0, b:, **r}
-#         C.keys == nil
-#       end
-#     end
+    assert_block do
+      case C.new({a: 0, b: 0, c: 0})
+      in {a: 0, b:, **r}
+        C.keys == nil
+      end
+    end
 
-#     assert_block do
-#       case C.new({a: 0, b: 0, c: 0})
-#       in {**}
-#         C.keys == []
-#       end
-#     end
+    assert_block do
+      case C.new({a: 0, b: 0, c: 0})
+      in {**}
+        C.keys == []
+      end
+    end
 
-#     assert_block do
-#       case C.new({a: 0, b: 0, c: 0})
-#       in {**r}
-#         C.keys == nil
-#       end
-#     end
+    assert_block do
+      case C.new({a: 0, b: 0, c: 0})
+      in {**r}
+        C.keys == nil
+      end
+    end
   end
 
 #   ################################################################
@@ -1154,7 +1184,7 @@ END
     end
   end
 
-#   ################################################################
+  ################################################################
 
 #   it "modifier_in" do
 #     assert_equal true, (1 in a)
@@ -1163,6 +1193,29 @@ END
 #   end
 end
 
+
+# These tests are not copied from ruby/ruby
+describe "custom tests" do
+  # multiple clauses with arrays
+  assert_block do
+    case [0, 1, 2]
+    in [0, 2, *a]
+      false
+    in [0, *a]
+      a == [1, 2]
+    end
+  end
+
+  #  multiple clauses with hash
+  assert_block do
+    case {a: 0, b: 1}
+      in a: 1, **b
+        false
+      in a:, **b
+        a == 0 && b == {b: 1}
+      end
+  end
+end
 
 class C1
   def deconstruct
