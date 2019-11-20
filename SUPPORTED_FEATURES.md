@@ -42,7 +42,9 @@
 
 ### 2.7
 
-- Pattern matching (`case ... in ... end`)
+- Pattern matching (`case ... in ... end`) ([#14912](https://bugs.ruby-lang.org/issues/14912))
+
+- One line pattern matching (`1 in a`) ([#15865](https://bugs.ruby-lang.org/issues/15865))
 
 - **REVERTED IN RUBY ([#16275](https://bugs.ruby-lang.org/issues/16275))** Method reference operator (`Module.:method`) ([#12125](https://bugs.ruby-lang.org/issues/12125), [#13581](https://bugs.ruby-lang.org/issues/13581))
 

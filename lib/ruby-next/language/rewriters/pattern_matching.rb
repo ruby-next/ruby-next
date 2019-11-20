@@ -41,7 +41,6 @@ module RubyNext
 
         def on_case_match(node)
           context.track! self
-          context.use_ruby_next!
 
           @deconstructed = []
 
@@ -60,6 +59,37 @@ module RubyNext
             :begin,
             [
               matchee_ast, ifs_ast
+            ]
+          )
+        end
+
+        def on_in_match(node)
+          context.track! self
+
+          @deconstructed = []
+
+          matchee =
+            s(:lvasgn, MATCHEE, node.children[0])
+
+          pattern =
+            locals.with(
+              matchee: MATCHEE,
+              arr: MATCHEE_ARR,
+              hash: MATCHEE_HASH
+            ) do
+              send(
+                :"#{node.children[1].type}_clause",
+                node.children[1]
+              )
+            end
+
+          node.updated(
+            :and,
+            [
+              matchee,
+              s(:and,
+                pattern,
+                s(:true)) # rubocop:disable Lint/BooleanSymbol
             ]
           )
         end
@@ -171,6 +201,8 @@ module RubyNext
         def deconstruct_node(matchee)
           # only deconstruct once per case
           return if deconstructed.include?(locals[:arr])
+
+          context.use_ruby_next!
 
           right = s(:send, matchee, :deconstruct)
 
@@ -327,6 +359,8 @@ module RubyNext
           # Create a copy of the original hash if already deconstructed
           return hash_dup if deconstructed.include?(locals[:hash])
 
+          context.use_ruby_next!
+
           deconstructed << locals[:hash]
 
           right = s(:send,
@@ -403,8 +437,7 @@ module RubyNext
         def match_nil_pattern_hash_element(node, _key = nil)
           s(:send,
             s(:lvar, locals[:hash]),
-            :empty?
-          )
+            :empty?)
         end
 
         def match_rest_hash_element(node, _key = nil)

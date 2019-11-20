@@ -2,6 +2,13 @@
 
 ## master
 
+- Support in modifier. ([@palkan][])
+
+```ruby
+{a:1, b: 2} in {a:, **}
+p a #=> 1
+```
+
 ## 0.1.0 (2019-11-18)
 
 - Support hash pattern in array and vice versa. ([@palkan][])
