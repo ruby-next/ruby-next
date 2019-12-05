@@ -69,6 +69,11 @@ Ruby Next relies on its own version of the [parser][] gem hosted on Github Packa
 
 [**The list of supported syntax features.**][features_syntax]
 
+### Prerequisites
+
+Currently, we rely on our custom version of Parser which is hosted on GitHub Package Registry.
+You must obtain an access token to use it. See the [GPR docs](https://help.github.com/en/github/managing-packages-with-github-package-registry/configuring-rubygems-for-use-with-github-package-registry#authenticating-to-github-package-registry).
+
 ### Installing with Bundler
 
 First, configure your bundler to access GPR:
@@ -92,7 +97,13 @@ gem "ruby-next"
 
 ### Installing globally via `gem`
 
-Currently unavailable due to the limitations of Github Package Registry. See [issue](https://github.community/t5/GitHub-Actions/Can-t-install-Ruby-gem-after-publishing-to-Github-Package/m-p/35192/thread-id/2126).
+You can install `ruby-next` globally by running the following commands:
+
+```sh
+gem install unparser -v "~> 0.4.5"
+gem install parser -v "~> 2.6.3.100" --source "https://USERNAME:ACCESS_TOKEN@rubygems.pkg.github.com/ruby-next"
+gem install ruby-next
+```
 
 ### Integrating into a gem development
 
@@ -207,5 +218,5 @@ The gem is available as open source under the terms of the [MIT License](https:/
 [Opal]: https://opalrb.com
 [Artichoke]: https://github.com/artichoke/artichoke
 [Prism]: https://github.com/prism-rb/prism
-[parser]: https://github.com/whitequark/parser
+[parser]: https://github.com/ruby-next/parser
 [Bootsnap]: https://github.com/Shopify/bootsnap
