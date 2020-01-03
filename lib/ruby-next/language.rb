@@ -88,13 +88,15 @@ module RubyNext
     require "ruby-next/language/rewriters/pattern_matching"
     rewriters << Rewriters::PatternMatching
 
-    require "ruby-next/language/rewriters/method_reference"
-    rewriters << Rewriters::MethodReference
-
     require "ruby-next/language/rewriters/args_forward"
     rewriters << Rewriters::ArgsForward
 
     require "ruby-next/language/rewriters/numbered_params"
     rewriters << Rewriters::NumberedParams
+
+    if ENV["RUBY_NEXT_ENABLE_METHOD_REFERENCE"] == "1"
+      require "ruby-next/language/rewriters/method_reference"
+      RubyNext::Language.rewriters << RubyNext::Language::Rewriters::MethodReference
+    end
   end
 end

@@ -35,6 +35,11 @@ module RubyNext
           opts.on("--single-version", "Only create one version of a file (for the earliest Ruby version)") do
             @single_version = true
           end
+
+          opts.on("--enable-method-reference", "Enable reverted method reference syntax (requires custom parser)") do
+            require "ruby-next/language/rewriters/method_reference"
+            Language.rewriters << Language::Rewriters::MethodReference
+          end
         end
 
         @lib_path = args[0]
