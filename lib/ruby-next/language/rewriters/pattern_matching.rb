@@ -80,16 +80,18 @@ module RubyNext
               send(
                 :"#{node.children[1].type}_clause",
                 node.children[1]
-              )
+              ).then do |node|
+                s(:or,
+                  node,
+                  no_matching_pattern)
+              end
             end
 
           node.updated(
             :and,
             [
               matchee,
-              s(:and,
-                pattern,
-                s(:true)) # rubocop:disable Lint/BooleanSymbol
+              pattern
             ]
           )
         end

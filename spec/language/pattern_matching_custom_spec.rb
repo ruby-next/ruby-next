@@ -35,19 +35,4 @@ describe "custom tests" do
     {a: [0, 1, 2]} in {a: [0, *r]}
     r == [1, 2]
   end
-
-  # non-matching in
-  assert_block do
-    if 0 in 1 | 2
-      flunk
-    else
-      true
-    end
-  end
-
-  # non-matching with match var
-  assert_block do
-    {a:0, b: 1} in {c:, **nil}
-    c.nil?
-  end
 end
