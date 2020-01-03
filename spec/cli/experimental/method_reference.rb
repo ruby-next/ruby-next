@@ -1,6 +1,5 @@
 class A
   def self.transform(val)
-    val in {status:}
-    val
+    JSON.:parse.call %q({"status": "ok"})
   end
 end

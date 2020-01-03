@@ -61,7 +61,7 @@ describe "ruby-next nextify" do
       "-o #{File.join(__dir__, "dummy", ".rbnext", "transpile_me_old.rb")}"
     ) do |_status, _output, err|
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "transpile_me_old.rb")).should equal true
-      File.read(File.join(__dir__, "dummy", ".rbnext", "transpile_me_old.rb")).should include("JSON.method(:parse)")
+      File.read(File.join(__dir__, "dummy", ".rbnext", "transpile_me_old.rb")).should include("deconstruct_keys([:status])")
     end
   end
 
@@ -82,6 +82,26 @@ describe "ruby-next nextify" do
     ) do |_status, _output, err|
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.6", "endless_pattern.rb")).should equal true
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.7", "endless_pattern.rb")).should equal true
+    end
+  end
+
+  it "supports optional rewriters toggles" do
+    run(
+      "bin/ruby-next nextify #{File.join(__dir__, "experimental", "method_reference.rb")} --enable-method-reference",
+      "-o #{File.join(__dir__, "dummy", ".rbnext", "method_reference_old.rb")}"
+    ) do |_status, _output, err|
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "method_reference_old.rb")).should equal true
+      File.read(File.join(__dir__, "dummy", ".rbnext", "method_reference_old.rb")).should include("JSON.method(:parse)")
+    end
+  end
+
+  it "fails when syntax is unsupported and not enabled explicitly" do
+    run(
+      "bin/ruby-next nextify #{File.join(__dir__, "experimental", "method_reference.rb")}",
+      "-o #{File.join(__dir__, "dummy", ".rbnext", "method_reference_old.rb")}",
+      should_fail: true
+    ) do |status, output, err|
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "method_reference_old.rb")).should equal false
     end
   end
 end

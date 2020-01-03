@@ -199,6 +199,16 @@ RUBYOPT="-ruby-next" ruby my_ruby_script.rb
 ruby -ruby-next -e "puts [2, 4, 5].tally"
 ```
 
+## Unofficial/experimental features
+
+RubyNext also provides support for some features not-yet-merged into Ruby master (or reverted).
+
+Currenly, the only such feature is the [_method reference_ operator](https://bugs.ruby-lang.org/issues/13581):
+
+- Add `--enable-method-reference` option to `nextify` command when using CLI.
+- OR add it programmatically when using a runtime mode (see [example](https://github.com/ruby-next/ruby-next/blob/master/default.mspec)).
+- OR set `RUBY_NEXT_ENABLE_METHOD_REFERENCE=1` environment variable (works with CLI as well).
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at [https://github.com/ruby-next/ruby-next](ttps://github.com/ruby-next/ruby-next).

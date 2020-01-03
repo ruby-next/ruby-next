@@ -14,6 +14,7 @@ AllCops:
     - 'spec/core/**/*'
     - 'spec/language/**/*'
     - 'spec/cli/dummy/**/*'
+    - 'spec/cli/experimental/**/*'
     - 'spec/integration/fixtures/**/*'
     - 'mspec/**/*'
     - 'benchmarks/**/*'
@@ -35,9 +36,6 @@ Style/TrailingCommaInHashLiteral:
 
 Style/Alias:
   Enabled: false
-
-Layout/AlignParameters:
-  EnforcedStyle: with_first_parameter
 
 # See https://github.com/rubocop-hq/rubocop/issues/4222
 Lint/AmbiguousBlockAssociation:
