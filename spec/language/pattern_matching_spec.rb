@@ -1,30 +1,36 @@
 # source: https://github.com/ruby/ruby/blob/master/test/ruby/test_pattern_matching.rb
+#
+# How to sync tests:
+#  - Copy `eval` contents from ruby tests and paste here
+#  - Drop experimental warning tests
+#  - Extract refeniments tests and update manually
 
 require_relative '../test_unit_to_mspec'
 
 using TestUnitToMspec
 
-describe "pattern matching" do
+eval "\n#{<<~'END_of_GUARD'}", binding, __FILE__, __LINE__
+class TestPatternMatching < Test::Unit::TestCase
   class C
     class << self
       attr_accessor :keys
     end
-  
+
     def initialize(obj)
       @obj = obj
     end
-  
+
     def deconstruct
       @obj
     end
-  
+
     def deconstruct_keys(keys)
       C.keys = keys
       @obj
     end
   end
-  
-  it "basic" do
+
+  def test_basic
     assert_block do
       case 0
       in 0
@@ -126,7 +132,7 @@ describe "pattern matching" do
     end
   end
 
-  it "modifier" do
+  def test_modifier
     assert_block do
       case 0
       in a if a == 0
@@ -158,7 +164,7 @@ describe "pattern matching" do
     end
   end
 
-  it "as_pattern" do
+  def test_as_pattern
     assert_block do
       case 0
       in 0 => a
@@ -167,7 +173,7 @@ describe "pattern matching" do
     end
   end
 
-  it "alternative_pattern" do
+  def test_alternative_pattern
     assert_block do
       [0, 1].all? do |i|
         case i
@@ -191,7 +197,7 @@ describe "pattern matching" do
     }, /illegal variable in alternative pattern/)
   end
 
-  it "var_pattern" do
+  def test_var_pattern
     # NODE_DASGN_CURR
     assert_block do
       case 0
@@ -265,6 +271,7 @@ describe "pattern matching" do
     assert_block do
       case 0
       in a
+        assert_equal(0, a)
         true
       in a
         flunk
@@ -276,7 +283,7 @@ describe "pattern matching" do
     }, /duplicated variable name/)
   end
 
-  it "literal_value_pattern" do
+  def test_literal_value_pattern
     assert_block do
       case [nil, self, true, false]
       in [nil, self, true, false]
@@ -363,7 +370,7 @@ END
     end
   end
 
-  it "constant_value_pattern" do
+  def test_constant_value_pattern
     assert_block do
       case 0
       in Integer
@@ -386,7 +393,7 @@ END
     end
   end
 
-  it "pin_operator_value_pattern" do
+  def test_pin_operator_value_pattern
     assert_block do
       a = /a/
       case 'abc'
@@ -403,7 +410,7 @@ END
     end
   end
 
-  it "array_pattern" do
+  def test_array_pattern
     assert_block do
       [[0], C.new([0])].all? do |i|
         case i
@@ -473,6 +480,7 @@ END
       [[0], C.new([0])].all? do |i|
         case i
         in *a, 0, 1
+          raise a # suppress "unused variable: a" warning
         else
           true
         end
@@ -616,13 +624,6 @@ END
     end
 
     assert_block do
-      case [1]
-      in [0 | 1]
-        true
-      end
-    end
-
-    assert_block do
       case C.new([0])
       in [0]
         true
@@ -646,6 +647,7 @@ END
     assert_block do
       case []
       in [0, *a]
+        raise a # suppress "unused variable: a" warning
       else
         true
       end
@@ -661,6 +663,7 @@ END
     assert_block do
       case [0]
       in [0, *a, 1]
+        raise a # suppress "unused variable: a" warning
       else
         true
       end
@@ -705,6 +708,7 @@ END
     assert_block do
       case []
       in [0, *a]
+        raise a # suppress "unused variable: a" warning
       else
         true
       end
@@ -740,7 +744,7 @@ END
     end
   end
 
-  it "hash_pattern" do
+  def test_hash_pattern
     assert_block do
       [{}, C.new({})].all? do |i|
         case i
@@ -801,6 +805,7 @@ END
       [{}, C.new({})].all? do |i|
         case i
         in a:
+          raise a # suppress "unused variable: a" warning
         else
           true
         end
@@ -883,6 +888,8 @@ END
       [{}, C.new({})].all? do |i|
         case i
         in a:, **b
+          raise a # suppress "unused variable: a" warning
+          raise b # suppress "unused variable: b" warning
         else
           true
         end
@@ -930,6 +937,7 @@ END
       [{a: 0}, C.new({a: 0})].all? do |i|
         case i
         in a:, **nil
+          assert_equal(0, a)
           true
         end
       end
@@ -939,6 +947,7 @@ END
       [{a: 0, b: 1}, C.new({a: 0, b: 1})].all? do |i|
         case i
         in a:, **nil
+          assert_equal(0, a)
         else
           true
         end
@@ -1067,7 +1076,7 @@ END
     }, /symbol literal with interpolation is not allowed/)
   end
 
-  it "paren" do
+  def test_paren
     assert_block do
       case 0
       in (0)
@@ -1076,7 +1085,7 @@ END
     end
   end
 
-  it "invalid_syntax" do
+  def test_invalid_syntax
     assert_syntax_error(%q{
       case 0
       in a, b:
@@ -1102,7 +1111,7 @@ END
     }, /unexpected/)
   end
 
-#   ################################################################
+  ################################################################
 
   class CTypeError
     def deconstruct
@@ -1114,7 +1123,7 @@ END
     end
   end
 
-  it "deconstruct" do
+  def test_deconstruct
     assert_raise(TypeError) do
       case CTypeError.new
       in []
@@ -1122,7 +1131,7 @@ END
     end
   end
 
-  it "deconstruct_keys" do
+  def test_deconstruct_keys
     assert_raise(TypeError) do
       case CTypeError.new
       in {}
@@ -1132,13 +1141,14 @@ END
     assert_block do
       case {}
       in {}
-        true
+        C.keys == nil
       end
     end
 
     assert_block do
       case C.new({a: 0, b: 0, c: 0})
       in {a: 0, b:}
+        assert_equal(0, b)
         C.keys == [:a, :b]
       end
     end
@@ -1146,6 +1156,7 @@ END
     assert_block do
       case C.new({a: 0, b: 0, c: 0})
       in {a: 0, b:, **}
+        assert_equal(0, b)
         C.keys == [:a, :b]
       end
     end
@@ -1153,6 +1164,8 @@ END
     assert_block do
       case C.new({a: 0, b: 0, c: 0})
       in {a: 0, b:, **r}
+        assert_equal(0, b)
+        assert_equal({c: 0}, r)
         C.keys == nil
       end
     end
@@ -1167,14 +1180,15 @@ END
     assert_block do
       case C.new({a: 0, b: 0, c: 0})
       in {**r}
+        assert_equal({a: 0, b: 0, c: 0}, r)
         C.keys == nil
       end
     end
   end
 
-#   ################################################################
+  ################################################################
 
-  it "struct" do
+  def test_struct
     assert_block do
       s = Struct.new(:a, :b)
       case s[0, 1]
@@ -1182,14 +1196,45 @@ END
         true
       end
     end
+
+    s = Struct.new(:a, :b, keyword_init: true)
+    assert_block do
+      case s[a: 0, b: 1]
+      in **r
+        r == {a: 0, b: 1}
+      end
+    end
+    assert_block do
+      s = Struct.new(:a, :b, keyword_init: true)
+      case s[a: 0, b: 1]
+      in a:, b:
+        a == 0 && b == 1
+      end
+    end
+    assert_block do
+      s = Struct.new(:a, :b, keyword_init: true)
+      case s[a: 0, b: 1]
+      in a:, c:
+        raise a # suppress "unused variable: a" warning
+        raise c # suppress "unused variable: c" warning
+        flunk
+      in a:, b:, c:
+        flunk
+      in b:
+        b == 1
+      end
+    end
   end
 
   ################################################################
 
-  it "modifier_in" do
-    assert_equal true, (1 in a)
+  def test_modifier_in
+    1 in a
     assert_equal 1, a
-    assert_valid_syntax "p(({} in {a:}), a:\n 1)"
+    assert_raise(NoMatchingPatternError) do
+      {a: 1} in {a: 0}
+    end
+    assert_syntax_error("if {} in {a:}; end", /void value expression/)
     assert_syntax_error(%q{
       1 in a, b
     }, /unexpected/, '[ruby-core:95098]')
@@ -1198,57 +1243,7 @@ END
     }, /unexpected/, '[ruby-core:95098]')
   end
 end
-
-
-# These tests are not copied from ruby/ruby
-describe "custom tests" do
-  # multiple clauses with arrays
-  assert_block do
-    case [0, 1, 2]
-    in [0, 2, *a]
-      false
-    in [0, *a]
-      a == [1, 2]
-    end
-  end
-
-  #  multiple clauses with hash
-  assert_block do
-    case {a: 0, b: 1}
-      in a: 1, **b
-        false
-      in a:, **b
-        a == 0 && b == {b: 1}
-      end
-  end
-
-  # in with hash
-  assert_block do
-    {a: [0, 1, 2]} in {a:}
-    a == [0, 1, 2]
-  end
-
-  # in with hash and array rest
-  assert_block do
-    {a: [0, 1, 2]} in {a: [0, *r]}
-    r == [1, 2]
-  end
-
-  # non-matching in
-  assert_block do
-    if 0 in 1 | 2
-      flunk
-    else
-      true
-    end
-  end
-
-  # non-matching with match var
-  assert_block do
-    {a:0, b: 1} in {c:, **nil}
-    c.nil?
-  end
-end
+END_of_GUARD
 
 class C1
   def deconstruct
