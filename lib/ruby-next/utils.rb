@@ -25,9 +25,11 @@ module RubyNext
       end
     end
 
-    def source_with_lines(source)
+    def source_with_lines(source, path)
       source.lines.map.with_index do |line, i|
-        "#{i.to_s.rjust(3)}:  #{line}"
+        "#{(i + 1).to_s.rjust(4)}:  #{line}"
+      end.tap do |lines|
+        lines.unshift "   0:  # source: #{path}"
       end
     end
   end
