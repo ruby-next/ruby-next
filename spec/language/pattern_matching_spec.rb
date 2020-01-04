@@ -2,6 +2,7 @@
 #
 # How to sync tests:
 #  - Copy `eval` contents from ruby tests and paste here
+#  - Include refinement into eval (for JRuby)
 #  - Drop experimental warning tests
 #  - Extract refeniments tests and update manually
 
@@ -10,6 +11,8 @@ require_relative '../test_unit_to_mspec'
 using TestUnitToMspec
 
 eval "\n#{<<~'END_of_GUARD'}", binding, __FILE__, __LINE__
+using TestUnitToMspec
+
 class TestPatternMatching < Test::Unit::TestCase
   class C
     class << self
