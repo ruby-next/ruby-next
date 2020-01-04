@@ -4,7 +4,7 @@
 #  - Copy `eval` contents from ruby tests and paste here
 #  - Include refinement into eval (for JRuby)
 #  - Drop experimental warning tests
-#  - Extract refeniments tests and update manually
+#  - Extract refeniments modules from the test class and refinements test at the end of the file
 
 require_relative '../test_unit_to_mspec'
 
@@ -1246,7 +1246,8 @@ END
     }, /unexpected/, '[ruby-core:95098]')
   end
 end
-END_of_GUARD
+
+################################################################
 
 class C1
   def deconstruct
@@ -1279,8 +1280,8 @@ end
 
 using M
 
-describe "pattern matching with refinements" do
-  it "refinements" do
+class TestPatternMatchingRefinements < Test::Unit::TestCase
+  def test_refinements
     assert_block do
       case []
       in [0]
@@ -1303,3 +1304,4 @@ describe "pattern matching with refinements" do
     end
   end
 end
+END_of_GUARD
