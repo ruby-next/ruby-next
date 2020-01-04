@@ -26,7 +26,7 @@ module RubyNext
           contents = File.read(path)
           new_contents = transform contents
 
-          puts source_with_lines(new_contents) if ENV["RUBY_NEXT_DEBUG"] == "1"
+          $stdout.puts source_with_lines(new_contents, path) if ENV["RUBY_NEXT_DEBUG"] == "1"
 
           TOPLEVEL_BINDING.eval(new_contents, path)
           true
@@ -106,14 +106,15 @@ module Kernel
   end
 
   alias_method :eval_without_ruby_next, :eval
-  def eval(source, *args)
-    new_source = RubyNext::Language::Runtime.transform(source, eval: true)
-    eval_without_ruby_next new_source, *args
+  def eval(source, bind = nil, *args)
+    new_source = ::RubyNext::Language::Runtime.transform(source, eval: bind.nil?)
+    $stdout.puts ::RubyNext::Utils.source_with_lines(new_source, "(#{caller_locations(1, 1).first})") if ENV["RUBY_NEXT_DEBUG"] == "1"
+    eval_without_ruby_next new_source, bind, *args
   end
 end
 
-# Patch BasicObject to hijack instance_eval
-class BasicObject
+# Patch Object to hijack instance_eval
+class Object
   alias_method :instance_eval_without_ruby_next, :instance_eval
 
   def instance_eval(*args, &block)
@@ -121,6 +122,7 @@ class BasicObject
 
     source = args.shift
     new_source = ::RubyNext::Language::Runtime.transform(source, eval: true)
+    $stdout.puts ::RubyNext::Utils.source_with_lines(new_source, "(#{caller_locations(1, 1).first})") if ENV["RUBY_NEXT_DEBUG"] == "1"
     instance_eval_without_ruby_next new_source, *args
   end
 end
@@ -134,6 +136,7 @@ class Module
 
     source = args.shift
     new_source = ::RubyNext::Language::Runtime.transform(source, eval: true)
+    $stdout.puts ::RubyNext::Utils.source_with_lines(new_source, "(#{caller_locations(1, 1).first})") if ENV["RUBY_NEXT_DEBUG"] == "1"
     module_eval_without_ruby_next new_source, *args
   end
 
@@ -144,6 +147,7 @@ class Module
 
     source = args.shift
     new_source = ::RubyNext::Language::Runtime.transform(source, eval: true)
+    $stdout.puts ::RubyNext::Utils.source_with_lines(new_source, "(#{caller_locations(1, 1).first})") if ENV["RUBY_NEXT_DEBUG"] == "1"
     class_eval_without_ruby_next new_source, *args
   end
 end
