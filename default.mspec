@@ -9,6 +9,26 @@ rescue LoadError
   nil
 end
 
+class MSpecScript
+  # Language features specs
+  set :language, %w[spec/language]
+
+  # Core library specs
+  set :core, %w[spec/core]
+
+  # Integration specs
+  set :integration, %w[spec/integration]
+
+  # Command line specs
+  set :cli, %w[spec/cli]
+
+  # Optional specs (require custom parser)
+  set :optional, %w[spec/optional]
+
+  # Latest stable Ruby release specs
+  set :stable, get(:cli) + get(:language) + get(:core) + get(:integration)
+end
+
 require "ruby-next/language"
 # It's important to enable optional rewriters before loading Runtime module,
 # 'cause it creates a copy of the original list

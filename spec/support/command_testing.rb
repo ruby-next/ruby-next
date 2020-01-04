@@ -3,10 +3,11 @@
 require "open3"
 
 module CommandTesting
-  refine Kernel do
-    def run(command, opt_string = "", chdir: nil, should_fail: false)
+  refine MSpecEnv do
+    def run(command, opt_string = "", chdir: nil, should_fail: false, env: {})
       output, err, status =
         Open3.capture3(
+          env,
           "bundle exec #{command} #{opt_string}",
           chdir: chdir || File.expand_path("../..", __dir__)
         )
