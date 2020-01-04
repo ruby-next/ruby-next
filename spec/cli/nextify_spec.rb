@@ -85,19 +85,9 @@ describe "ruby-next nextify" do
     end
   end
 
-  it "supports optional rewriters toggles" do
-    run(
-      "bin/ruby-next nextify #{File.join(__dir__, "experimental", "method_reference.rb")} --enable-method-reference",
-      "-o #{File.join(__dir__, "dummy", ".rbnext", "method_reference_old.rb")}"
-    ) do |_status, _output, err|
-      File.exist?(File.join(__dir__, "dummy", ".rbnext", "method_reference_old.rb")).should equal true
-      File.read(File.join(__dir__, "dummy", ".rbnext", "method_reference_old.rb")).should include("JSON.method(:parse)")
-    end
-  end
-
   it "fails when syntax is unsupported and not enabled explicitly" do
     run(
-      "bin/ruby-next nextify #{File.join(__dir__, "experimental", "method_reference.rb")}",
+      "bin/ruby-next nextify #{File.join(__dir__, "..", "optional", "integration", "fixtures", "method_reference.rb")}",
       "-o #{File.join(__dir__, "dummy", ".rbnext", "method_reference_old.rb")}",
       should_fail: true
     ) do |status, output, err|
