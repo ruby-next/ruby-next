@@ -36,8 +36,8 @@ module TestUnitToMspec
 
   refine Kernel do
     def eval(contents, *other)
-      contents.gsub!(/def test_([\w_]+)/, "it '\1' do")
-      contents.gsub!(/class Test(\w+).+$/, "describe '\1' do")
+      contents.gsub!(/def test_([\w_]+)/, 'it "\1" do')
+      contents.gsub!(/class Test(\w+).+$/, 'describe "\1" do')
       super
     end
   end
