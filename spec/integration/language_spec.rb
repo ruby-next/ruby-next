@@ -7,7 +7,7 @@ using CommandTesting
 describe "language features (via -ruby-next)" do
   it "nested array pattern matching" do
     run(
-      "ruby -I#{File.join(__dir__, "../../lib")} -ruby-next -r #{File.join(__dir__, "fixtures", "nested_array.rb")} " \
+      "ruby -rbundler/setup -I#{File.join(__dir__, "../../lib")} -ruby-next -r #{File.join(__dir__, "fixtures", "nested_array.rb")} " \
       "-e 'p main([1, [2]]); p main([2, [2, 3]]); p main([1, [2, 3]])'"
     ) do |_status, output, _err|
       output.should include("2\n")
@@ -18,7 +18,7 @@ describe "language features (via -ruby-next)" do
 
   it "nested hash pattern matching" do
     run(
-      "ruby -I#{File.join(__dir__, "../../lib")} -ruby-next #{File.join(__dir__, "fixtures", "display_name.rb")} "
+      "ruby -rbundler/setup -I#{File.join(__dir__, "../../lib")} -ruby-next #{File.join(__dir__, "fixtures", "display_name.rb")} "
     ) do |_status, output, _err|
       output.should include("\"Tae Noppakun Wongsrinoppakun\"\n")
       output.should include("\"Guest\"\n")
@@ -29,7 +29,7 @@ describe "language features (via -ruby-next)" do
 
   it "array in hash in pattern matching" do
     run(
-      "ruby -rjson -I#{File.join(__dir__, "../../lib")} -ruby-next #{File.join(__dir__, "fixtures", "array_in_hash_pattern.rb")} " \
+      "ruby -rbundler/setup -rjson -I#{File.join(__dir__, "../../lib")} -ruby-next #{File.join(__dir__, "fixtures", "array_in_hash_pattern.rb")} " \
       "'{\"name\":\"Alice\",\"children\":[{\"name\":\"Bob\",\"age\":30}]}'"
     ) do |_status, output, _err|
       output.should include("Bob age is 30")

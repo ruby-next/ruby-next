@@ -20,7 +20,7 @@ describe "ruby-next nextify" do
     end
 
     run(
-      "ruby -I#{File.join(__dir__, "../../lib")} -r ruby-next -r #{File.join(__dir__, "fixtures", ".rbnext", version_dir, "beach.rb")} " \
+      "ruby -rbundler/setup -I#{File.join(__dir__, "../../lib")} -r ruby-next -r #{File.join(__dir__, "fixtures", ".rbnext", version_dir, "beach.rb")} " \
       "-e 'puts beach(:k, 300)'"
     ) do |_status, output, _err|
       output.should include("scientifically_favorable")
