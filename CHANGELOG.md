@@ -2,6 +2,10 @@
 
 ## master
 
+- Revoke method reference support. ([@palkan][])
+
+You can still use this feature by enabling it explicitly (see Readme).
+
 - Support in modifier. ([@palkan][])
 
 ```ruby

@@ -27,7 +27,7 @@ module RubyNext
         private
 
         def proc_args(n)
-          return s(:args, s(:procarg0, :_1)) if n == 1
+          return s(:args, s(:procarg0, s(:arg, :_1))) if n == 1
 
           (1..n).map do |numero|
             s(:arg, :"_#{numero}")
