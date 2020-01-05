@@ -22,12 +22,19 @@ jobs:
     - name: Download MSpec
       run: |
         git clone https://github.com/ruby/mspec.git mspec
-    - name: Install deps
+    - name: Install bundler
+      run: |
+        gem install bundler
+    - name: Run MSpec with stable features
+      env:
+        USE_RUBYGEMS_PARSER: "1"
+      run: |
+        bundle install --jobs 4 --retry 3
+        bundle exec mspec/bin/mspec :stable
+    - name: Run MSpec with all features
       env:
         BUNDLE_RUBYGEMS__PKG__GITHUB__COM: "palkan:${{ secrets.GITHUB_TOKEN }}"
       run: |
-        gem install bundler
+        rm Gemfile.lock
         bundle install --jobs 4 --retry 3
-    - name: Run MSpec
-      run: |
         bundle exec mspec/bin/mspec
