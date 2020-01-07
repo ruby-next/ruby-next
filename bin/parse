@@ -15,5 +15,5 @@ contents =
     ARGV[0]
   end
 
-ast = RubyNext::Language::Parser.parse(contents)
+ast = RubyNext::Language.parse(contents)
 puts ast

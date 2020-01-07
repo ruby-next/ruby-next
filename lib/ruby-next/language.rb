@@ -62,7 +62,7 @@ module RubyNext
       attr_accessor :rewriters
 
       def transform(source, rewriters: self.rewriters, eval: false, context: TransformContext.new)
-        Parser.parse(source).then do |ast|
+        parse(source).then do |ast|
           rewriters.inject(ast) do |tree, rewriter|
             rewriter.new(context).process(tree)
           end.then do |new_ast|

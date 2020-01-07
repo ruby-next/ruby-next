@@ -1,13 +1,24 @@
 # frozen_string_literal: true
 
-require "ruby-next/utils"
-
 require "parser/ruby27"
-RubyNext::Language::Parser = Parser::Ruby27
 
-# See https://github.com/whitequark/parser/#usage
-Parser::Builders::Default.emit_lambda = true
-Parser::Builders::Default.emit_procarg0 = true
-Parser::Builders::Default.emit_arg_inside_procarg0 = true
-Parser::Builders::Default.emit_encoding = true
-Parser::Builders::Default.emit_index = true
+module RubyNext
+  module Language
+    class Builder < ::Parser::Builders::Default
+      modernize
+    end
+
+    class << self
+      def parser
+        ::Parser::Ruby27.new(Builder.new)
+      end
+
+      def parse(source, file = "(string)")
+        buffer = ::Parser::Source::Buffer.new(file).tap do |buffer|
+          buffer.source = source
+        end
+        parser.parse(buffer)
+      end
+    end
+  end
+end
