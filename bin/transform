@@ -2,11 +2,14 @@
 
 lib = File.expand_path("../../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-$VERBOSE = nil
 
 require "bundler/setup"
 
 require "ruby-next/language"
+
+# optional parsers
+require "ruby-next/language/rewriters/method_reference"
+RubyNext::Language.rewriters << RubyNext::Language::Rewriters::MethodReference
 
 contents =
   if File.exist?(ARGV[0])

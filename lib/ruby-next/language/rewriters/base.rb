@@ -5,6 +5,14 @@ using RubyNext
 module RubyNext
   module Language
     module Rewriters
+      CUSTOM_PARSER_REQUIRED = <<~MSG
+        The %s feature is not a part of the latest stable Ruby release
+        and is not supported by your Parser gem version.
+
+        Use RubyNext's parser to use it: https://github.com/ruby-next/parser
+
+      MSG
+
       class Base < ::Parser::TreeRewriter
         class LocalsTracker
           attr_reader :stacks
@@ -63,6 +71,16 @@ module RubyNext
           # by the specified version
           def unsupported_version?(version)
             self::MIN_SUPPORTED_VERSION > version
+          end
+
+          private
+
+          def transform(source)
+            Language.transform(source, rewriters: [self], eval: true)
+          end
+
+          def warn_custom_parser_required_for(feature)
+            warn(CUSTOM_PARSER_REQUIRED % feature)
           end
         end
 
