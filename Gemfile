@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 # Specify your gem's dependencies in rubanok.gemspec
-gemspec
+gemspec name: "ruby-next-core"
 
 gem "benchmark_driver"
 
