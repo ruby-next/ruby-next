@@ -5,15 +5,18 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "ruby-next/version"
 
 Gem::Specification.new do |s|
-  s.name = "ruby-next"
+  s.name = "ruby-next-core"
   s.version = RubyNext::VERSION
   s.authors = ["Vladimir Dementyev"]
   s.email = ["dementiev.vm@gmail.com"]
   s.homepage = "http://github.com/palkan/ruby-next"
-  s.summary = "Make older Rubies quack like edge Ruby"
+  s.summary = "Ruby Next core functionality"
   s.description = %(
-    Ruby Next is a collection of polyfills and a transpiler for supporting latest and upcoming edge CRuby features
-    in older versions and alternative implementations (such as mruby, JRuby, Opal, Artichoke, RubyMotion, etc.).
+    Ruby Next Core is a zero deps version of Ruby Next meant to be used
+    as as dependency in your gems.
+
+    It contains all the polyfills and utility files but doesn't require transpiler
+    dependencies to be install.
   )
 
   s.metadata = {
@@ -33,7 +36,6 @@ Gem::Specification.new do |s|
 
   s.executables = ["ruby-next"]
 
-  s.add_dependency "ruby-next-core"
-  s.add_dependency "parser", ">= 2.7.0.0"
-  s.add_dependency "unparser", ">= 0.4.7"
+  s.add_development_dependency "parser", ">= 2.7.0.0"
+  s.add_development_dependency "unparser", ">= 0.4.7"
 end
