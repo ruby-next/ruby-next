@@ -1,5 +1,7 @@
 # source: https://developer.squareup.com/blog/rubys-new-infinite-range-syntax-0/
 
+using RubyNext::Language::KernelEval
+
 describe "endless range 1.." do
   it "as index" do
     [1, 2, 3][1..].should == [2, 3]

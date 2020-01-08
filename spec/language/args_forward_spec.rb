@@ -2,6 +2,7 @@
 
 require_relative '../test_unit_to_mspec'
 
+using RubyNext::Language::InstanceEval
 using TestUnitToMspec
 
 describe "args forwarding def(...)" do

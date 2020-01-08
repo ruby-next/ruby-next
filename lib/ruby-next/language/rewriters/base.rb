@@ -76,7 +76,7 @@ module RubyNext
           private
 
           def transform(source)
-            Language.transform(source, rewriters: [self], eval: true)
+            Language.transform(source, rewriters: [self], using: false)
           end
 
           def warn_custom_parser_required_for(feature)

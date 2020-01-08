@@ -185,6 +185,16 @@ We plan to add [Bootsnap][] integration in the future, which would allow us to a
 RubyNext::Language::Runtime.watch_dirs << "path/to/other/dir"
 ```
 
+### Eval and similar
+
+By default, we do not hijack `Kernel.eval` and similar methods due to some limitations (e.g., there is no easy and efficient way to access the caller's scope, or _binding_, and some evaluations relies on local variables).
+
+If you want to support transpiling in `eval`-like methods, opt-in explicitly by activating the refinement:
+
+```ruby
+using RubyNext::Language::Eval
+```
+
 ## `uby-next`
 
 You can also enable runtime mode by requiring `uby-next` while running a Ruby executable:

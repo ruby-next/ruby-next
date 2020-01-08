@@ -2,6 +2,7 @@
 
 require_relative '../test_unit_to_mspec'
 
+using RubyNext::Language::KernelEval
 using TestUnitToMspec
 
 describe "numbered parameters: -> { _1 + _2 }" do
