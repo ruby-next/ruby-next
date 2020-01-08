@@ -10,7 +10,7 @@ jobs:
   ruby-edge-test:
     runs-on: ubuntu-latest
     container:
-      image: ruby:2.7-rc
+      image: ruby:latest
     steps:
     - uses: actions/checkout@v1
     - name: Download MSpec
