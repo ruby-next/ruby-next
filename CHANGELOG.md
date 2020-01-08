@@ -2,6 +2,10 @@
 
 ## master
 
+- Do not patch `eval` and friends when using runtime mode. ([@palkan][])
+
+Eval support should  be enabled explicitly via the `RubyNext::Language::Eval` refinement, 'cause we cannot handle all the edge cases easily (e.g., the usage caller's binding locals).
+
 - Revoke method reference support. ([@palkan][])
 
 You can still use this feature by enabling it explicitly (see Readme).

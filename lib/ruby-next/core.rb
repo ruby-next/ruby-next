@@ -5,7 +5,11 @@ module RubyNext
     class << self
       # Inject `using RubyNext` at the top of the source code
       def inject!(contents)
-        contents.sub!(/^(\s*[^#\s].*)/, 'using RubyNext;\1')
+        if contents.frozen?
+          contents = contents.sub(/^(\s*[^#\s].*)/, 'using RubyNext;\1')
+        else
+          contents.sub!(/^(\s*[^#\s].*)/, 'using RubyNext;\1')
+        end
         contents
       end
     end

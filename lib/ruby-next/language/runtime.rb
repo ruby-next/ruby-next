@@ -5,6 +5,7 @@ require "pathname"
 require "ruby-next"
 require "ruby-next/utils"
 require "ruby-next/language"
+require "ruby-next/language/eval"
 
 using RubyNext
 
@@ -103,51 +104,5 @@ module Kernel
   rescue => e
     warn "RubyNext failed to load '#{path}': #{e.message}"
     load_without_ruby_next(path)
-  end
-
-  alias_method :eval_without_ruby_next, :eval
-  def eval(source, bind = nil, *args)
-    new_source = ::RubyNext::Language::Runtime.transform(source, eval: bind.nil?)
-    $stdout.puts ::RubyNext::Utils.source_with_lines(new_source, "(#{caller_locations(1, 1).first})") if ENV["RUBY_NEXT_DEBUG"] == "1"
-    eval_without_ruby_next new_source, bind, *args
-  end
-end
-
-# Patch Object to hijack instance_eval
-class Object
-  alias_method :instance_eval_without_ruby_next, :instance_eval
-
-  def instance_eval(*args, &block)
-    return instance_eval_without_ruby_next(*args, &block) if block_given?
-
-    source = args.shift
-    new_source = ::RubyNext::Language::Runtime.transform(source, eval: true)
-    $stdout.puts ::RubyNext::Utils.source_with_lines(new_source, "(#{caller_locations(1, 1).first})") if ENV["RUBY_NEXT_DEBUG"] == "1"
-    instance_eval_without_ruby_next new_source, *args
-  end
-end
-
-# Patch Module to hijack class_eval/module_eval
-class Module
-  alias_method :module_eval_without_ruby_next, :module_eval
-
-  def module_eval(*args, &block)
-    return module_eval_without_ruby_next(*args, &block) if block_given?
-
-    source = args.shift
-    new_source = ::RubyNext::Language::Runtime.transform(source, eval: true)
-    $stdout.puts ::RubyNext::Utils.source_with_lines(new_source, "(#{caller_locations(1, 1).first})") if ENV["RUBY_NEXT_DEBUG"] == "1"
-    module_eval_without_ruby_next new_source, *args
-  end
-
-  alias_method :class_eval_without_ruby_next, :class_eval
-
-  def class_eval(*args, &block)
-    return class_eval_without_ruby_next(*args, &block) if block_given?
-
-    source = args.shift
-    new_source = ::RubyNext::Language::Runtime.transform(source, eval: true)
-    $stdout.puts ::RubyNext::Utils.source_with_lines(new_source, "(#{caller_locations(1, 1).first})") if ENV["RUBY_NEXT_DEBUG"] == "1"
-    class_eval_without_ruby_next new_source, *args
   end
 end

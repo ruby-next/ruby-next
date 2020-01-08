@@ -35,10 +35,15 @@ module TestUnitToMspec
   end
 
   refine Kernel do
-    def eval(contents, *other)
-      contents.gsub!(/def test_([\w_]+)/, 'it "\1" do')
-      contents.gsub!(/class Test(\w+).+$/, 'describe "\1" do')
-      super
+    def eval(source, bind = nil, *other)
+      source.gsub!(/def test_([\w_]+)/, 'it "\1" do')
+      source.gsub!(/class Test(\w+).+$/, 'describe "\1" do')
+      new_source = ::RubyNext::Language::Runtime.transform(
+        source,
+        using: bind&.receiver == TOPLEVEL_BINDING.receiver || bind&.receiver&.is_a?(Module)
+      )
+      $stdout.puts ::RubyNext::Utils.source_with_lines(new_source, "(#{caller_locations(1, 1).first})") if ENV["RUBY_NEXT_DEBUG"] == "1"
+      super new_source, bind, *other
     end
   end
 end

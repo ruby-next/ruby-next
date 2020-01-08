@@ -61,7 +61,7 @@ module RubyNext
     class << self
       attr_accessor :rewriters
 
-      def transform(source, rewriters: self.rewriters, eval: false, context: TransformContext.new)
+      def transform(source, rewriters: self.rewriters, using: true, context: TransformContext.new)
         parse(source).then do |ast|
           rewriters.inject(ast) do |tree, rewriter|
             rewriter.new(context).process(tree)
@@ -70,7 +70,7 @@ module RubyNext
 
             Unparser.unparse(new_ast)
           end.then do |source|
-            next source if eval || !context.use_ruby_next?
+            next source unless using && context.use_ruby_next?
 
             Core.inject! source.dup
           end
