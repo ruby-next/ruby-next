@@ -5,19 +5,18 @@
 
 > Make all Rubies quack like edge Ruby!
 
-Ruby Next is a tool for supporting modern/edge CRuby features (APIs and syntax) in older versions and alternative implementations. For example, you can use pattern matching and `Kernel#then` in Ruby 2.5 or [mruby][].
+Ruby Next is a collection of **polyfills** and a **transpiler** for supporting the latest and upcoming Ruby features (APIs and syntax) in older versions and alternative implementations. For example, you can use pattern matching and `Kernel#then` in Ruby 2.5 or [mruby][].
 
 Who might be interested in Ruby Next?
 
 - **Ruby gems maintainers** who want to write code using the latest Ruby version but still support older ones.
 - **Application developers** who want to give new features a try without waiting for the final release (or, more often, for the first patch).
-- **Users of non-MRI implementations** such as [mruby][], [JRuby][], [TruffleRuby][], [Opal][], [Artichoke][], [Prism][].
+- **Users of non-MRI implementations** such as [mruby][], [JRuby][], [TruffleRuby][], [Opal][], [RubyMotion][], [Artichoke][], [Prism][].
 
 Ruby Next also aims to help the community to assess new, _experimental_, MRI features by making it easier to play with them.
 That's why Ruby Next implements the `trunk` features as fast as possible.
 
-_⚡️ The project is in early alpha stage and looking for the first adopters. Main functionality has been implemented (see [the list][features]) but APIs could change in the future._
-
+_⚡️ The project is in a **beta** phase. That means that the main functionality has been implemented (see [the list][features]) and APIs shouldn't change a lot in the nearest future. On the other hand, the number of users/projects is not enough to say we're "production-ready". So, can't wait to hear your feedback 🙂_
 
 ## Links
 
@@ -34,6 +33,7 @@ Language is responsible for **transpiling** edge Ruby syntax into older versions
 programmatically or via CLI. It also could be done in runtime.
 
 Currently, Ruby Next supports Ruby versions 2.5+ (including JRuby 9.2.8+).
+Please, [open an issue](https://github.com/ruby-next/ruby-next/issues/new/choose) if you would like us to support older Ruby versions.
 
 ## Using only polyfills
 
@@ -41,11 +41,13 @@ First, install a gem:
 
 ```ruby
 # Gemfile
-gem "ruby-next"
+gem "ruby-next-core"
 
 # gemspec
-spec.add_dependency "ruby-next"
+spec.add_dependency "ruby-next-core"
 ```
+
+**NOTE:** we use the different _distribution_ gem, `ruby-next-core`, to provide zero-dependency, polyfills-only version.
 
 Then, all you need is to load the Ruby Next:
 
@@ -65,45 +67,24 @@ Ruby Next only refines core classes if necessary; thus, this line wouldn't have 
 
 ## Transpiling, or using edge Ruby syntax features
 
-Ruby Next relies on its own version of the [parser][] gem hosted on Github Package Registry. That makes the installation process a bit more complicated than usual.
+Ruby Next transpiler relies on two libraries: [parser][] and [unparser][].
 
-[**The list of supported syntax features.**][features_syntax]
+**NOTE:** The "official" parser gem only supports the latest stable Ruby version, while Ruby Next aims to support edge and experimental Ruby features. To enable them, you should use our version of Parser (see [instructions](#using-ruby-next-parser) below).
 
-### Prerequisites
-
-Currently, we rely on our custom version of Parser which is hosted on GitHub Package Registry.
-You must obtain an access token to use it. See the [GPR docs](https://help.github.com/en/github/managing-packages-with-github-package-registry/configuring-rubygems-for-use-with-github-package-registry#authenticating-to-github-package-registry).
-
-### Installing with Bundler
-
-First, configure your bundler to access GPR:
-
-```sh
-bundle config --local https://rubygems.pkg.github.com/ruby-next USERNAME:ACCESS_TOKEN
-```
-
-Then, add to your Gemfile:
+Installation:
 
 ```ruby
-source "https://rubygems.pkg.github.com/ruby-next" do
-  gem "parser", "2.6.3.105"
-end
-
-gem "unparser", "~> 0.4.5"
+# Gemfile
 gem "ruby-next"
-```
 
-**NOTE:** we don't add `parser` and `unparser` to the gem's runtime deps, 'cause they're not necessary if you only need polyfills.
+# gemspec
+spec.add_dependency "ruby-next"
 
-### Installing globally via `gem`
-
-You can install `ruby-next` globally by running the following commands:
-
-```sh
-gem install unparser -v "~> 0.4.5"
-gem install parser -v "~> 2.6.3.100" --source "https://USERNAME:ACCESS_TOKEN@rubygems.pkg.github.com/ruby-next"
+# or install globally
 gem install ruby-next
 ```
+
+[**The list of supported syntax features.**][features_syntax]
 
 ### Integrating into a gem development
 
@@ -185,7 +166,7 @@ We plan to add [Bootsnap][] integration in the future, which would allow us to a
 RubyNext::Language::Runtime.watch_dirs << "path/to/other/dir"
 ```
 
-### Eval and similar
+### Eval & similar
 
 By default, we do not hijack `Kernel.eval` and similar methods due to some limitations (e.g., there is no easy and efficient way to access the caller's scope, or _binding_, and some evaluations relies on local variables).
 
@@ -211,13 +192,52 @@ ruby -ruby-next -e "puts [2, 4, 5].tally"
 
 ## Unofficial/experimental features
 
-RubyNext also provides support for some features not-yet-merged into Ruby master (or reverted).
+Ruby Next also provides support for some features not-yet-merged into Ruby master (or reverted).
+
+These features require a [custom parser](#using-ruby-next-parser).
 
 Currenly, the only such feature is the [_method reference_ operator](https://bugs.ruby-lang.org/issues/13581):
 
 - Add `--enable-method-reference` option to `nextify` command when using CLI.
 - OR add it programmatically when using a runtime mode (see [example](https://github.com/ruby-next/ruby-next/blob/master/default.mspec)).
 - OR set `RUBY_NEXT_ENABLE_METHOD_REFERENCE=1` environment variable (works with CLI as well).
+
+## Using Ruby Next parser
+
+### Prerequisites
+
+Our own version of [parser][next_parser] gem is hosted on Github Package Registry. That makes the installation process a bit more complicated than usual.
+
+You must obtain an access token to use it. See the [GPR docs](https://help.github.com/en/github/managing-packages-with-github-package-registry/configuring-rubygems-for-use-with-github-package-registry#authenticating-to-github-package-registry).
+
+### Installing with Bundler
+
+First, configure your bundler to access GPR:
+
+```sh
+bundle config --local https://rubygems.pkg.github.com/ruby-next USERNAME:ACCESS_TOKEN
+```
+
+Then, add to your Gemfile:
+
+```ruby
+source "https://rubygems.pkg.github.com/ruby-next" do
+  gem "parser", "2.7.0.100"
+end
+
+gem "ruby-next"
+```
+
+**NOTE:** we don't add `parser` and `unparser` to the gem's runtime deps, 'cause they're not necessary if you only need polyfills.
+
+### Installing globally via `gem`
+
+You can install `ruby-next` globally by running the following commands:
+
+```sh
+gem install parser -v "2.7.0.100" --source "https://USERNAME:ACCESS_TOKEN@rubygems.pkg.github.com/ruby-next"
+gem install ruby-next
+```
 
 ## Contributing
 
@@ -236,7 +256,10 @@ The gem is available as open source under the terms of the [MIT License](https:/
 [JRuby]: https://www.jruby.org
 [TruffleRuby]: https://github.com/oracle/truffleruby
 [Opal]: https://opalrb.com
+[RubyMotion]: http://www.rubymotion.com
 [Artichoke]: https://github.com/artichoke/artichoke
 [Prism]: https://github.com/prism-rb/prism
-[parser]: https://github.com/ruby-next/parser
+[parser]: https://github.com/whitequark/parser
+[unparser]: https://github.com/mbj/unparser
+[next_parser]: https://github.com/ruby-next/parser
 [Bootsnap]: https://github.com/Shopify/bootsnap
