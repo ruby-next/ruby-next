@@ -13,3 +13,5 @@ unless ENV["USE_RUBYGEMS_PARSER"] == "1"
     gem "parser", "~> 2.7.0.100"
   end
 end
+
+gem "zeitwerk"
