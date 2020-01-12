@@ -70,11 +70,13 @@ module Kernel
 
     return false if $LOADED_FEATURES.include?(realpath)
 
+    $LOADED_FEATURES << realpath
+
     RubyNext::Language::Runtime.load(realpath)
 
-    $LOADED_FEATURES << realpath
     true
   rescue => e
+    $LOADED_FEATURES.delete realpath
     warn "RubyNext failed to require '#{path}': #{e.message}"
     require_without_ruby_next(path)
   end
