@@ -7,10 +7,6 @@ module RubyNext
         SYNTAX_PROBE = "Language.:transform"
         MIN_SUPPORTED_VERSION = Gem::Version.new("2.7.0")
 
-        unless transform(SYNTAX_PROBE) == "Language.method(:transform)"
-          warn_custom_parser_required_for("method reference")
-        end
-
         def on_meth_ref(node)
           context.track! self
 
@@ -24,6 +20,10 @@ module RubyNext
               s(:sym, mid)
             ]
           )
+        end
+
+        unless transform(SYNTAX_PROBE) == "Language.method(:transform)"
+          warn_custom_parser_required_for("method reference")
         end
       end
     end

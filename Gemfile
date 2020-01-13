@@ -12,6 +12,8 @@ unless ENV["USE_RUBYGEMS_PARSER"] == "1"
   source "https://rubygems.pkg.github.com/ruby-next" do
     gem "parser", "~> 2.7.0.100"
   end
+else
+  gem "parser", "~> 2.7.0.2", "< 2.7.0.100"
 end
 
 # For compatibility tests
