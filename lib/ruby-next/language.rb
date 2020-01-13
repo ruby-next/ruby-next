@@ -60,6 +60,7 @@ module RubyNext
 
     class << self
       attr_accessor :rewriters
+      attr_reader :watch_dirs
 
       def transform(source, rewriters: self.rewriters, using: true, context: TransformContext.new)
         parse(source).then do |ast|
@@ -76,9 +77,23 @@ module RubyNext
           end
         end
       end
+
+      def transformable?(path)
+        watch_dirs.any? { |dir| path.start_with?(dir) }
+      end
+
+      # Rewriters required for the current version
+      def current_rewriters
+        @current_rewriters ||= rewriters.select(&:unsupported_syntax?)
+      end
+
+      private
+
+      attr_writer :watch_dirs
     end
 
     self.rewriters = []
+    self.watch_dirs = %w[app lib spec test].map { |path| File.join(Dir.pwd, path) }
 
     require "ruby-next/language/rewriters/base"
 

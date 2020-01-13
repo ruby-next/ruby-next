@@ -2,7 +2,7 @@
 
 require "ruby-next/language/runtime"
 
-RubyNext::Language::Runtime.watch_dirs << __dir__
+RubyNext::Language.watch_dirs << __dir__
 
 require "zeitwerk"
 

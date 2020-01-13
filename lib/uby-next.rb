@@ -5,7 +5,7 @@ require "ruby-next/core/runtime"
 
 using RubyNext
 
-RubyNext::Language::Runtime.watch_dirs << Dir.pwd
+RubyNext::Language.watch_dirs << Dir.pwd
 
 require "stringio"
 

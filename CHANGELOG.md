@@ -2,6 +2,11 @@
 
 ## master
 
+- Add Bootsnap integration. ([@palkan][])
+
+Add `require "ruby-next/language/bootsnap"` after setting up Bootsnap
+to transpile the files on load (and cache the resulted iseq via Bootsnap as usually).
+
 - Do not patch `eval` and friends when using runtime mode. ([@palkan][])
 
 Eval support should  be enabled explicitly via the `RubyNext::Language::Eval` refinement, 'cause we cannot handle all the edge cases easily (e.g., the usage caller's binding locals).
