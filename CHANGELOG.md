@@ -2,6 +2,8 @@
 
 ## master
 
+- Add `Enumerator.produce`. ([@palkan][])
+
 - Add Bootsnap integration. ([@palkan][])
 
 Add `require "ruby-next/language/bootsnap"` after setting up Bootsnap

@@ -21,6 +21,10 @@ module TestUnitToMspec
       block.should raise_error(error)
     end
 
+    def assert_nothing_raised(&block)
+      block.should_not raise_error
+    end
+
     # We do not check syntax, so make it no-op
     def assert_syntax_error(*)
       true.should == true
@@ -31,6 +35,10 @@ module TestUnitToMspec
     # Let's skip for now
     def assert_warning(*)
       yield
+    end
+
+    def assert_instance_of(klass, obj)
+      (klass === obj).should == true
     end
   end
 
