@@ -2,6 +2,8 @@
 
 ## master
 
+## 0.2.0 (2020-01-13) 🎄
+
 - Add `Enumerator.produce`. ([@palkan][])
 
 - Add Bootsnap integration. ([@palkan][])
