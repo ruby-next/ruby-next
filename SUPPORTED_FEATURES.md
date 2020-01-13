@@ -28,6 +28,8 @@
 
 - `Enumerable#filter_map`
 
+- `Enumerator#produce` ([#14781](https://bugs.ruby-lang.org/issues/14781))
+
 - (TODO) `Time#ceil`, `Time#floor`
 
 - (TODO) `UnboundMethod#bind_call`
