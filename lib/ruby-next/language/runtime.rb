@@ -12,14 +12,10 @@ using RubyNext
 module RubyNext
   module Language
     # Module responsible for runtime transformations
-    module Runtime
-      # Apply only rewriters required for the current version
-      REWRITERS = RubyNext::Language.rewriters.select(&:unsupported_syntax?)
 
+    module Runtime
       class << self
         include Utils
-
-        attr_reader :watch_dirs
 
         def load(path, wrap: false)
           raise "RubyNext cannot handle `load(smth, wrap: true)`" if wrap
@@ -34,27 +30,17 @@ module RubyNext
         end
 
         def transform(contents, **options)
-          Language.transform(contents, rewriters: REWRITERS, **options)
-        end
-
-        def transformable?(path)
-          watch_dirs.any? { |dir| path.start_with?(dir) }
+          Language.transform(contents, rewriters: Language.current_rewriters, **options)
         end
 
         def feature_path(path)
           path = resolve_feature_path(path)
           return if path.nil?
           return if File.extname(path) != ".rb"
-          return unless transformable?(path)
+          return unless Language.transformable?(path)
           path
         end
-
-        private
-
-        attr_writer :watch_dirs
       end
-
-      self.watch_dirs = %w[app lib spec test].map { |path| File.join(Dir.pwd, path) }
     end
   end
 end

@@ -158,12 +158,12 @@ You can also automatically inject `using RubyNext` to every\* loaded file by als
 
 Since the runtime mode requires Kernel monkey-patching, it should be used carefully. For example, we use it in Ruby Next tests—works perfectly. But think twice before enabling it in production.
 
-We plan to add [Bootsnap][] integration in the future, which would allow us to avoid monkey-patching (by relying on the bullet-proofed Bootsnap's one 😉).
+Consider using [Bootsnap](#using-with-bootsnap) integration, 'cause its monkey-patching has been bullet-proofed 😉.
 
 \* Ruby Next doesn't hijack every required file but _watches_ only the configured directories: `./app/`, `./lib/`, `./spec/`, `./test/` (relative to the `pwd`). You can configure the watch dirs:
 
 ```ruby
-RubyNext::Language::Runtime.watch_dirs << "path/to/other/dir"
+RubyNext::Language.watch_dirs << "path/to/other/dir"
 ```
 
 ### Eval & similar
@@ -175,6 +175,20 @@ If you want to support transpiling in `eval`-like methods, opt-in explicitly by 
 ```ruby
 using RubyNext::Language::Eval
 ```
+
+## Using with Bootsnap
+
+[Bootsnap][] is a great tool to speed-up your application load and it's included into the default Rails Gemfile. It patches Ruby mechanism of loading source files to make it possible to cache the intermediate representation (_iseq_).
+
+Ruby Next provides a specific integration which allows to add a transpiling step to this process, thus making the transpiler overhead as small as possible, because the cached and **already transpiled** version is used if no changes were made.
+
+To enable this integration, add the following line after the `require "bootsnap/setup"`:
+
+```ruby
+require "ruby-next/language/bootsnap"
+```
+
+**NOTE:** there is no way to invalidate the cache when you upgrade Ruby Next (e.g., due to the bug fixes), so you should do this manually.
 
 ## `uby-next`
 

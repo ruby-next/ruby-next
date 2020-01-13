@@ -14,4 +14,6 @@ unless ENV["USE_RUBYGEMS_PARSER"] == "1"
   end
 end
 
-gem "zeitwerk"
+# For compatibility tests
+gem "zeitwerk", platform: :mri
+gem "bootsnap", platform: :mri
