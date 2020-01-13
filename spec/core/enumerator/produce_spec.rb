@@ -1,4 +1,4 @@
-# source: https://github.com/ruby/ruby/blob/master/test/ruby/test_syntax.rb#L1477
+# source: https://github.com/ruby/ruby/blob/a65e8644fb97491314387e4138cabf6378a8e8d5/test/ruby/test_enumerator.rb#L836
 
 require_relative "../../test_unit_to_mspec"
 using TestUnitToMspec
