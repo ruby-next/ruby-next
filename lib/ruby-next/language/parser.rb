@@ -10,7 +10,11 @@ module RubyNext
 
     class << self
       def parser
-        ::Parser::Ruby27.new(Builder.new)
+        ::Parser::Ruby27.new(Builder.new).tap do |prs|
+          prs.diagnostics.tap do |diagnostics|
+            diagnostics.all_errors_are_fatal = true
+          end
+        end
       end
 
       def parse(source, file = "(string)")

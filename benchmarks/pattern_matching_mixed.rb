@@ -38,6 +38,8 @@ Benchmark.driver do |x|
         age: 30
       }]
     }
+
+    raise "Assertion failed" if alice(data) != alice_next(data)
   }
   x.report "baseline", %{ alice data }
   x.report "transpiled", %{ alice_next data }

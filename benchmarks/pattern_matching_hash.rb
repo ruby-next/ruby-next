@@ -38,7 +38,28 @@ Benchmark.driver do |x|
       realName: {firstName: 'Noppakun', lastName: 'Wongsrinoppakun'},
       username: 'tae8838'
     }
+
+    raise "Assertion failed" if display_name(data) != display_name_next(data)
   }
-  x.report "baseline", %{ display_name data }
-  x.report "transpiled", %{ display_name_next data }
+
+  x.report "baseline (first match)", %{ display_name data }
+  x.report "transpiled (first match)", %{ display_name_next data }
+end
+
+Benchmark.driver do |x|
+  x.prelude %Q{
+    #{source}
+
+    #{next_source}
+
+    data = {
+      nickname: 'Tae',
+      realname: {first: 'Noppakun', last: 'Wongsrinoppakun'}
+    }
+
+    raise "Assertion failed" if display_name(data) != display_name_next(data)
+  }
+
+  x.report "baseline (second match)", %{ display_name data }
+  x.report "transpiled (second match)", %{ display_name_next data }
 end

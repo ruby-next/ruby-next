@@ -66,8 +66,6 @@ module RubyNext
         def on_in_match(node)
           context.track! self
 
-          @deconstructed = []
-
           matchee =
             s(:lvasgn, MATCHEE, node.children[0])
 
@@ -146,10 +144,10 @@ module RubyNext
           s(:or, *children)
         end
 
-        def match_as_clause(node)
+        def match_as_clause(node, right = s(:lvar, locals[:matchee]))
           s(:and,
             case_eq_clause(node.children[0]),
-            match_var_clause(node.children[1], s(:lvar, locals[:matchee])))
+            match_var_clause(node.children[1], right))
         end
 
         def match_var_clause(node, left = s(:lvar, locals[:matchee]))
@@ -195,6 +193,10 @@ module RubyNext
             s(:and,
               dnode,
               right)
+          end.then do |right|
+            s(:and,
+              respond_to_check(matchee, :deconstruct),
+              right)
           end
         end
 
@@ -202,20 +204,21 @@ module RubyNext
 
         def deconstruct_node(matchee)
           # only deconstruct once per case
-          return if deconstructed.include?(locals[:arr])
+          return if deconstructed&.include?(locals[:arr])
 
           context.use_ruby_next!
 
           right = s(:send, matchee, :deconstruct)
 
-          deconstructed << locals[:arr]
+          deconstructed << locals[:arr] if deconstructed
+
           s(:and,
             s(:or,
               s(:lvasgn, locals[:arr], right),
               s(:true)), # rubocop:disable Lint/BooleanSymbol
             s(:or,
               case_eq_clause(s(:const, nil, :Array), s(:lvar, locals[:arr])),
-              raise_error(:TypeError)))
+              raise_error(:TypeError, "#deconstruct must return Array")))
         end
 
         def array_element(index, head, *tail)
@@ -282,6 +285,10 @@ module RubyNext
           match_var_clause(node, arr_item_at(index))
         end
 
+        def match_as_array_element(node, index)
+          match_as_clause(node, arr_item_at(index))
+        end
+
         def pin_array_element(node, index)
           case_eq_array_element node.children[0], index
         end
@@ -321,10 +328,14 @@ module RubyNext
                 hash_element(*node.children)
               end
 
-            return dnode if right.nil?
+            next dnode if right.nil?
 
             s(:and,
               dnode,
+              right)
+          end.then do |right|
+            s(:and,
+              respond_to_check(matchee, :deconstruct_keys),
               right)
           end
         end
@@ -359,11 +370,12 @@ module RubyNext
             end
 
           # Create a copy of the original hash if already deconstructed
-          return hash_dup if deconstructed.include?(locals[:hash])
+          # FIXME: need better algorithm to handle different key sets
+          # return hash_dup if deconstructed&.include?(locals[:hash])
 
           context.use_ruby_next!
 
-          deconstructed << locals[:hash]
+          deconstructed << locals[:hash] if deconstructed
 
           right = s(:send,
             matchee, :deconstruct_keys, keys)
@@ -375,7 +387,7 @@ module RubyNext
             s(:and,
               s(:or,
                 case_eq_clause(s(:const, nil, :Hash), s(:lvar, locals[:hash, :src])),
-                raise_error(:TypeError)),
+                raise_error(:TypeError, "#deconstruct_keys must return Hash")),
               hash_dup))
         end
 
@@ -491,14 +503,21 @@ module RubyNext
         end
 
         def no_matching_pattern
-          raise_error :NoMatchingPatternError
+          raise_error(
+            :NoMatchingPatternError,
+            s(:send,
+              s(:lvar, locals[:matchee]), :inspect)
+          )
         end
 
-        def raise_error(type)
+        def raise_error(type, msg = "")
           s(:send, s(:const, nil, :Kernel), :raise,
             s(:const, nil, type),
-            s(:send,
-              s(:lvar, locals[:matchee]), :inspect))
+            msg.to_ast_node)
+        end
+
+        def respond_to_check(node, mid)
+          s(:send, node, :respond_to?, mid.to_ast_node)
         end
 
         def respond_to_missing?(mid, *)

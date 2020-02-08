@@ -2,6 +2,10 @@
 
 ## master
 
+- Check whether pattern matching target respond to `#deconstruct` / `#deconstruct_keys`. ([@palkan][])
+
+- Fix `Struct#deconstruct_keys` to respect passed keys. ([@palkan][])
+
 ## 0.2.0 (2020-01-13) 🎄
 
 - Add `Enumerator.produce`. ([@palkan][])

@@ -39,4 +39,16 @@ describe "custom tests" do
       r == [1, 2]
     end
   end
+
+  it "mixed clauses" do
+    s = Struct.new(:x, :y)
+    assert_block do
+      case s[0, "m"]
+        in x: 1, **b
+          false
+        in *b, "m"
+          b == [0]
+        end
+    end
+  end
 end

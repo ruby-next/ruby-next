@@ -1,1307 +1,986 @@
-# source: https://github.com/ruby/ruby/blob/master/test/ruby/test_pattern_matching.rb
-#
-# How to sync tests:
-#  - Copy `eval` contents from ruby tests and paste here
-#  - Include refinement into eval (for JRuby)
-#  - Drop experimental warning tests
-#  - Extract refeniments modules from the test class and refinements test at the end of the file
+# source: https://github.com/ruby/spec/ruby/language/pattern_matching_spec.rb
 
-require_relative '../test_unit_to_mspec'
+# NOTE: the following changes to the original code should be made:
+# - Add `using RubyNext::Language::Eval`
+# - Remove expected messages from SyntaxError
+# - Replace SyntaxError with Parser::SyntaxError
+# - Add binding to all eval calls (e.g., `eval <<~CODE` => `eval(<<~CODE, binding)`)
+# - Skip warnings specs
+# - Replace empty else clauses with implicit `nil` (`else; end` => `else; nil; end`)
 
-using TestUnitToMspec
+require_relative '../spec_helper'
 
-eval "\n#{<<~'END_of_GUARD'}", binding, __FILE__, __LINE__
-using TestUnitToMspec
+using RubyNext::Language::Eval
 
-class TestPatternMatching < Test::Unit::TestCase
-  class C
-    class << self
-      attr_accessor :keys
+ruby_version_is "2.7" do
+  describe "Pattern matching" do
+    # TODO: Remove excessive eval calls when support of previous version
+    #       Ruby 2.6 will be dropped
+
+    before do
+      ScratchPad.record []
     end
 
-    def initialize(obj)
-      @obj = obj
+    it "can be standalone in operator that deconstructs value" do
+      eval(<<-RUBY, binding).should == [0, 1]
+        [0, 1] in [a, b]
+        [a, b]
+      RUBY
     end
 
-    def deconstruct
-      @obj
-    end
-
-    def deconstruct_keys(keys)
-      C.keys = keys
-      @obj
-    end
-  end
-
-  def test_basic
-    assert_block do
-      case 0
-      in 0
-        true
-      else
-        false
-      end
-    end
-
-    assert_block do
-      case 0
-      in 1
-        false
-      else
-        true
-      end
-    end
-
-    assert_raise(NoMatchingPatternError) do
-      case 0
-      in 1
-        false
-      end
-    end
-
-    begin
-      o = [0]
-      case o
-      in 1
-        false
-      end
-    rescue => e
-      assert_match o.inspect, e.message
-    end
-
-    assert_block do
-      begin
-        true
-      ensure
-        case 0
-        in 0
-          false
+    it "extends case expression with case/in construction" do
+      eval(<<~RUBY, binding).should == :bar
+        case [0, 1]
+          in [0]
+            :foo
+          in [0, 1]
+            :bar
         end
-      end
+      RUBY
     end
 
-    assert_block do
-      begin
-        true
-      ensure
-        case 0
-        in 1
-        else
-          false
+    it "allows using then operator" do
+      eval(<<~RUBY, binding).should == :bar
+        case [0, 1]
+          in [0]    then :foo
+          in [0, 1] then :bar
         end
-      end
+      RUBY
     end
 
-    assert_raise(NoMatchingPatternError) do
-      begin
-      ensure
-        case 0
-        in 1
-        end
-      end
-    end
-
-    assert_block do
-      verbose, $VERBOSE = $VERBOSE, nil # suppress "warning: Pattern matching is experimental, and the behavior may change in future versions of Ruby!"
-      eval(%q{
-        case true
-        in a
-          a
-        end
-      })
-    ensure
-      $VERBOSE = verbose
-    end
-
-    assert_block do
-      tap do |a|
-        tap do
-          case true
-          in a
-            a
+    it "warns about pattern matching is experimental feature" do
+      skip "we do not warn :)"
+      -> {
+        eval(<<~RUBY, binding)
+          case 0
+            in 0
           end
+        RUBY
+      }.should complain(/warning: Pattern matching is experimental, and the behavior may change in future versions of Ruby!/)
+    end
+
+    it "binds variables" do
+      eval(<<~RUBY, binding).should == 1
+        case [0, 1]
+          in [0, a]
+            a
         end
-      end
+      RUBY
     end
 
-    assert_raise(NoMatchingPatternError) do
-      o = BasicObject.new
-      def o.match
-        case 0
-        in 1
+    it "cannot mix in and when operators" do
+      -> {
+        eval(<<~RUBY, binding)
+          case []
+            when 1 == 1
+            in []
+          end
+        RUBY
+      }.should raise_error(Parser::SyntaxError)
+
+      -> {
+        eval(<<~RUBY, binding)
+          case []
+            in []
+            when 1 == 1
+          end
+        RUBY
+      }.should raise_error(Parser::SyntaxError)
+    end
+
+    it "checks patterns until the first matching" do
+      eval(<<~RUBY, binding).should == :bar
+        case [0, 1]
+          in [0]
+            :foo
+          in [0, 1]
+            :bar
+          in [0, 1]
+            :baz
         end
-      end
-      o.match
-    end
-  end
-
-  def test_modifier
-    assert_block do
-      case 0
-      in a if a == 0
-        true
-      end
+      RUBY
     end
 
-    assert_block do
-      case 0
-      in a if a != 0
-      else
-        true
-      end
-    end
-
-    assert_block do
-      case 0
-      in a unless a != 0
-        true
-      end
-    end
-
-    assert_block do
-      case 0
-      in a unless a == 0
-      else
-        true
-      end
-    end
-  end
-
-  def test_as_pattern
-    assert_block do
-      case 0
-      in 0 => a
-        a == 0
-      end
-    end
-  end
-
-  def test_alternative_pattern
-    assert_block do
-      [0, 1].all? do |i|
-        case i
-        in 0 | 1
-          true
+    it "executes else clause if no pattern matches" do
+      eval(<<~RUBY, binding).should == false
+        case [0, 1]
+          in [0]
+            true
+          else
+            false
         end
+      RUBY
+    end
+
+    it "raises NoMatchingPatternError if no pattern matches and no else clause" do
+      -> {
+        eval(<<~RUBY, binding)
+          case [0, 1]
+            in [0]
+          end
+        RUBY
+      }.should raise_error(NoMatchingPatternError, /\[0, 1\]/)
+    end
+
+    it "does not allow calculation or method calls in a pattern" do
+      -> {
+        eval(<<~RUBY, binding)
+          case 0
+            in 1 + 1
+              true
+          end
+        RUBY
+      }.should raise_error(Parser::SyntaxError)
+    end
+
+    describe "guards" do
+      it "supports if guard" do
+        eval(<<~RUBY, binding).should == false
+          case 0
+            in 0 if false
+              true
+          else
+            false
+          end
+        RUBY
+
+        eval(<<~RUBY, binding).should == true
+          case 0
+            in 0 if true
+              true
+          else
+            false
+          end
+        RUBY
+      end
+
+      it "supports unless guard" do
+        eval(<<~RUBY, binding).should == false
+          case 0
+            in 0 unless true
+              true
+          else
+            false
+          end
+        RUBY
+
+        eval(<<~RUBY, binding).should == true
+          case 0
+            in 0 unless false
+              true
+          else
+            false
+          end
+        RUBY
+      end
+
+      it "makes bound variables visible in guard" do
+        eval(<<~RUBY, binding).should == true
+          case [0, 1]
+            in [a, 1] if a >= 0
+              true
+          end
+        RUBY
+      end
+
+      it "does not evaluate guard if pattern does not match" do
+        eval(<<~RUBY, binding)
+          case 0
+            in 1 if (ScratchPad << :foo) || true
+          else
+            nil
+          end
+        RUBY
+
+        ScratchPad.recorded.should == []
+      end
+
+      it "takes guards into account when there are several matching patterns" do
+        eval(<<~RUBY, binding).should == :bar
+          case 0
+            in 0 if false
+              :foo
+            in 0 if true
+              :bar
+          end
+        RUBY
+      end
+
+      it "executes else clause if no guarded pattern matches" do
+        eval(<<~RUBY, binding).should == false
+          case 0
+            in 0 if false
+              true
+          else
+            false
+          end
+        RUBY
+      end
+
+      it "raises NoMatchingPatternError if no guarded pattern matches and no else clause" do
+        -> {
+          eval(<<~RUBY, binding)
+            case [0, 1]
+              in [0, 1] if false
+            end
+          RUBY
+        }.should raise_error(NoMatchingPatternError, /\[0, 1\]/)
       end
     end
 
-    assert_block do
-      case 0
-      in _ | _a
-        true
+    describe "value pattern" do
+      it "matches an object such that pattern === object" do
+        eval(<<~RUBY, binding).should == true
+          case 0
+            in 0
+              true
+          end
+        RUBY
+
+        eval(<<~RUBY, binding).should == true
+          case 0
+            in (-1..1)
+              true
+          end
+        RUBY
+
+        eval(<<~RUBY, binding).should == true
+          case 0
+            in Integer
+              true
+          end
+        RUBY
+
+        eval(<<~RUBY, binding).should == true
+          case "0"
+            in /0/
+              true
+          end
+        RUBY
+
+        eval(<<~RUBY, binding).should == true
+          case "0"
+            in ->(s) { s == "0" }
+              true
+          end
+        RUBY
+      end
+
+      it "allows string literal with interpolation" do
+        x = "x"
+
+        eval(<<~RUBY, binding).should == true
+          case "x"
+            in "#{x + ""}"
+              true
+          end
+        RUBY
       end
     end
 
-    assert_syntax_error(%q{
-      case 0
-      in a | 0
-      end
-    }, /illegal variable in alternative pattern/)
-  end
-
-  def test_var_pattern
-    # NODE_DASGN_CURR
-    assert_block do
-      case 0
-      in a
-        a == 0
-      end
-    end
-
-    # NODE_DASGN
-    b = 0
-    assert_block do
-      case 1
-      in b
-        b == 1
-      end
-    end
-
-    # NODE_LASGN
-    case 0
-    in c
-      assert_equal(0, c)
-    else
-      flunk
-    end
-
-    assert_syntax_error(%q{
-      case 0
-      in ^a
-      end
-    }, /no such local variable/)
-
-    assert_syntax_error(%q{
-      case 0
-      in a, a
-      end
-    }, /duplicated variable name/)
-
-    assert_block do
-      case [0, 1, 2, 3]
-      in _, _, _a, _a
-        true
-      end
-    end
-
-    assert_syntax_error(%q{
-      case 0
-      in a, {a:}
-      end
-    }, /duplicated variable name/)
-
-    assert_syntax_error(%q{
-      case 0
-      in a, {"a":}
-      end
-    }, /duplicated variable name/)
-
-    # TODO: support rucursive pattern matching
-    # assert_block do
-    #   case [0, "1"]
-    #   in a, "#{case 1; in a; a; end}"
-    #     true
-    #   end
-    # end
-
-    assert_syntax_error(%q{
-      case [0, "1"]
-      in a, "#{case 1; in a; a; end}", a
-      end
-    }, /duplicated variable name/)
-
-    assert_block do
-      case 0
-      in a
-        assert_equal(0, a)
-        true
-      in a
-        flunk
-      end
-    end
-
-    assert_syntax_error(%q{
-      0 in [a, a]
-    }, /duplicated variable name/)
-  end
-
-  def test_literal_value_pattern
-    assert_block do
-      case [nil, self, true, false]
-      in [nil, self, true, false]
-        true
-      end
-    end
-
-    assert_block do
-      case [0d170, 0D170, 0xaa, 0xAa, 0xAA, 0Xaa, 0XAa, 0XaA, 0252, 0o252, 0O252]
-      in [0d170, 0D170, 0xaa, 0xAa, 0xAA, 0Xaa, 0XAa, 0XaA, 0252, 0o252, 0O252]
-        true
+    describe "variable pattern" do
+      it "matches a value and binds variable name to this value" do
+        eval(<<~RUBY, binding).should == 0
+          case 0
+            in a
+              a
+          end
+        RUBY
       end
 
-      case [0b10101010, 0B10101010, 12r, 12.3r, 1i, 12.3ri]
-      in [0b10101010, 0B10101010, 12r, 12.3r, 1i, 12.3ri]
-        true
-      end
-    end
+      it "makes bounded variable visible outside a case statement scope" do
+        eval(<<~RUBY, binding).should == 0
+          case 0
+            in a
+          end
 
-    assert_block do
-      x = 'x'
-      case ['a', 'a', x]
-      in ['a', "a", "#{x}"]
-        true
+          a
+        RUBY
       end
-    end
 
-    assert_block do
-      case ["a\n"]
-      in [<<END]
-a
-END
-        true
+      it "create local variables even if a pattern doesn't match" do
+        eval(<<~RUBY, binding).should == [0, nil, nil]
+          case 0
+            in a
+            in b
+            in c
+          end
+
+          [a, b, c]
+        RUBY
+      end
+
+      it "allow using _ name to drop values" do
+        eval(<<~RUBY, binding).should == 0
+          case [0, 1]
+            in [a, _]
+              a
+          end
+        RUBY
+      end
+
+      it "supports using _ in a pattern several times" do
+        eval(<<~RUBY, binding).should == 2
+          case [0, 1, 2]
+            in [0, _, _]
+              _
+          end
+        RUBY
+      end
+
+      it "supports using any name with _ at the beginning in a pattern several times" do
+        eval(<<~RUBY, binding).should == 2
+          case [0, 1, 2]
+            in [0, _x, _x]
+              _x
+          end
+        RUBY
+
+        eval(<<~RUBY, binding).should == 2
+          case {a: 0, b: 1, c: 2}
+            in {a: 0, b: _x, c: _x}
+              _x
+          end
+        RUBY
+      end
+
+      it "does not support using variable name (except _) several times" do
+        -> {
+          eval(<<~RUBY, binding)
+            case [0]
+              in [a, a]
+            end
+          RUBY
+        }.should raise_error(Parser::SyntaxError)
+      end
+
+      it "supports existing variables in a pattern specified with ^ operator" do
+        a = 0
+
+        eval(<<~RUBY, binding).should == true
+          case 0
+            in ^a
+              true
+          end
+        RUBY
+      end
+
+      it "allows applying ^ operator to bound variables" do
+        eval(<<~RUBY, binding).should == 1
+          case [1, 1]
+            in [n, ^n]
+              n
+          end
+        RUBY
+
+        eval(<<~RUBY, binding).should == false
+          case [1, 2]
+            in [n, ^n]
+              true
+          else
+            false
+          end
+        RUBY
+      end
+
+      it "requires bound variable to be specified in a pattern before ^ operator when it relies on a bound variable" do
+        skip "TODO: parser"
+        -> {
+          eval(<<~RUBY, binding)
+            case [1, 2]
+              in [^n, n]
+                true
+            else
+              false
+            end
+          RUBY
+        }.should raise_error(Parser::SyntaxError)
       end
     end
 
-    assert_block do
-      case [:a, :"a"]
-      in [:a, :"a"]
-        true
+    describe "alternative pattern" do
+      it "matches if any of patterns matches" do
+        eval(<<~RUBY, binding).should == true
+          case 0
+            in 0 | 1 | 2
+              true
+          end
+        RUBY
+      end
+
+      it "does not support variable binding" do
+        skip "TODO: parser"
+        -> {
+          eval(<<~RUBY, binding)
+            case [0, 1]
+              in [0, 0] | [0, a]
+            end
+          RUBY
+        }.should raise_error(Parser::SyntaxError)
       end
     end
 
-    # TODO: support beginless range
-    # assert_block do
-    #   case [0, 1, 2, 3, 4, 5]
-    #   in [0..1, 0...2, 0.., 0..., (...5), (..5)]
-    #     true
-    #   end
-    # end
-
-    assert_syntax_error(%q{
-      case 0
-      in a..b
+    describe "AS pattern" do
+      it "binds a variable to a value if pattern matches" do
+        eval(<<~RUBY, binding).should == 0
+          case 0
+            in Integer => n
+              n
+          end
+        RUBY
       end
-    }, /unexpected/)
 
-    assert_block do
-      case 'abc'
-      in /a/
-        true
-      end
-    end
-
-    assert_block do
-      case 0
-      in ->(i) { i == 0 }
-        true
+      it "can be used as a nested pattern" do
+        eval(<<~RUBY, binding).should == [2, 3]
+          case [1, [2, 3]]
+            in [1, Array => ary]
+              ary
+          end
+        RUBY
       end
     end
 
-    assert_block do
-      case [%(a), %q(a), %Q(a), %w(a), %W(a), %i(a), %I(a), %s(a), %x(echo a), %(), %q(), %Q(), %w(), %W(), %i(), %I(), %s(), 'a']
-      in [%(a), %q(a), %Q(a), %w(a), %W(a), %i(a), %I(a), %s(a), %x(echo a), %(), %q(), %Q(), %w(), %W(), %i(), %I(), %s(), %r(a)]
-        true
+    describe "Array pattern" do
+      it "supports form Constant(pat, pat, ...)" do
+        eval(<<~RUBY, binding).should == true
+          case [0, 1, 2]
+            in Array(0, 1, 2)
+              true
+          end
+        RUBY
+      end
+
+      it "supports form Constant[pat, pat, ...]" do
+        eval(<<~RUBY, binding).should == true
+          case [0, 1, 2]
+            in Array[0, 1, 2]
+              true
+          end
+        RUBY
+      end
+
+      it "supports form [pat, pat, ...]" do
+        eval(<<~RUBY, binding).should == true
+          case [0, 1, 2]
+            in [0, 1, 2]
+              true
+          end
+        RUBY
+      end
+
+      it "supports form pat, pat, ..." do
+        eval(<<~RUBY, binding).should == true
+          case [0, 1, 2]
+            in 0, 1, 2
+              true
+          end
+        RUBY
+
+        eval(<<~RUBY, binding).should == 1
+          case [0, 1, 2]
+            in 0, a, 2
+              a
+          end
+        RUBY
+
+        eval(<<~RUBY, binding).should == [1, 2]
+          case [0, 1, 2]
+            in 0, *rest
+              rest
+          end
+        RUBY
+      end
+
+      it "matches an object with #deconstruct method which returns an array and each element in array matches element in pattern" do
+        obj = Object.new
+        def obj.deconstruct; [0, 1] end
+
+        eval(<<~RUBY, binding).should == true
+          case obj
+            in [Integer, Integer]
+              true
+          end
+        RUBY
+      end
+
+      it "does not match object if Constant === object returns false" do
+        eval(<<~RUBY, binding).should == false
+          case [0, 1, 2]
+            in String[0, 1, 2]
+              true
+          else
+            false
+          end
+        RUBY
+      end
+
+      it "does not match object without #deconstruct method" do
+        skip "TODO: parser (empty array should return array-pattern anyway)"
+        obj = Object.new
+
+        eval(<<~RUBY, binding).should == false
+          case obj
+            in Object[]
+              true
+          else
+            false
+          end
+        RUBY
+      end
+
+      it "raises TypeError if #deconstruct method does not return array" do
+        obj = Object.new
+        def obj.deconstruct; "" end
+
+        -> {
+          eval(<<~RUBY, binding)
+            case obj
+              in Object[0]
+            else
+            end
+          RUBY
+        }.should raise_error(TypeError, /deconstruct must return Array/)
+      end
+
+      it "does not match object if elements of array returned by #deconstruct method does not match elements in pattern" do
+        obj = Object.new
+        def obj.deconstruct; [1] end
+
+        eval(<<~RUBY, binding).should == false
+          case obj
+            in Object[0]
+              true
+          else
+            false
+          end
+        RUBY
+      end
+
+      it "binds variables" do
+        eval(<<~RUBY, binding).should == [0, 1, 2]
+          case [0, 1, 2]
+            in [a, b, c]
+              [a, b, c]
+          end
+        RUBY
+      end
+
+      it "binds variable even if patter matches only partially" do
+        a = nil
+
+        eval(<<~RUBY, binding).should == 0
+          case [0, 1, 2]
+            in [a, 1, 3]
+          else
+            nil
+          end
+
+          a
+        RUBY
+      end
+
+      it "supports splat operator *rest" do
+        eval(<<~RUBY, binding).should == [1, 2]
+          case [0, 1, 2]
+            in [0, *rest]
+              rest
+          end
+        RUBY
+      end
+
+      it "does not match partially by default" do
+        eval(<<~RUBY, binding).should == false
+          case [0, 1, 2, 3]
+            in [1, 2]
+              true
+          else
+            false
+          end
+        RUBY
+      end
+
+      it "does match partially from the array beginning if list + , syntax used" do
+        eval(<<~RUBY, binding).should == true
+          case [0, 1, 2, 3]
+            in [0, 1,]
+              true
+          end
+        RUBY
+
+        eval(<<~RUBY, binding).should == true
+          case [0, 1, 2, 3]
+            in 0, 1,;
+              true
+          end
+        RUBY
+      end
+
+      it "matches [] with []" do
+        eval(<<~RUBY, binding).should == true
+          case []
+            in []
+              true
+          end
+        RUBY
+      end
+
+      it "matches anything with *" do
+        eval(<<~RUBY, binding).should == true
+          case [0, 1]
+            in *;
+              true
+          end
+        RUBY
       end
     end
 
-    assert_block do
-      case [__FILE__, __LINE__ + 1, __ENCODING__]
-      in [__FILE__, __LINE__, __ENCODING__]
-        true
+    describe "Hash pattern" do
+      it "supports form Constant(id: pat, id: pat, ...)" do
+        eval(<<~RUBY, binding).should == true
+          case {a: 0, b: 1}
+            in Hash(a: 0, b: 1)
+              true
+          end
+        RUBY
       end
-    end
-  end
 
-  def test_constant_value_pattern
-    assert_block do
-      case 0
-      in Integer
-        true
+      it "supports form Constant[id: pat, id: pat, ...]" do
+        eval(<<~RUBY, binding).should == true
+          case {a: 0, b: 1}
+            in Hash[a: 0, b: 1]
+              true
+          end
+        RUBY
       end
-    end
 
-    assert_block do
-      case 0
-      in Object::Integer
-        true
+      it "supports form {id: pat, id: pat, ...}" do
+        eval(<<~RUBY, binding).should == true
+          case {a: 0, b: 1}
+            in {a: 0, b: 1}
+              true
+          end
+        RUBY
       end
-    end
 
-    assert_block do
-      case 0
-      in ::Object::Integer
-        true
+      it "supports form id: pat, id: pat, ..." do
+        eval(<<~RUBY, binding).should == true
+          case {a: 0, b: 1}
+            in a: 0, b: 1
+              true
+          end
+        RUBY
+
+        eval(<<~RUBY, binding).should == [0, 1]
+          case {a: 0, b: 1}
+            in a: a, b: b
+              [a, b]
+          end
+        RUBY
+
+        eval(<<~RUBY, binding).should == { b: 1, c: 2 }
+          case {a: 0, b: 1, c: 2}
+            in a: 0, **rest
+              rest
+          end
+        RUBY
       end
-    end
-  end
 
-  def test_pin_operator_value_pattern
-    assert_block do
-      a = /a/
-      case 'abc'
-      in ^a
-        true
+      it "supports a: which means a: a" do
+        eval(<<~RUBY, binding).should == [0, 1]
+          case {a: 0, b: 1}
+            in Hash(a:, b:)
+              [a, b]
+          end
+        RUBY
+
+        a = b = nil
+        eval(<<~RUBY, binding).should == [0, 1]
+          case {a: 0, b: 1}
+            in Hash[a:, b:]
+              [a, b]
+          end
+        RUBY
+
+        a = b = nil
+        eval(<<~RUBY, binding).should == [0, 1]
+          case {a: 0, b: 1}
+            in {a:, b:}
+              [a, b]
+          end
+        RUBY
+
+        a = nil
+        eval(<<~RUBY, binding).should == [0, {b: 1, c: 2}]
+          case {a: 0, b: 1, c: 2}
+            in {a:, **rest}
+              [a, rest]
+          end
+        RUBY
+
+        a = b = nil
+        eval(<<~RUBY, binding).should == [0, 1]
+          case {a: 0, b: 1}
+            in a:, b:
+              [a, b]
+          end
+        RUBY
       end
-    end
 
-    assert_block do
-      case [0, 0]
-      in a, ^a
-        a == 0
+      it "can mix key (a:) and key-value (a: b) declarations" do
+        eval(<<~RUBY, binding).should == [0, 1]
+          case {a: 0, b: 1}
+            in Hash(a:, b: x)
+              [a, x]
+          end
+        RUBY
       end
-    end
-  end
 
-  def test_array_pattern
-    assert_block do
-      [[0], C.new([0])].all? do |i|
-        case i
-        in 0,;
-          true
+      it "supports 'string': key literal" do
+        eval(<<~RUBY, binding).should == true
+          case {a: 0}
+            in {"a": 0}
+              true
+          end
+        RUBY
+      end
+
+      it "does not support non-symbol keys" do
+        -> {
+          eval(<<~RUBY, binding)
+            case {a: 1}
+              in {"a" => 1}
+            end
+          RUBY
+        }.should raise_error(Parser::SyntaxError)
+      end
+
+      it "does not support string interpolation in keys" do
+        skip "TODO: parser"
+        x = "a"
+
+        -> {
+          eval(<<~'RUBY', binding)
+            case {a: 1}
+              in {"#{x}": 1}
+            end
+          RUBY
+        }.should raise_error(Parser::SyntaxError)
+      end
+
+      it "raise SyntaxError when keys duplicate in pattern" do
+        -> {
+          eval(<<~RUBY, binding)
+            case {a: 1}
+              in {a: 1, b: 2, a: 3}
+            end
+          RUBY
+        }.should raise_error(Parser::SyntaxError)
+      end
+
+      it "matches an object with #deconstruct_keys method which returns a Hash with equal keys and each value in Hash matches value in pattern" do
+        obj = Object.new
+        def obj.deconstruct_keys(*); {a: 1} end
+
+        eval(<<~RUBY, binding).should == true
+          case obj
+            in {a: 1}
+              true
+          end
+        RUBY
+      end
+
+      it "does not match object if Constant === object returns false" do
+        eval(<<~RUBY, binding).should == false
+          case {a: 1}
+            in String[a: 1]
+              true
+          else
+            false
+          end
+        RUBY
+      end
+
+      it "does not match object without #deconstruct_keys method" do
+        obj = Object.new
+
+        eval(<<~RUBY, binding).should == false
+          case obj
+            in Object[a: 1]
+              true
+          else
+            false
+          end
+        RUBY
+      end
+
+      it "does not match object if #deconstruct_keys method does not return Hash" do
+        obj = Object.new
+        def obj.deconstruct_keys(*); "" end
+
+        -> {
+          eval(<<~RUBY, binding)
+            case obj
+              in Object[a: 1]
+            end
+          RUBY
+        }.should raise_error(TypeError, /deconstruct_keys must return Hash/)
+      end
+
+      it "does not match object if #deconstruct_keys method returns Hash with non-symbol keys" do
+        obj = Object.new
+        def obj.deconstruct_keys(*); {"a" => 1} end
+
+        eval(<<~RUBY, binding).should == false
+          case obj
+            in Object[a: 1]
+              true
+          else
+            false
+          end
+        RUBY
+      end
+
+      it "does not match object if elements of Hash returned by #deconstruct_keys method does not match values in pattern" do
+        obj = Object.new
+        def obj.deconstruct_keys(*); {a: 1} end
+
+        eval(<<~RUBY, binding).should == false
+          case obj
+            in Object[a: 2]
+              true
+          else
+            false
+          end
+        RUBY
+      end
+
+      it "passes keys specified in pattern as arguments to #deconstruct_keys method" do
+        obj = Object.new
+
+        def obj.deconstruct_keys(*args)
+          ScratchPad << args
+          {a: 1, b: 2, c: 3}
         end
-      end
-    end
 
-    assert_block do
-      [[0, 1], C.new([0, 1])].all? do |i|
-        case i
-        in 0,;
-          true
+        eval(<<~RUBY, binding)
+          case obj
+            in Object[a: 1, b: 2, c: 3]
+          end
+        RUBY
+
+        ScratchPad.recorded.should == [[[:a, :b, :c]]]
+      end
+
+      it "passes keys specified in pattern to #deconstruct_keys method if pattern contains double splat operator **" do
+        obj = Object.new
+
+        def obj.deconstruct_keys(*args)
+          ScratchPad << args
+          {a: 1, b: 2, c: 3}
         end
-      end
-    end
 
-    assert_block do
-      [[], C.new([])].all? do |i|
-        case i
-        in 0,;
-        else
-          true
+        eval(<<~RUBY, binding)
+          case obj
+            in Object[a: 1, b: 2, **]
+          end
+        RUBY
+
+        ScratchPad.recorded.should == [[[:a, :b]]]
+      end
+
+      it "passes nil to #deconstruct_keys method if pattern contains double splat operator **rest" do
+        obj = Object.new
+
+        def obj.deconstruct_keys(*args)
+          ScratchPad << args
+          {a: 1, b: 2}
         end
-      end
-    end
-
-    assert_block do
-      [[0, 1], C.new([0, 1])].all? do |i|
-        case i
-        in 0, 1
-          true
-        end
-      end
-    end
-
-    assert_block do
-      [[0], C.new([0])].all? do |i|
-        case i
-        in 0, 1
-        else
-          true
-        end
-      end
-    end
-
-    assert_block do
-      [[], C.new([])].all? do |i|
-        case i
-        in *a
-          a == []
-        end
-      end
-    end
-
-    assert_block do
-      [[0], C.new([0])].all? do |i|
-        case i
-        in *a
-          a == [0]
-        end
-      end
-    end
-
-    assert_block do
-      [[0], C.new([0])].all? do |i|
-        case i
-        in *a, 0, 1
-          raise a # suppress "unused variable: a" warning
-        else
-          true
-        end
-      end
-    end
-
-    assert_block do
-      [[0, 1], C.new([0, 1])].all? do |i|
-        case i
-        in *a, 0, 1
-          a == []
-        end
-      end
-    end
-
-    assert_block do
-      [[0, 1, 2], C.new([0, 1, 2])].all? do |i|
-        case i
-        in *a, 1, 2
-          a == [0]
-        end
-      end
-    end
-
-    assert_block do
-      [[], C.new([])].all? do |i|
-        case i
-        in *;
-          true
-        end
-      end
-    end
-
-    assert_block do
-      [[0], C.new([0])].all? do |i|
-        case i
-        in *, 0, 1
-        else
-          true
-        end
-      end
-    end
-
-    assert_block do
-      [[0, 1], C.new([0, 1])].all? do |i|
-        case i
-        in *, 0, 1
-          true
-        end
-      end
-    end
-
-    assert_block do
-      [[0, 1, 2], C.new([0, 1, 2])].all? do |i|
-        case i
-        in *, 1, 2
-          true
-        end
-      end
-    end
-
-    assert_block do
-      case C.new([0])
-      in C(0)
-        true
-      end
-    end
-
-    assert_block do
-      case C.new([0])
-      in Array(0)
-      else
-        true
-      end
-    end
-
-    assert_block do
-      case C.new([])
-      in C()
-        true
-      end
-    end
-
-    assert_block do
-      case C.new([])
-      in Array()
-      else
-        true
-      end
-    end
-
-    assert_block do
-      case C.new([0])
-      in C[0]
-        true
-      end
-    end
-
-    assert_block do
-      case C.new([0])
-      in Array[0]
-      else
-        true
-      end
-    end
-
-    assert_block do
-      case C.new([])
-      in C[]
-        true
-      end
-    end
-
-    assert_block do
-      case C.new([])
-      in Array[]
-      else
-        true
-      end
-    end
-
-    assert_block do
-      case []
-      in []
-        true
-      end
-    end
-
-    assert_block do
-      case C.new([])
-      in []
-        true
-      end
-    end
-
-    assert_block do
-      case [0]
-      in [0]
-        true
-      end
-    end
-
-    assert_block do
-      case C.new([0])
-      in [0]
-        true
-      end
-    end
-
-    assert_block do
-      case [0]
-      in [0,]
-        true
-      end
-    end
-
-    assert_block do
-      case [0, 1]
-      in [0,]
-        true
-      end
-    end
-
-    assert_block do
-      case []
-      in [0, *a]
-        raise a # suppress "unused variable: a" warning
-      else
-        true
-      end
-    end
-
-    assert_block do
-      case [0]
-      in [0, *a]
-        a == []
-      end
-    end
-
-    assert_block do
-      case [0]
-      in [0, *a, 1]
-        raise a # suppress "unused variable: a" warning
-      else
-        true
-      end
-    end
-
-    assert_block do
-      case [0, 1]
-      in [0, *a, 1]
-        a == []
-      end
-    end
-
-    assert_block do
-      case [0, 1, 2]
-      in [0, *a, 2]
-        a == [1]
-      end
-    end
-
-    assert_block do
-      case []
-      in [0, *]
-      else
-        true
-      end
-    end
-
-    assert_block do
-      case [0]
-      in [0, *]
-        true
-      end
-    end
-
-    assert_block do
-      case [0, 1]
-      in [0, *]
-        true
-      end
-    end
-
-    assert_block do
-      case []
-      in [0, *a]
-        raise a # suppress "unused variable: a" warning
-      else
-        true
-      end
-    end
-
-    assert_block do
-      case [0]
-      in [0, *a]
-        a == []
-      end
-    end
-
-    assert_block do
-      case [0, 1]
-      in [0, *a]
-        a == [1]
-      end
-    end
-
-    assert_block do
-      case [0]
-      in [0, *, 1]
-      else
-        true
-      end
-    end
-
-    assert_block do
-      case [0, 1]
-      in [0, *, 1]
-        true
-      end
-    end
-  end
-
-  def test_hash_pattern
-    assert_block do
-      [{}, C.new({})].all? do |i|
-        case i
-        in a: 0
-        else
-          true
-        end
-      end
-    end
-
-    assert_block do
-      [{a: 0}, C.new({a: 0})].all? do |i|
-        case i
-        in a: 0
-          true
-        end
-      end
-    end
-
-    assert_block do
-      [{a: 0, b: 1}, C.new({a: 0, b: 1})].all? do |i|
-        case i
-        in a: 0
-          true
-        end
-      end
-    end
-
-    assert_block do
-      [{a: 0}, C.new({a: 0})].all? do |i|
-        case i
-        in a: 0, b: 1
-        else
-          true
-        end
-      end
-    end
-
-    assert_block do
-      [{a: 0, b: 1}, C.new({a: 0, b: 1})].all? do |i|
-        case i
-        in a: 0, b: 1
-          true
-        end
-      end
-    end
-
-    assert_block do
-      [{a: 0, b: 1, c: 2}, C.new({a: 0, b: 1, c: 2})].all? do |i|
-        case i
-        in a: 0, b: 1
-          true
-        end
-      end
-    end
-
-    assert_block do
-      [{}, C.new({})].all? do |i|
-        case i
-        in a:
-          raise a # suppress "unused variable: a" warning
-        else
-          true
-        end
-      end
-    end
-
-    assert_block do
-      [{a: 0}, C.new({a: 0})].all? do |i|
-        case i
-        in a:
-          a == 0
-        end
-      end
-    end
-
-    assert_block do
-      [{a: 0, b: 1}, C.new({a: 0, b: 1})].all? do |i|
-        case i
-        in a:
-          a == 0
-        end
-      end
-    end
-
-    assert_block do
-      [{a: 0}, C.new({a: 0})].all? do |i|
-        case i
-        in "a": 0
-          true
-        end
-      end
-    end
-
-    assert_block do
-      [{a: 0}, C.new({a: 0})].all? do |i|
-        case i
-        in "a":;
-          a == 0
-        end
-      end
-    end
-
-    assert_block do
-      [{}, C.new({})].all? do |i|
-        case i
-        in **a
-          a == {}
-        end
-      end
-    end
-
-    assert_block do
-      [{a: 0}, C.new({a: 0})].all? do |i|
-        case i
-        in **a
-          a == {a: 0}
-        end
-      end
-    end
-
-    assert_block do
-      [{}, C.new({})].all? do |i|
-        case i
-        in **;
-          true
-        end
-      end
-    end
-
-    assert_block do
-      [{a: 0}, C.new({a: 0})].all? do |i|
-        case i
-        in **;
-          true
-        end
-      end
-    end
-
-    assert_block do
-      [{}, C.new({})].all? do |i|
-        case i
-        in a:, **b
-          raise a # suppress "unused variable: a" warning
-          raise b # suppress "unused variable: b" warning
-        else
-          true
-        end
-      end
-    end
-
-    assert_block do
-      [{a: 0}, C.new({a: 0})].all? do |i|
-        case i
-        in a:, **b
-          a == 0 && b == {}
-        end
-      end
-    end
-
-    assert_block do
-      [{a: 0, b: 1}, C.new({a: 0, b: 1})].all? do |i|
-        case i
-        in a:, **b
-          a == 0 && b == {b: 1}
-        end
-      end
-    end
-
-    assert_block do
-      [{}, C.new({})].all? do |i|
-        case i
-        in **nil
-          true
-        end
-      end
-    end
-
-    assert_block do
-      [{a: 0}, C.new({a: 0})].all? do |i|
-        case i
-        in **nil
-        else
-          true
-        end
-      end
-    end
-
-    assert_block do
-      [{a: 0}, C.new({a: 0})].all? do |i|
-        case i
-        in a:, **nil
-          assert_equal(0, a)
-          true
-        end
-      end
-    end
-
-    assert_block do
-      [{a: 0, b: 1}, C.new({a: 0, b: 1})].all? do |i|
-        case i
-        in a:, **nil
-          assert_equal(0, a)
-        else
-          true
-        end
-      end
-    end
-
-    assert_block do
-      case C.new({a: 0})
-      in C(a: 0)
-        true
-      end
-    end
-
-    assert_block do
-      case {a: 0}
-      in C(a: 0)
-      else
-        true
-      end
-    end
-
-    assert_block do
-      case C.new({a: 0})
-      in C[a: 0]
-        true
-      end
-    end
-
-    assert_block do
-      case {a: 0}
-      in C[a: 0]
-      else
-        true
-      end
-    end
-
-    assert_block do
-      [{}, C.new({})].all? do |i|
-        case i
-        in {a: 0}
-        else
-          true
-        end
-      end
-    end
-
-    assert_block do
-      [{a: 0}, C.new({a: 0})].all? do |i|
-        case i
-        in {a: 0}
-          true
-        end
-      end
-    end
-
-    assert_block do
-      [{a: 0, b: 1}, C.new({a: 0, b: 1})].all? do |i|
-        case i
-        in {a: 0}
-          true
-        end
-      end
-    end
-
-    assert_block do
-      [{}, C.new({})].all? do |i|
-        case i
-        in {}
-          true
-        end
-      end
-    end
-
-    assert_block do
-      [{a: 0}, C.new({a: 0})].all? do |i|
-        case i
-        in {}
-        else
-          true
-        end
-      end
-    end
-
-    assert_syntax_error(%q{
-      case _
-      in a:, a:
-      end
-    }, /duplicated key name/)
-
-    assert_syntax_error(%q{
-      case _
-      in a?:
-      end
-    }, /key must be valid as local variables/)
-
-    assert_block do
-      case {a?: true}
-      in a?: true
-        true
-      end
-    end
-
-    assert_syntax_error(%q{
-      case _
-      in "a-b":
-      end
-    }, /key must be valid as local variables/)
-
-    assert_block do
-      case {"a-b": true}
-      in "a-b": true
-        true
-      end
-    end
-
-    assert_syntax_error(%q{
-      case _
-      in "#{a}": a
-      end
-    }, /symbol literal with interpolation is not allowed/)
-
-    assert_syntax_error(%q{
-      case _
-      in "#{a}":
-      end
-    }, /symbol literal with interpolation is not allowed/)
-  end
-
-  def test_paren
-    assert_block do
-      case 0
-      in (0)
-        true
-      end
-    end
-  end
-
-  def test_invalid_syntax
-    assert_syntax_error(%q{
-      case 0
-      in a, b:
-      end
-    }, /unexpected/)
-
-    assert_syntax_error(%q{
-      case 0
-      in [a:]
-      end
-    }, /unexpected/)
-
-    assert_syntax_error(%q{
-      case 0
-      in {a}
-      end
-    }, /unexpected/)
-
-    assert_syntax_error(%q{
-      case 0
-      in {0 => a}
-      end
-    }, /unexpected/)
-  end
-
-  ################################################################
-
-  class CTypeError
-    def deconstruct
-      nil
-    end
-
-    def deconstruct_keys(keys)
-      nil
-    end
-  end
-
-  def test_deconstruct
-    assert_raise(TypeError) do
-      case CTypeError.new
-      in []
-      end
-    end
-  end
-
-  def test_deconstruct_keys
-    assert_raise(TypeError) do
-      case CTypeError.new
-      in {}
-      end
-    end
-
-    assert_block do
-      case {}
-      in {}
-        C.keys == nil
-      end
-    end
-
-    assert_block do
-      case C.new({a: 0, b: 0, c: 0})
-      in {a: 0, b:}
-        assert_equal(0, b)
-        C.keys == [:a, :b]
-      end
-    end
-
-    assert_block do
-      case C.new({a: 0, b: 0, c: 0})
-      in {a: 0, b:, **}
-        assert_equal(0, b)
-        C.keys == [:a, :b]
-      end
-    end
-
-    assert_block do
-      case C.new({a: 0, b: 0, c: 0})
-      in {a: 0, b:, **r}
-        assert_equal(0, b)
-        assert_equal({c: 0}, r)
-        C.keys == nil
-      end
-    end
-
-    assert_block do
-      case C.new({a: 0, b: 0, c: 0})
-      in {**}
-        C.keys == []
-      end
-    end
-
-    assert_block do
-      case C.new({a: 0, b: 0, c: 0})
-      in {**r}
-        assert_equal({a: 0, b: 0, c: 0}, r)
-        C.keys == nil
-      end
-    end
-  end
-
-  ################################################################
-
-  def test_struct
-    assert_block do
-      s = Struct.new(:a, :b)
-      case s[0, 1]
-      in 0, 1
-        true
-      end
-    end
-
-    s = Struct.new(:a, :b, keyword_init: true)
-    assert_block do
-      case s[a: 0, b: 1]
-      in **r
-        r == {a: 0, b: 1}
-      end
-    end
-    assert_block do
-      s = Struct.new(:a, :b, keyword_init: true)
-      case s[a: 0, b: 1]
-      in a:, b:
-        a == 0 && b == 1
-      end
-    end
-    assert_block do
-      s = Struct.new(:a, :b, keyword_init: true)
-      case s[a: 0, b: 1]
-      in a:, c:
-        raise a # suppress "unused variable: a" warning
-        raise c # suppress "unused variable: c" warning
-        flunk
-      in a:, b:, c:
-        flunk
-      in b:
-        b == 1
-      end
-    end
-  end
-
-  ################################################################
-
-  def test_modifier_in
-    1 in a
-    assert_equal 1, a
-    assert_raise(NoMatchingPatternError) do
-      {a: 1} in {a: 0}
-    end
-    assert_syntax_error("if {} in {a:}; end", /void value expression/)
-    assert_syntax_error(%q{
-      1 in a, b
-    }, /unexpected/, '[ruby-core:95098]')
-    assert_syntax_error(%q{
-      1 in a:
-    }, /unexpected/, '[ruby-core:95098]')
-  end
-end
-
-################################################################
-
-class C1
-  def deconstruct
-    [:C1]
-  end
-end
-
-class C2
-end
-
-module M
-  refine Array do
-    def deconstruct
-      [0]
-    end
-  end
-
-  refine Hash do
-    def deconstruct_keys(_)
-      {a: 0}
-    end
-  end
-
-  refine C2.singleton_class do
-    def ===(obj)
-      obj.kind_of?(C1)
-    end
-  end
-end
-
-using M
-
-class TestPatternMatchingRefinements < Test::Unit::TestCase
-  def test_refinements
-    assert_block do
-      case []
-      in [0]
-        true
-      end
-    end
-
-    assert_block do
-      case {}
-      in {a: 0}
-        true
-      end
-    end
 
-    assert_block do
-      case C1.new
-      in C2(:C1)
-        true
+        eval(<<~RUBY, binding)
+          case obj
+            in Object[a: 1, **rest]
+          end
+        RUBY
+
+        ScratchPad.recorded.should == [[nil]]
+      end
+
+      it "binds variables" do
+        eval(<<~RUBY, binding).should == [0, 1, 2]
+          case {a: 0, b: 1, c: 2}
+            in {a: x, b: y, c: z}
+              [x, y, z]
+          end
+        RUBY
+      end
+
+      it "binds variable even if pattern matches only partially" do
+        x = nil
+
+        eval(<<~RUBY, binding).should == 0
+          case {a: 0, b: 1}
+            in {a: x, b: 2}
+          else
+            nil
+          end
+
+          x
+        RUBY
+      end
+
+      it "supports double splat operator **rest" do
+        eval(<<~RUBY, binding).should == {b: 1, c: 2}
+          case {a: 0, b: 1, c: 2}
+            in {a: 0, **rest}
+              rest
+          end
+        RUBY
+      end
+
+      it "treats **nil like there should not be any other keys in a matched Hash" do
+        eval(<<~RUBY, binding).should == true
+          case {a: 1, b: 2}
+            in {a: 1, b: 2, **nil}
+              true
+          end
+        RUBY
+
+        eval(<<~RUBY, binding).should == false
+          case {a: 1, b: 2}
+            in {a: 1, **nil}
+              true
+          else
+            false
+          end
+        RUBY
+      end
+
+      it "can match partially" do
+        eval(<<~RUBY, binding).should == true
+          case {a: 1, b: 2}
+            in {a: 1}
+              true
+          end
+        RUBY
+      end
+
+      it "matches {} with {}" do
+        eval(<<~RUBY, binding).should == true
+          case {}
+            in {}
+              true
+          end
+        RUBY
+      end
+
+      it "matches anything with **" do
+        eval(<<~RUBY, binding).should == true
+          case {a: 1}
+            in **;
+              true
+          end
+        RUBY
       end
     end
   end
 end
-END_of_GUARD

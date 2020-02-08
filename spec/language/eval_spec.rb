@@ -20,16 +20,14 @@ describe "transforming eval contents" do
 
   it "Kernel.eval without binding" do
     skip unless RubyNext::Language::Rewriters::PatternMatching.unsupported_syntax?
-    -> {
-      eval(%q{
-        case {status: :ok}
-        in {status:}
-          status
-        else
-          :unknown
-        end
-      })
-    }.should raise_error(NoMethodError) # deconstruct_keys is not defined
+    eval(%q{
+      case {status: :ok}
+      in {status:}
+        status
+      else
+        :unknown
+      end
+    }).should  == :unknown
   end
 
   it "Kernel.eval with binding" do

@@ -32,6 +32,8 @@ Benchmark.driver do |x|
     #{source}
 
     #{next_source}
+
+    raise "Assertion failed" if beach(:f, 112) != beach_next(:f, 112)
   }
   x.report "baseline", %{ beach :f, 112 }
   x.report "transpiled", %{ beach_next :f, 112 }

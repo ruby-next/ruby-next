@@ -22,7 +22,9 @@ module RubyNext
           )
         end
 
-        unless transform(SYNTAX_PROBE) == "Language.method(:transform)"
+        begin
+          transform(SYNTAX_PROBE)
+        rescue ::Parser::SyntaxError
           warn_custom_parser_required_for("method reference")
         end
       end
