@@ -11,6 +11,7 @@ module RubyNext
       attr_reader :lib_path, :paths, :out_path, :min_version, :single_version
 
       def run
+        log "RubyNext core strategy: #{RubyNext::Core.strategy}"
         paths.each do |path|
           contents = File.read(path)
           transpile path, contents
@@ -39,6 +40,10 @@ module RubyNext
           opts.on("--enable-method-reference", "Enable reverted method reference syntax (requires custom parser)") do
             require "ruby-next/language/rewriters/method_reference"
             Language.rewriters << Language::Rewriters::MethodReference
+          end
+
+          opts.on("--[no-]refine", "Do not inject `using RubyNext`") do |val|
+            Core.strategy = :core_ext unless val
           end
         end
 
