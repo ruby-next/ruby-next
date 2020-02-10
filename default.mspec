@@ -37,8 +37,13 @@ RubyNext::Language.rewriters << RubyNext::Language::Rewriters::MethodReference
 
 require "ruby-next/language/runtime"
 
-if ENV["USE_CORE_EXT"] == "1"
+if ENV["CORE_EXT"] == "gem"
   require "ruby-next/core_ext"
+elsif ENV["CORE_EXT"] == "generated"
+  require "ruby-next/cli"
+  RubyNext::CLI.new.run(["core_ext", "--min-version", RUBY_VERSION, "-o", File.join(__dir__, "tmp", "core_ext.rb")])
+  require_relative "tmp/core_ext"
+  RubyNext::Core.strategy = :core_ext
 else
   require "ruby-next/core/runtime"
 end

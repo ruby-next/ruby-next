@@ -6,7 +6,6 @@ gem "unparser", ">= 0.4.7"
 require "set"
 
 require "ruby-next"
-using RubyNext
 
 module RubyNext
   # Language module contains tools to transpile newer Ruby syntax
@@ -19,6 +18,8 @@ module RubyNext
   #   - Each processor may modify the AST
   #   - Generates a transpiled source code from the transformed AST (via the `unparser` gem)
   module Language
+    using RubyNext
+
     require "ruby-next/language/parser"
     require "ruby-next/language/unparser"
 

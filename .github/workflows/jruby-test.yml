@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        core_ext: [0, 1]
+        core_ext: ["false", "gem", "generated"]
     env:
       USE_CORE_EXT: ${{ matrix.core_ext }}
     steps:

@@ -2,6 +2,7 @@
 
 RubyNext::Core.patch Enumerator.singleton_class,
   name: "EnumeratorProduce",
+  singleton: Enumerator,
   version: "2.7",
   supported: Enumerator.respond_to?(:produce) do
   <<~'RUBY'

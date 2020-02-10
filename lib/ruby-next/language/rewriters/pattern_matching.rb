@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-using RubyNext
-
 module RubyNext
   module Language
     module Rewriters
+      using RubyNext
+
       using(Module.new do
         refine ::Parser::AST::Node do
           def to_ast_node

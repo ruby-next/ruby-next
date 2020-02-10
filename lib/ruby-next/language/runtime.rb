@@ -7,13 +7,12 @@ require "ruby-next/utils"
 require "ruby-next/language"
 require "ruby-next/language/eval"
 
-using RubyNext
-
 module RubyNext
   module Language
     # Module responsible for runtime transformations
-
     module Runtime
+      using RubyNext
+
       class << self
         include Utils
 
