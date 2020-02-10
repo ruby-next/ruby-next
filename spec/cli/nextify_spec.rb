@@ -94,4 +94,14 @@ describe "ruby-next nextify" do
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "method_reference_old.rb")).should equal false
     end
   end
+
+  it "supports --no-refine" do
+    run(
+      "bin/ruby-next nextify #{File.join(__dir__, "dummy", "transpile_me.rb")}",
+      "--no-refine -o #{File.join(__dir__, "dummy", ".rbnext", "transpile_me_old.rb")}"
+    ) do |_status, _output, err|
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "transpile_me_old.rb")).should equal true
+      File.read(File.join(__dir__, "dummy", ".rbnext", "transpile_me_old.rb")).should_not include("using RubyNext")
+    end
+  end
 end

@@ -143,10 +143,12 @@ It has the following interface:
 ```sh
 $ ruby-next nextify
 Usage: ruby-next nextify DIRECTORY_OR_FILE [options]
-    -o, --output=OUTPUT     Specify output directory or file
-    --min-version=VERSION   Specify the minimum Ruby version to support
-    --single-version        Only create one version of a file (for the earliest Ruby version)
-    -V                      Turn on verbose mode
+    -o, --output=OUTPUT              Specify output directory or file or stdout
+        --min-version=VERSION        Specify the minimum Ruby version to support
+        --single-version             Only create one version of a file (for the earliest Ruby version)
+        --enable-method-reference    Enable reverted method reference syntax (requires custom parser)
+        --[no-]refine                Do not inject `using RubyNext`
+    -V                               Turn on verbose mode
 ```
 
 The behaviour depends on whether you transpile a single file or a directory:
@@ -157,6 +159,7 @@ The behaviour depends on whether you transpile a single file or a directory:
 
 ```sh
 $ ruby-next nextify my_ruby.rb -o my_ruby_next.rb -V
+RubyNext core strategy: refine
 Generated: my_ruby_next.rb
 ```
 
