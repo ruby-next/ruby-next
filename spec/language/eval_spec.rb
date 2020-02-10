@@ -20,6 +20,8 @@ describe "transforming eval contents" do
 
   it "Kernel.eval without binding" do
     skip unless RubyNext::Language::Rewriters::PatternMatching.unsupported_syntax?
+    skip if RubyNext::Core.core_ext?
+
     eval(%q{
       case {status: :ok}
       in {status:}

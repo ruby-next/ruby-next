@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-unless {}.method(:merge).arity == -1
-  RubyNext::Core.patch Hash, name: "HashMultiMerge" do
+unless {}.method(:merge).arity < 0
+  RubyNext::Core.patch Hash, name: "HashMultiMerge", core_ext: :prepend do
     def merge(*others)
       return super if others.size == 1
       return dup if others.size == 0
