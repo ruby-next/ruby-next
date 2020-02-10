@@ -1,25 +1,34 @@
 # frozen_string_literal: true
 
-unless [].respond_to?(:union)
-  RubyNext::Core.patch Array, name: "ArrayUnion" do
+RubyNext::Core.patch Array,
+  name: "ArrayUnion",
+  version: "2.6",
+  supported: [].respond_to?(:union) do
+  <<~RUBY
     def union(*others)
       others.reduce(Array.new(self).uniq) { |acc, arr| acc | arr }
     end
-  end
+  RUBY
 end
 
-unless [].respond_to?(:difference)
-  RubyNext::Core.patch Array, name: "ArrayDifference" do
+RubyNext::Core.patch Array,
+  name: "ArrayDifference",
+  version: "2.6",
+  supported: [].respond_to?(:difference) do
+  <<~RUBY
     def difference(*others)
       others.reduce(Array.new(self)) { |acc, arr| acc - arr }
     end
-  end
+  RUBY
 end
 
-unless [].respond_to?(:intersection)
-  RubyNext::Core.patch Array, name: "ArrayIntersection" do
+RubyNext::Core.patch Array,
+  name: "ArrayIntersection",
+  version: "2.7",
+  supported: [].respond_to?(:intersection) do
+  <<~RUBY
     def intersection(*others)
       others.reduce(Array.new(self)) { |acc, arr| acc & arr }
     end
-  end
+  RUBY
 end

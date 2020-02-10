@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
-unless {}.method(:merge).arity < 0
-  RubyNext::Core.patch Hash, name: "HashMultiMerge", core_ext: :prepend do
+RubyNext::Core.patch Hash,
+  name: "HashMultiMerge",
+  version: "2.6",
+  supported: {}.method(:merge).arity < 0,
+  core_ext: :prepend do
+  <<~RUBY
     def merge(*others)
       return super if others.size == 1
       return dup if others.size == 0
@@ -10,5 +14,5 @@ unless {}.method(:merge).arity < 0
         others.each { |h| new_h.merge!(h) }
       end
     end
-  end
+  RUBY
 end

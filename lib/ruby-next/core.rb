@@ -7,7 +7,7 @@ module RubyNext
     # Patch contains the extension implementation
     # and meta information (e.g., Ruby version).
     class Patch
-      attr_reader :refineables, :name, :mod, :block
+      attr_reader :refineables, :name, :mod, :version, :body
 
       # Create a new patch for module/class (mod)
       # with the specified uniq name
@@ -15,15 +15,15 @@ module RubyNext
       # `core_ext` defines the strategy for core extensions:
       #    - :patch — extend class directly
       #    - :prepend — extend class by prepending a module (e.g., when needs `super`)
-      def initialize(mod = nil, name:, refineable: mod, core_ext: :patch, &block)
+      def initialize(mod = nil, name:, version:, supported:, refineable: mod, core_ext: :patch)
         @mod = mod
         @name = name
+        @version = version
+        @supported = supported
         @refineables = Array(refineable)
-        @block = block
+        @body = yield
         @core_ext = core_ext
       end
-
-      alias to_proc block
 
       def prepend?
         core_ext == :prepend
@@ -33,15 +33,21 @@ module RubyNext
         !mod.nil?
       end
 
+      def supported?
+        supported == true
+      end
+
       def to_module
-        Module.new(&block).tap do |ext|
+        Module.new.tap do |ext|
+          ext.module_eval(body)
+
           RubyNext::Core.const_set(name, ext)
         end
       end
 
       private
 
-      attr_reader :core_ext
+      attr_reader :core_ext, :supported
     end
 
     # Registry for patches
@@ -59,7 +65,7 @@ module RubyNext
         raise ArgumentError, "Patch already registered: #{patch.name}" if @names.include?(patch.name)
         @names << patch.name
         @extensions[patch.mod] << patch if patch.core_ext?
-        patch.refineables.each { |r| @refined[r] << patch }
+        patch.refineables.each { |r| @refined[r] << patch } unless patch.supported?
       end
     end
 
@@ -127,7 +133,7 @@ RubyNext.module_eval do
   RubyNext::Core.patches.refined.each do |mod, patches|
     refine mod do
       patches.each do |patch|
-        module_eval(&patch)
+        module_eval(patch.body)
       end
     end
   end
