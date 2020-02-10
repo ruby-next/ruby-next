@@ -62,7 +62,7 @@ module RubyNext
       attr_accessor :rewriters
       attr_reader :watch_dirs
 
-      def transform(source, rewriters: self.rewriters, using: true, context: TransformContext.new)
+      def transform(source, rewriters: self.rewriters, using: RubyNext::Core.refine?, context: TransformContext.new)
         parse(source).then do |ast|
           rewriters.inject(ast) do |tree, rewriter|
             rewriter.new(context).process(tree)

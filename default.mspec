@@ -36,4 +36,11 @@ require "ruby-next/language/rewriters/method_reference"
 RubyNext::Language.rewriters << RubyNext::Language::Rewriters::MethodReference
 
 require "ruby-next/language/runtime"
-require "ruby-next/core/runtime"
+
+if ENV["USE_CORE_EXT"] == "1"
+  require "ruby-next/core_ext"
+else
+  require "ruby-next/core/runtime"
+end
+
+$stdout.puts "RubyNext core strategy: #{RubyNext::Core.strategy}"
