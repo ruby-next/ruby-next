@@ -2,6 +2,10 @@
 
 ## master
 
+- Add `ruby-next/core_ext`. ([@palkan][])
+
+Now you can use core extensions (monkey-patches) instead of the refinements.
+
 - Check whether pattern matching target respond to `#deconstruct` / `#deconstruct_keys`. ([@palkan][])
 
 - Fix `Struct#deconstruct_keys` to respect passed keys. ([@palkan][])
