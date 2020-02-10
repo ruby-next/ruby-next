@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
 # rubocop:disable Style/LambdaCall
-unless proc {}.respond_to?(:<<)
-  RubyNext::Core.patch Proc, name: "ProcCompose" do
+RubyNext::Core.patch Proc,
+  name: "ProcCompose",
+  version: "2.6",
+  supported: proc {}.respond_to?(:<<) do
+  <<~RUBY
     def <<(other)
       raise TypeError, "callable object is expected" unless other.respond_to?(:call)
       this = self
@@ -14,6 +17,6 @@ unless proc {}.respond_to?(:<<)
       this = self
       proc { |*args, &block| other.(this.(*args, &block)) }
     end
-  end
+  RUBY
 end
 # rubocop:enable Style/LambdaCall

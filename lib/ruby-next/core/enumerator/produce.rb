@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
-unless Enumerator.respond_to?(:produce)
-  RubyNext::Core.patch Enumerator.singleton_class, name: "EnumeratorProduce" do
+RubyNext::Core.patch Enumerator.singleton_class,
+  name: "EnumeratorProduce",
+  version: "2.7",
+  supported: Enumerator.respond_to?(:produce) do
+  <<~'RUBY'
     # Based on https://github.com/zverok/enumerator_generate
     def produce(*rest, &block)
       raise ArgumentError, "wrong number of arguments (given #{rest.size}, expected 0..1)" if rest.size > 1
@@ -16,5 +19,5 @@ unless Enumerator.respond_to?(:produce)
         end
       end
     end
-  end
+  RUBY
 end

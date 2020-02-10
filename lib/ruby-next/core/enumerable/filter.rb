@@ -1,21 +1,36 @@
 # frozen_string_literal: true
 
-unless [].respond_to?(:filter)
-  RubyNext::Core.patch Enumerable, name: "EnumerableFilter" do
+RubyNext::Core.patch Enumerable,
+  name: "EnumerableFilter",
+  version: "2.6",
+  supported: [].respond_to?(:filter) do
+  <<~RUBY
     alias filter select
-  end
+  RUBY
+end
 
-  # Refine Array seprately, 'cause refining modules is vulnerable to prepend:
-  # - https://bugs.ruby-lang.org/issues/13446
-  #
-  # Also, Array also have `filter!`
-  RubyNext::Core.patch Array, name: "ArrayFilter" do
+# Refine Array seprately, 'cause refining modules is vulnerable to prepend:
+# - https://bugs.ruby-lang.org/issues/13446
+#
+# Also, Array also have `filter!`
+RubyNext::Core.patch Array,
+  refineable: Array,
+  name: "ArrayFilter",
+  version: "2.6",
+  supported: [].respond_to?(:filter!) do
+  <<~RUBY
     alias filter select
     alias filter! select!
-  end
+  RUBY
+end
 
-  RubyNext::Core.patch Hash, name: "HashFilter" do
+RubyNext::Core.patch Hash,
+  refineable: Hash,
+  name: "HashFilter",
+  version: "2.6",
+  supported: {}.respond_to?(:filter!) do
+  <<~RUBY
     alias filter select
     alias filter! select!
-  end
+  RUBY
 end
