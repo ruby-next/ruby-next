@@ -3,11 +3,11 @@
 require "fileutils"
 require "pathname"
 
-using RubyNext
-
 module RubyNext
   module Commands
     class Nextify < Base
+      using RubyNext
+
       attr_reader :lib_path, :paths, :out_path, :min_version, :single_version
 
       def run

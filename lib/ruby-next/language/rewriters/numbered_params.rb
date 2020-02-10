@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-using RubyNext
-
 module RubyNext
   module Language
     module Rewriters
       class NumberedParams < Base
+        using RubyNext
+
         SYNTAX_PROBE = "proc { _1 }.call(1)"
         MIN_SUPPORTED_VERSION = Gem::Version.new("2.7.0")
 

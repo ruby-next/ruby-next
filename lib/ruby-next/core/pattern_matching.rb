@@ -28,6 +28,7 @@ RubyNext::Core.patch Array,
   RUBY
 end
 
+# Source: https://github.com/ruby/ruby/blob/b76a21aa45fff75909a66f8b20fc5856705f7862/struct.c#L953-L980
 RubyNext::Core.patch Struct,
   name: "StructDeconstruct",
   version: "2.7",
@@ -35,7 +36,6 @@ RubyNext::Core.patch Struct,
   <<~'RUBY'
     alias deconstruct to_a
 
-    # Source: https://github.com/ruby/ruby/blob/b76a21aa45fff75909a66f8b20fc5856705f7862/struct.c#L953-L980
     def deconstruct_keys(keys)
       raise TypeError, "wrong argument type #{keys.class} (expected Array or nil)" if keys && !keys.is_a?(Array)
 

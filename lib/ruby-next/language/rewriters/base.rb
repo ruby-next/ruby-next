@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-using RubyNext
-
 module RubyNext
   module Language
     module Rewriters
+      using RubyNext
+
       CUSTOM_PARSER_REQUIRED = <<~MSG
         The %s feature is not a part of the latest stable Ruby release
         and is not supported by your Parser gem version.

@@ -7,7 +7,7 @@ module RubyNext
     # Patch contains the extension implementation
     # and meta information (e.g., Ruby version).
     class Patch
-      attr_reader :refineables, :name, :mod, :version, :body
+      attr_reader :refineables, :name, :mod, :version, :body, :singleton, :core_ext, :supported
 
       # Create a new patch for module/class (mod)
       # with the specified uniq name
@@ -15,11 +15,12 @@ module RubyNext
       # `core_ext` defines the strategy for core extensions:
       #    - :patch — extend class directly
       #    - :prepend — extend class by prepending a module (e.g., when needs `super`)
-      def initialize(mod = nil, name:, version:, supported:, refineable: mod, core_ext: :patch)
+      def initialize(mod = nil, name:, version:, supported:, refineable: mod, core_ext: :patch, singleton: nil)
         @mod = mod
         @name = name
         @version = version
         @supported = supported
+        @singleton = singleton
         @refineables = Array(refineable)
         @body = yield
         @core_ext = core_ext
@@ -33,9 +34,8 @@ module RubyNext
         !mod.nil?
       end
 
-      def supported?
-        supported == true
-      end
+      alias supported? supported
+      alias singleton? singleton
 
       def to_module
         Module.new.tap do |ext|
@@ -44,10 +44,6 @@ module RubyNext
           RubyNext::Core.const_set(name, ext)
         end
       end
-
-      private
-
-      attr_reader :core_ext, :supported
     end
 
     # Registry for patches

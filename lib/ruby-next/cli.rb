@@ -5,6 +5,7 @@ require "ruby-next/language"
 
 require "ruby-next/commands/base"
 require "ruby-next/commands/nextify"
+require "ruby-next/commands/core_ext"
 
 module RubyNext
   # Command line interface for RubyNext
@@ -16,7 +17,8 @@ module RubyNext
     self.verbose = false
 
     COMMANDS = {
-      "nextify" => Commands::Nextify
+      "nextify" => Commands::Nextify,
+      "core_ext" => Commands::CoreExt
     }.freeze
 
     def initialize
