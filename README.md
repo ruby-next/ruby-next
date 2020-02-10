@@ -26,8 +26,7 @@ _⚡️ The project is in a **beta** phase. That means that the main functionali
 
 Ruby Next consists of two parts: **core** and **language**.
 
-Core provides **polyfills** for Ruby core classes APIs via Refinements.
-Thus, polyfills are only available in compatible runtimes (MRI, JRuby, TruffleRuby).
+Core provides **polyfills** for Ruby core classes APIs via Refinements (default strategy) or core extensions (optionally or for refinement-less environments).
 
 Language is responsible for **transpiling** edge Ruby syntax into older versions. It could be done
 programmatically or via CLI. It also could be done in runtime.
@@ -62,6 +61,18 @@ using RubyNext
 ```
 
 Ruby Next only refines core classes if necessary; thus, this line wouldn't have any effect in the edge Ruby.
+
+Alternatively, you can go with monkey-patches. Just add this line:
+
+```ruby
+require "ruby-next/core_ext"
+```
+
+The following _rule of thumb_ is recommended when choosing between refinements and monkey-patches:
+
+- Use refinements for libraries development (to avoid conflicts with others code)
+- Using core extensions could be considered for application development (no need to think about `using RubyNext`); this approach could potentially lead to conflicts with dependendices (if these dependencies are not using refinements 🙂)
+- Use core extensions if refinements are not supported by your platform
 
 [**The list of supported APIs.**][features_core]
 
