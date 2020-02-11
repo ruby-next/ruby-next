@@ -6,6 +6,7 @@ RubyNext::Core.patch Enumerable,
   name: "Enumerable",
   version: "2.7",
   supported: [].respond_to?(:tally),
+  location: [__FILE__, __LINE__ + 3],
   refineable: [Enumerable, Array] do
   <<~RUBY
     def tally

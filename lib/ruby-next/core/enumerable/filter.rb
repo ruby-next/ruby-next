@@ -3,7 +3,8 @@
 RubyNext::Core.patch Enumerable,
   name: "EnumerableFilter",
   version: "2.6",
-  supported: [].respond_to?(:filter) do
+  supported: [].respond_to?(:filter),
+  location: [__FILE__, __LINE__ + 2] do
   <<~RUBY
     alias filter select
   RUBY
@@ -17,7 +18,8 @@ RubyNext::Core.patch Array,
   refineable: Array,
   name: "ArrayFilter",
   version: "2.6",
-  supported: [].respond_to?(:filter!) do
+  supported: [].respond_to?(:filter!),
+  location: [__FILE__, __LINE__ + 2] do
   <<~RUBY
     alias filter select
     alias filter! select!
@@ -28,7 +30,8 @@ RubyNext::Core.patch Hash,
   refineable: Hash,
   name: "HashFilter",
   version: "2.6",
-  supported: {}.respond_to?(:filter!) do
+  supported: {}.respond_to?(:filter!),
+  location: [__FILE__, __LINE__ + 2] do
   <<~RUBY
     alias filter select
     alias filter! select!

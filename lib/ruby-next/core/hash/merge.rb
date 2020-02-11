@@ -4,6 +4,7 @@ RubyNext::Core.patch Hash,
   name: "HashMultiMerge",
   version: "2.6",
   supported: {}.method(:merge).arity < 0,
+  location: [__FILE__, __LINE__ + 3],
   core_ext: :prepend do
   <<~RUBY
     def merge(*others)

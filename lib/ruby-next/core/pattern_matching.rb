@@ -9,7 +9,8 @@ end
 RubyNext::Core.patch Object,
   name: "NoMatchingPatternError",
   version: "2.7",
-  supported: defined?(NoMatchingPatternError) do
+  supported: defined?(NoMatchingPatternError),
+  location: [__FILE__, __LINE__ + 2] do
   <<~RUBY
     class NoMatchingPatternError < RuntimeError
     end
@@ -20,7 +21,8 @@ end
 RubyNext::Core.patch Array,
   name: "ArrayDeconstruct",
   version: "2.7",
-  supported: [].respond_to?(:deconstruct) do
+  supported: [].respond_to?(:deconstruct),
+  location: [__FILE__, __LINE__ + 2] do
   <<~RUBY
     def deconstruct
       self
@@ -32,7 +34,8 @@ end
 RubyNext::Core.patch Struct,
   name: "StructDeconstruct",
   version: "2.7",
-  supported: Struct.new(:x).new.respond_to?(:deconstruct_keys) do
+  supported: Struct.new(:x).new.respond_to?(:deconstruct_keys),
+  location: [__FILE__, __LINE__ + 2] do
   <<~'RUBY'
     alias deconstruct to_a
 
@@ -57,7 +60,8 @@ end
 RubyNext::Core.patch Hash,
   name: "HashDeconstructKeys",
   version: "2.7",
-  supported: {}.respond_to?(:deconstruct_keys) do
+  supported: {}.respond_to?(:deconstruct_keys),
+  location: [__FILE__, __LINE__ + 2] do
   <<~RUBY
     def deconstruct_keys(_)
       self
@@ -70,7 +74,8 @@ if Gem::Version.new(RUBY_VERSION) < Gem::Version.new("2.6")
   RubyNext::Core.patch refineable: Array,
                        name: "ArrayRespondToDeconstruct",
                        version: "2.7",
-                       supported: [].respond_to?(:deconstruct) do
+                       supported: [].respond_to?(:deconstruct),
+                       location: [__FILE__, __LINE__ + 2] do
     <<~RUBY
       def respond_to?(mid, *)
         return true if mid == :deconstruct
@@ -82,7 +87,8 @@ if Gem::Version.new(RUBY_VERSION) < Gem::Version.new("2.6")
   RubyNext::Core.patch refineable: Hash,
                        name: "HashRespondToDeconstructKeys",
                        version: "2.7",
-                       supported: {}.respond_to?(:deconstruct_keys) do
+                       supported: {}.respond_to?(:deconstruct_keys),
+                       location: [__FILE__, __LINE__ + 2] do
     <<~RUBY
       def respond_to?(mid, *)
         return true if mid == :deconstruct_keys
@@ -94,7 +100,8 @@ if Gem::Version.new(RUBY_VERSION) < Gem::Version.new("2.6")
   RubyNext::Core.patch refineable: Struct,
                        name: "StructRespondToDeconstruct",
                        version: "2.7",
-                       supported: Struct.new(:x).new.respond_to?(:deconstruct_keys) do
+                       supported: Struct.new(:x).new.respond_to?(:deconstruct_keys),
+                       location: [__FILE__, __LINE__ + 2] do
     <<~RUBY
       def respond_to?(mid, *)
         return true if mid == :deconstruct_keys || mid == :deconstruct
