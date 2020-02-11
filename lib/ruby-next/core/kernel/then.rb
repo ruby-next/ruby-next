@@ -7,7 +7,8 @@ RubyNext::Core.patch Kernel,
   name: "KernelThen",
   version: "2.6",
   supported: Object.new.respond_to?(:then),
-  refineable: Object do
+  refineable: Object,
+  location: [__FILE__, __LINE__ + 2] do
   <<~RUBY
     alias then yield_self
   RUBY

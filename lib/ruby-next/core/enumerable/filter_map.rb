@@ -6,6 +6,7 @@ RubyNext::Core.patch Enumerable,
   name: "EnumerableFilterMap",
   version: "2.7",
   supported: [].respond_to?(:filter_map),
+  location: [__FILE__, __LINE__ + 3],
   refineable: [Enumerable, Array] do
   <<~RUBY
     def filter_map
@@ -33,7 +34,8 @@ end
 RubyNext::Core.patch Enumerator::Lazy,
   name: "EnumeratorLazyFilterMap",
   version: "2.7",
-  supported: [].respond_to?(:filter_map) do
+  supported: [].respond_to?(:filter_map),
+  location: [__FILE__, __LINE__ + 2] do
   <<~RUBY
     def filter_map
       Enumerator::Lazy.new(self) do |yielder, *values|

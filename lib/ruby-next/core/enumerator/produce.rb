@@ -4,7 +4,8 @@ RubyNext::Core.patch Enumerator.singleton_class,
   name: "EnumeratorProduce",
   singleton: Enumerator,
   version: "2.7",
-  supported: Enumerator.respond_to?(:produce) do
+  supported: Enumerator.respond_to?(:produce),
+  location: [__FILE__, __LINE__ + 2] do
   <<~'RUBY'
     # Based on https://github.com/zverok/enumerator_generate
     def produce(*rest, &block)

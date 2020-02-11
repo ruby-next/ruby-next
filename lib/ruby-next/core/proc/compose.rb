@@ -4,7 +4,8 @@
 RubyNext::Core.patch Proc,
   name: "ProcCompose",
   version: "2.6",
-  supported: proc {}.respond_to?(:<<) do
+  supported: proc {}.respond_to?(:<<),
+  location: [__FILE__, __LINE__ + 2] do
   <<~RUBY
     def <<(other)
       raise TypeError, "callable object is expected" unless other.respond_to?(:call)
