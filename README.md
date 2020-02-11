@@ -136,18 +136,21 @@ due to the way feature resolving works in Ruby (scanning the `$LOAD_PATH` and ha
 
 Ruby Next ships with the command-line interface (`ruby-next`) which provides the following functionality:
 
-- `ruby-next nextify` — transpile file or directory into older Rubies (see, for example, the "Integrating into a gem development" section above).
+### `ruby-next nextify`
+
+This command allows you to transpile a file or directory into older Rubies (see, for example, the "Integrating into a gem development" section above).
 
 It has the following interface:
 
 ```sh
 $ ruby-next nextify
 Usage: ruby-next nextify DIRECTORY_OR_FILE [options]
-    -o, --output=OUTPUT              Specify output directory or file or stdout
+    -o, --output=OUTPUT              Specify output directory or file or stdout (use -o stdout for that)
         --min-version=VERSION        Specify the minimum Ruby version to support
         --single-version             Only create one version of a file (for the earliest Ruby version)
         --enable-method-reference    Enable reverted method reference syntax (requires custom parser)
         --[no-]refine                Do not inject `using RubyNext`
+    -h, --help                       Print help
     -V                               Turn on verbose mode
 ```
 
@@ -161,6 +164,49 @@ The behaviour depends on whether you transpile a single file or a directory:
 $ ruby-next nextify my_ruby.rb -o my_ruby_next.rb -V
 RubyNext core strategy: refine
 Generated: my_ruby_next.rb
+```
+
+### `ruby-next core_ext`
+
+This command could be used to generate a Ruby file with a configurable set of core extensions.
+
+Use this command if you want to backport new Ruby features to Ruby implementations not compatible with RubyGems.
+
+It has the following interface:
+
+```sh
+$ ruby-next core_ext
+Usage: ruby-next core_ext [options]
+    -o, --output=OUTPUT              Specify output file or stdout (default: ./core_ext.rb)
+    -l, --list                       List all available extensions
+        --min-version=VERSION        Specify the minimum Ruby version to support
+    -n, --name=NAME                  Filter extensions by name
+    -h, --help                       Print help
+    -V                               Turn on verbose mode
+```
+
+The most common usecase is to backport the APIs required by pattern matching. You can do this, for example,
+by including only monkey-patches containing the `"deconstruct"` in their names:
+
+```sh
+ruby-next core_ext -n deconstruct -o pattern_matching_core_ext.rb
+```
+
+To list all available (are matching if `--min-version` or `--name` specified) monkey-patches, use the `-l` switch:
+
+```sh
+$ ruby-next core_ext -l --name=filter --name=deconstruct
+2.6 extensions:
+  - ArrayFilter
+  - EnumerableFilter
+  - HashFilter
+
+2.7 extensions:
+  - ArrayDeconstruct
+  - EnumerableFilterMap
+  - EnumeratorLazyFilterMap
+  - HashDeconstructKeys
+  - StructDeconstruct
 ```
 
 ## Runtime mode
