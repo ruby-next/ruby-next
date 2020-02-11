@@ -22,6 +22,7 @@ module RubyNext
       end
 
       def parse!(args)
+        print_help = false
         @min_version = MIN_SUPPORTED_VERSION
         @original_command = "ruby-next core_ext #{args.join(" ")}"
         @names = []
@@ -31,7 +32,7 @@ module RubyNext
         optparser = base_parser do |opts|
           opts.banner = "Usage: ruby-next core_ext [options]"
 
-          opts.on("-o", "--output=OUTPUT", "Specify output directory or file or stdout (default: ./core_ext.rb)") do |val|
+          opts.on("-o", "--output=OUTPUT", "Specify output file or stdout (default: ./core_ext.rb)") do |val|
             @out_path = val
           end
 
@@ -46,9 +47,18 @@ module RubyNext
           opts.on("-n", "--name=NAME", "Filter extensions by name") do |val|
             names << val
           end
+
+          opts.on("-h", "--help", "Print help") do
+            print_help = true
+          end
         end
 
         optparser.parse!(args)
+
+        if print_help
+          $stdout.puts optparser.help
+          exit 0
+        end
 
         @filter = /(#{names.join("|")})/i unless names.empty?
       end
@@ -122,7 +132,12 @@ module RubyNext
           buffer << "end\n"
         end
 
-        File.write(out_path, buffer.join("\n"))
+        contents = buffer.join("\n")
+
+        return $stdout.puts(contents) if out_path == "stdout"
+
+        FileUtils.mkdir_p File.dirname(out_path)
+        File.write(out_path, contents)
 
         log "Generated: #{out_path}"
       end

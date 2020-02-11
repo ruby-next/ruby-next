@@ -19,6 +19,7 @@ module RubyNext
       end
 
       def parse!(args)
+        print_help = false
         @min_version = MIN_SUPPORTED_VERSION
         @single_version = false
 
@@ -45,13 +46,22 @@ module RubyNext
           opts.on("--[no-]refine", "Do not inject `using RubyNext`") do |val|
             Core.strategy = :core_ext unless val
           end
+
+          opts.on("-h", "--help", "Print help") do
+            print_help = true
+          end
         end
 
         @lib_path = args[0]
 
-        unless lib_path&.then(&File.method(:exist?))
+        if print_help
           $stdout.puts optparser.help
           exit 0
+        end
+
+        unless lib_path&.then(&File.method(:exist?))
+          $stdout.puts optparser.help
+          exit 2
         end
 
         optparser.parse!(args)

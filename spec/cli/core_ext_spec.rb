@@ -26,7 +26,7 @@ describe "ruby-next core_ext" do
     end
   end
 
-  it "-l -v" do
+  it "-l --min-version" do
     run("bin/ruby-next core_ext -l --min-version 2.6") do |_status, output, err|
       output.should_not include("2.6 extensions:")
       output.should_not include("- KernelThen")
@@ -38,7 +38,7 @@ describe "ruby-next core_ext" do
     end
   end
 
-  it "-v 2.5" do
+  it "--min-version 2.5" do
     run "bin/ruby-next core_ext --min-version 2.5 -o #{@out_path}" do |_status, _output, err|
       File.exist?(@out_path).should equal true
       File.read(@out_path).tap do |contents|
@@ -50,7 +50,7 @@ describe "ruby-next core_ext" do
     end
   end
 
-  it "-v 2.6" do
+  it "--min-version 2.6" do
     run "bin/ruby-next core_ext --min-version 2.6 -o #{@out_path}" do |_status, _output, err|
       File.exist?(@out_path).should equal true
       File.read(@out_path).tap do |contents|
