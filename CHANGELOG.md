@@ -2,6 +2,11 @@
 
 ## master
 
+- Add `ruby-next core_ext` command. ([@palkan][])
+
+This command allows generating custom core extension files. Meant to be used in
+alternative Ruby implementations (mruby, Opal, etc.) not compatible with the `ruby-next-core` gem.
+
 - Add `ruby-next/core_ext`. ([@palkan][])
 
 Now you can use core extensions (monkey-patches) instead of the refinements.
