@@ -18,7 +18,7 @@ jobs:
           - ruby: 2.7
             core_ext: "gem"
     env:
-      USE_CORE_EXT: ${{ matrix.core_ext }}
+      CORE_EXT: ${{ matrix.core_ext }}
     steps:
     - uses: actions/checkout@v1
     - name: Set up Ruby
