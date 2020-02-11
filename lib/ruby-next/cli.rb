@@ -27,9 +27,15 @@ module RubyNext
     def run(args = ARGV)
       maybe_print_version(args)
 
-      command = args.shift
+      command = extract_command(args)
 
-      raise "Command must be specified!" unless command
+      # Handle top-level help
+      unless command
+        maybe_print_help
+        raise "Command must be specified!"
+      end
+
+      args.delete(command)
 
       COMMANDS.fetch(command) do
         raise "Unknown command: #{command}. Available commands: #{COMMANDS.keys.join(",")}"
@@ -41,6 +47,35 @@ module RubyNext
     def maybe_print_version(args)
       args = args.dup
       begin
+        optparser.parse!(args)
+      rescue OptionParser::InvalidOption
+        # skip and pass all args to the command's parser
+      end
+    end
+
+    def maybe_print_help
+      return unless @print_help
+
+      STDOUT.puts optparser.help
+      exit 0
+    end
+
+    def extract_command(source_args)
+      args = source_args.dup
+      unknown_args = []
+      command = nil
+      begin
+        command, = optparser.permute!(args)
+      rescue OptionParser::InvalidOption => e
+        unknown_args += e.args
+        args = source_args - unknown_args
+        retry
+      end
+      command
+    end
+
+    def optparser
+      @optparser ||= begin
         OptionParser.new do |opts|
           opts.banner = "Usage: ruby-next COMMAND [options]"
 
@@ -48,9 +83,11 @@ module RubyNext
             STDOUT.puts RubyNext::VERSION
             exit 0
           end
-        end.parse!(args)
-      rescue OptionParser::InvalidOption
-        # skip and pass all args to the command's parser
+
+          opts.on("-h", "--help", "Print help") do
+            @print_help = true
+          end
+        end
       end
     end
   end
