@@ -72,6 +72,7 @@ module RubyNext
 
             Unparser.unparse(new_ast)
           end.then do |source|
+            next source unless RubyNext::Core.refine?
             next source unless using && context.use_ruby_next?
 
             Core.inject! source.dup
