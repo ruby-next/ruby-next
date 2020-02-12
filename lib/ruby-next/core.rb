@@ -7,7 +7,7 @@ module RubyNext
     # Patch contains the extension implementation
     # and meta information (e.g., Ruby version).
     class Patch
-      attr_reader :refineables, :name, :mod, :version, :body, :singleton, :core_ext, :supported, :location
+      attr_reader :refineables, :name, :mod, :method_name, :version, :body, :singleton, :core_ext, :supported, :location
 
       # Create a new patch for module/class (mod)
       # with the specified uniq name
@@ -15,16 +15,19 @@ module RubyNext
       # `core_ext` defines the strategy for core extensions:
       #    - :patch — extend class directly
       #    - :prepend — extend class by prepending a module (e.g., when needs `super`)
-      def initialize(mod = nil, name:, version:, supported:, location: nil, refineable: mod, core_ext: :patch, singleton: nil)
+      def initialize(mod = nil, method:, name: nil, version:, supported: nil, location: nil, refineable: mod, core_ext: :patch, singleton: nil)
         @mod = mod
-        @name = name
+        @method_name = method
         @version = version
-        @supported = supported
+        if method_name
+          @supported = supported.nil? ? mod.instance_methods.include?(method_name) : supported
+        end
         @singleton = singleton
         @refineables = Array(refineable)
         @body = yield
         @core_ext = core_ext
-        @location = location
+        @location = location || build_location(caller_locations(3, 1).first)
+        @name = name || build_module_name
       end
 
       def prepend?
@@ -44,6 +47,19 @@ module RubyNext
 
           RubyNext::Core.const_set(name, ext)
         end
+      end
+
+      private
+
+      def build_module_name
+        mod_name = singleton? ? singleton.name : mod.name
+        camelized_method_name = method_name.to_s.split("_").map(&:capitalize).join
+
+        "#{mod_name}#{camelized_method_name}".gsub(/\W/, "")
+      end
+
+      def build_location(trace_location)
+        [trace_location.absolute_path, trace_location.lineno + 2]
       end
     end
 

@@ -1,11 +1,6 @@
 # frozen_string_literal: true
 
-RubyNext::Core.patch Enumerator.singleton_class,
-  name: "EnumeratorProduce",
-  singleton: Enumerator,
-  version: "2.7",
-  supported: Enumerator.respond_to?(:produce),
-  location: [__FILE__, __LINE__ + 2] do
+RubyNext::Core.patch Enumerator.singleton_class, method: :produce, singleton: Enumerator, version: "2.7" do
   <<~'RUBY'
     # Based on https://github.com/zverok/enumerator_generate
     def produce(*rest, &block)

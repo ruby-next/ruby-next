@@ -1,11 +1,6 @@
 # frozen_string_literal: true
 
-RubyNext::Core.patch Hash,
-  name: "HashMultiMerge",
-  version: "2.6",
-  supported: {}.method(:merge).arity < 0,
-  location: [__FILE__, __LINE__ + 3],
-  core_ext: :prepend do
+RubyNext::Core.patch Hash, method: :merge, version: "2.6", supported: {}.method(:merge).arity < 0, core_ext: :prepend do
   <<~RUBY
     def merge(*others)
       return super if others.size == 1
