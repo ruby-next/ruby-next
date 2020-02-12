@@ -2,12 +2,7 @@
 
 # Refine Array seprately, 'cause refining modules is vulnerable to prepend:
 # - https://bugs.ruby-lang.org/issues/13446
-RubyNext::Core.patch Enumerable,
-  name: "EnumerableFilterMap",
-  version: "2.7",
-  supported: [].respond_to?(:filter_map),
-  location: [__FILE__, __LINE__ + 3],
-  refineable: [Enumerable, Array] do
+RubyNext::Core.patch Enumerable, method: :filter_map, version: "2.7", refineable: [Enumerable, Array] do
   <<~RUBY
     def filter_map
       if block_given?
@@ -31,11 +26,7 @@ RubyNext::Core.patch Enumerable,
   RUBY
 end
 
-RubyNext::Core.patch Enumerator::Lazy,
-  name: "EnumeratorLazyFilterMap",
-  version: "2.7",
-  supported: [].respond_to?(:filter_map),
-  location: [__FILE__, __LINE__ + 2] do
+RubyNext::Core.patch Enumerator::Lazy, method: :filter_map, version: "2.7" do
   <<~RUBY
     def filter_map
       Enumerator::Lazy.new(self) do |yielder, *values|

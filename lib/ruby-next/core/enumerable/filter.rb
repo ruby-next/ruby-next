@@ -1,10 +1,6 @@
 # frozen_string_literal: true
 
-RubyNext::Core.patch Enumerable,
-  name: "EnumerableFilter",
-  version: "2.6",
-  supported: [].respond_to?(:filter),
-  location: [__FILE__, __LINE__ + 2] do
+RubyNext::Core.patch Enumerable, method: :filter, version: "2.6" do
   <<~RUBY
     alias filter select
   RUBY
@@ -14,24 +10,14 @@ end
 # - https://bugs.ruby-lang.org/issues/13446
 #
 # Also, Array also have `filter!`
-RubyNext::Core.patch Array,
-  refineable: Array,
-  name: "ArrayFilter",
-  version: "2.6",
-  supported: [].respond_to?(:filter!),
-  location: [__FILE__, __LINE__ + 2] do
+RubyNext::Core.patch Array, method: :filter!, version: "2.6" do
   <<~RUBY
     alias filter select
     alias filter! select!
   RUBY
 end
 
-RubyNext::Core.patch Hash,
-  refineable: Hash,
-  name: "HashFilter",
-  version: "2.6",
-  supported: {}.respond_to?(:filter!),
-  location: [__FILE__, __LINE__ + 2] do
+RubyNext::Core.patch Hash, method: :filter!, version: "2.6" do
   <<~RUBY
     alias filter select
     alias filter! select!
