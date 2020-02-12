@@ -20,6 +20,7 @@ describe "ruby-next core_ext" do
       output.should include("- KernelThen")
       output.should include("- ProcCompose")
       output.should include("2.7 extensions:")
+      output.should include("- NoMatchingPatternError")
       output.should include("- EnumerableFilterMap")
       output.should include("- ArrayDeconstruct")
       output.should include("- HashDeconstructKeys")
