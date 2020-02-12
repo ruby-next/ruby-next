@@ -7,7 +7,7 @@ using CommandTesting
 describe "patch has source location meta" do
   it "works" do
     source_path = Pathname.new(File.join(__dir__, "../../lib/ruby-next/core/enumerator/produce.rb")).realpath
-    source_line = File.open(source_path).each_line.with_index { |line, i| break i + 1 if line =~ /wrong number of arguments/ }
+    source_line = File.open(source_path).each_line.with_index { |line, i| break i + 1 if /wrong number of arguments/.match?(line) }
 
     run(
       "ruby -rbundler/setup -I#{File.join(__dir__, "../../lib")} "\

@@ -122,6 +122,8 @@ require_relative "core/array/difference_union_intersection"
 
 require_relative "core/hash/merge"
 
+require_relative "core/string/split"
+
 # Core extensions required for pattern matching
 require_relative "core/pattern_matching"
 
