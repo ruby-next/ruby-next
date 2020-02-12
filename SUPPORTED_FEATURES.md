@@ -16,7 +16,9 @@
 
 - `Enumerable#filter/#filter!` ([ref](https://rubyreferences.github.io/rubychanges/2.6.html#hashmerge-with-multiple-arguments))
 
-- (TODO) `String#split` with block ([ref](https://rubyreferences.github.io/rubychanges/2.6.html#stringsplit-with-block))
+- `String#split` with block ([ref](https://rubyreferences.github.io/rubychanges/2.6.html#stringsplit-with-block))
+
+**NOTE:** the implementation is very-straightforward and uses and intermediate array; it's only added to provide an API, not the optimization itself.
 
 - `Hash#merge` with multiple args ([ref](https://rubyreferences.github.io/rubychanges/2.6.html#hashmerge-with-multiple-arguments))
 

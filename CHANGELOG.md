@@ -2,6 +2,8 @@
 
 ## master
 
+- Add `String#split` with block. ([@palkan][])
+
 - Add `ruby-next core_ext` command. ([@palkan][])
 
 This command allows generating custom core extension files. Meant to be used in
