@@ -26,7 +26,7 @@ module RubyNext
         @refineables = Array(refineable)
         @body = yield
         @core_ext = core_ext
-        @location = location || build_location(caller_locations(3, 1).first)
+        @location = location || build_location(caller_locations(1, 5))
         @name = name || build_module_name
       end
 
@@ -58,7 +58,15 @@ module RubyNext
         "#{mod_name}#{camelized_method_name}".gsub(/\W/, "")
       end
 
-      def build_location(trace_location)
+      def build_location(trace_locations)
+        # The caller_locations behaviour depends on implementaion,
+        # e.g. in JRuby https://github.com/jruby/jruby/issues/6055
+        while trace_locations.first.label != "patch"
+          trace_locations.shift
+        end
+
+        trace_location = trace_locations[1]
+
         [trace_location.absolute_path, trace_location.lineno + 2]
       end
     end
