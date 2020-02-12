@@ -141,7 +141,17 @@ require_relative "core/hash/merge"
 require_relative "core/string/split"
 
 # Core extensions required for pattern matching
-require_relative "core/pattern_matching"
+# Required for pattern matching with refinements
+unless defined?(NoMatchingPatternError)
+  class NoMatchingPatternError < RuntimeError
+  end
+end
+
+require_relative "core/constants/no_matching_pattern_error"
+require_relative "core/array/deconstruct"
+require_relative "core/hash/deconstruct_keys"
+require_relative "core/struct/deconstruct"
+require_relative "core/struct/deconstruct_keys"
 
 # Generate refinements
 RubyNext.module_eval do
