@@ -7,7 +7,7 @@ module RubyNext
     # Patch contains the extension implementation
     # and meta information (e.g., Ruby version).
     class Patch
-      attr_reader :refineables, :name, :mod, :method_name, :version, :body, :singleton, :core_ext, :supported, :location
+      attr_reader :refineables, :name, :mod, :method_name, :version, :body, :singleton, :core_ext, :supported, :native, :location
 
       # Create a new patch for module/class (mod)
       # with the specified uniq name
@@ -15,12 +15,15 @@ module RubyNext
       # `core_ext` defines the strategy for core extensions:
       #    - :patch — extend class directly
       #    - :prepend — extend class by prepending a module (e.g., when needs `super`)
-      def initialize(mod = nil, method:, name: nil, version:, supported: nil, location: nil, refineable: mod, core_ext: :patch, singleton: nil)
+      def initialize(mod = nil, method:, name: nil, version:, supported: nil, native: nil, location: nil, refineable: mod, core_ext: :patch, singleton: nil)
         @mod = mod
         @method_name = method
         @version = version
-        if method_name
+        if method_name && mod
           @supported = supported.nil? ? mod.instance_methods.include?(method_name) : supported
+          # define whether running Ruby has a native implementation for this method
+          # for that, we check the source_location (which is nil for C defined methods)
+          @native = native.nil? ? (supported? && mod.instance_method(method_name).source_location.nil?) : native
         end
         @singleton = singleton
         @refineables = Array(refineable)
@@ -39,6 +42,7 @@ module RubyNext
       end
 
       alias supported? supported
+      alias native? native
       alias singleton? singleton
 
       def to_module
@@ -86,7 +90,7 @@ module RubyNext
         raise ArgumentError, "Patch already registered: #{patch.name}" if @names.include?(patch.name)
         @names << patch.name
         @extensions[patch.mod] << patch if patch.core_ext?
-        patch.refineables.each { |r| @refined[r] << patch } unless patch.supported?
+        patch.refineables.each { |r| @refined[r] << patch } unless patch.native?
       end
     end
 

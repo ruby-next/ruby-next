@@ -4,6 +4,11 @@
 
 - Add `String#split` with block. ([@palkan][])
 
+- **Check for _native_ method implementation to activate a refinement.** ([@palkan][])
+
+Add a method refinement to `using RubyNext` even if the backport is present. That
+helps to avoid the conflicts with invalid monkey-patches.
+
 - Add `ruby-next core_ext` command. ([@palkan][])
 
 This command allows generating custom core extension files. Meant to be used in

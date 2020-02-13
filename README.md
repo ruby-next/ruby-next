@@ -62,6 +62,8 @@ using RubyNext
 
 Ruby Next only refines core classes if necessary; thus, this line wouldn't have any effect in the edge Ruby.
 
+**NOTE:** Even if the runtime already contains a monkey-patch with the backported functionality, we consider the method as _dirty_ and activate the refinement for it. Thus, you always have a predictable behaviour. That's why we recommend using refinements for gems development.
+
 Alternatively, you can go with monkey-patches. Just add this line:
 
 ```ruby
