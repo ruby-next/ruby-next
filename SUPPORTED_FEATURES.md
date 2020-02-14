@@ -58,4 +58,6 @@ You can still use this feature with RubyNext by enabling it explicitly (see [Rea
 
 - Numbered parameters (`block { _1 }`)
 
-- (TODO) Startless ranges (`..1` or `...1`) ([#14799](https://bugs.ruby-lang.org/issues/14799))
+- (_WONTFIX_) Startless ranges (`..1` or `...1`) ([#14799](https://bugs.ruby-lang.org/issues/14799))
+
+The possible translation depends on the _end_ type which is hardly inferrable from the source code.
