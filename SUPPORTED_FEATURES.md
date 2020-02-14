@@ -24,31 +24,29 @@
 
 ### 2.7
 
-- `Enumerable#tally`
+- `Enumerable#tally` ([ref](https://rubyreferences.github.io/rubychanges/2.7.html#enumerabletally))
 
-- `Array#intersection`
+- `Array#intersection` ([ref](https://rubyreferences.github.io/rubychanges/2.7.html#arrayintersection))
 
-- `Enumerable#filter_map`
+- `Enumerable#filter_map` ([ref](https://rubyreferences.github.io/rubychanges/2.7.html#enumerablefilter_map))
 
-- `Enumerator#produce` ([#14781](https://bugs.ruby-lang.org/issues/14781))
+- `Enumerator#produce` ([ref](https://rubyreferences.github.io/rubychanges/2.7.html#enumeratorproduce))
 
-- (TODO) `Time#ceil`, `Time#floor`
+- `Time#ceil`, `Time#floor` ([ref](https://rubyreferences.github.io/rubychanges/2.7.html#floor-and-ceil))
 
-- `UnboundMethod#bind_call`
+- `UnboundMethod#bind_call` ([ref](https://rubyreferences.github.io/rubychanges/2.7.html#unboundmethodbind_call))
 
 ## Syntax
 
 ### 2.6
 
-- Endless ranges (`1..` or `1...`).
+- Endless ranges (`1..` or `1...`) ([ref](https://rubyreferences.github.io/rubychanges/2.6.html#endless-range-1))
 
 **NOTE**: transpiled into `a[1..-1]` for indexes and `(1...Float::INFINITY)` in other cases.
 
 ### 2.7
 
-- Pattern matching (`case ... in ... end`) ([#14912](https://bugs.ruby-lang.org/issues/14912))
-
-- One line pattern matching (`1 in a`) ([#15865](https://bugs.ruby-lang.org/issues/15865))
+- Pattern matching (`case ... in ... end`) ([ref](https://rubyreferences.github.io/rubychanges/2.7.html#pattern-matching))
 
 - **REVERTED IN RUBY ([#16275](https://bugs.ruby-lang.org/issues/16275))** Method reference operator (`Module.:method`) ([#12125](https://bugs.ruby-lang.org/issues/12125), [#13581](https://bugs.ruby-lang.org/issues/13581))
 
@@ -56,8 +54,8 @@ You can still use this feature with RubyNext by enabling it explicitly (see [Rea
 
 - Arguments forwarding (`def a(...) b(...) end`) ([#16253](https://bugs.ruby-lang.org/issues/16253))
 
-- Numbered parameters (`block { _1 }`)
+- Numbered parameters (`block { _1 }`) ([ref](https://rubyreferences.github.io/rubychanges/2.7.html#numbered-block-parameters))
 
-- (_WONTFIX_) Startless ranges (`..1` or `...1`) ([#14799](https://bugs.ruby-lang.org/issues/14799))
+- (_WONTFIX_) Startless ranges (`..1` or `...1`) ([ref](https://rubyreferences.github.io/rubychanges/2.7.html#beginless-range))
 
 The possible translation depends on the _end_ type which is hardly inferrable from the source code.
