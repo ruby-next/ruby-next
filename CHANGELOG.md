@@ -2,6 +2,8 @@
 
 ## master
 
+- Add `UnboundMethod#bind_call`. ([@palkan][])
+
 - Add `String#split` with block. ([@palkan][])
 
 - **Check for _native_ method implementation to activate a refinement.** ([@palkan][])

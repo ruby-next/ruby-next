@@ -34,7 +34,7 @@
 
 - (TODO) `Time#ceil`, `Time#floor`
 
-- (TODO) `UnboundMethod#bind_call`
+- `UnboundMethod#bind_call`
 
 ## Syntax
 

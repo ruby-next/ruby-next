@@ -152,6 +152,8 @@ require_relative "core/hash/merge"
 
 require_relative "core/string/split"
 
+require_relative "core/unboundmethod/bind_call"
+
 # Core extensions required for pattern matching
 # Required for pattern matching with refinements
 unless defined?(NoMatchingPatternError)
