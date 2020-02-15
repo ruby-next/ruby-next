@@ -2,6 +2,8 @@
 
 ## master
 
+## 0.3.0 (2020-02-14) 💕
+
 - Add `Time#floor` and `Time#ceil`. ([@palkan][])
 
 - Add `UnboundMethod#bind_call`. ([@palkan][])
