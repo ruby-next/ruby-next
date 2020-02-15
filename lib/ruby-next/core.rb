@@ -20,7 +20,7 @@ module RubyNext
         @method_name = method
         @version = version
         if method_name && mod
-          @supported = supported.nil? ? mod.instance_methods.include?(method_name) : supported
+          @supported = supported.nil? ? mod.method_defined?(method_name) : supported
           # define whether running Ruby has a native implementation for this method
           # for that, we check the source_location (which is nil for C defined methods)
           @native = native.nil? ? (supported? && mod.instance_method(method_name).source_location.nil?) : native
@@ -153,6 +153,9 @@ require_relative "core/hash/merge"
 require_relative "core/string/split"
 
 require_relative "core/unboundmethod/bind_call"
+
+require_relative "core/time/floor"
+require_relative "core/time/ceil"
 
 # Core extensions required for pattern matching
 # Required for pattern matching with refinements

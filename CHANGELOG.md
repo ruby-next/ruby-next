@@ -2,6 +2,8 @@
 
 ## master
 
+- Add `Time#floor` and `Time#ceil`. ([@palkan][])
+
 - Add `UnboundMethod#bind_call`. ([@palkan][])
 
 - Add `String#split` with block. ([@palkan][])
