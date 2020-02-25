@@ -39,6 +39,8 @@ module RubyNext
         MATCHEE_ARR = :__m_arr__
         MATCHEE_HASH = :__m_hash__
 
+        ALTERNATION_MARKER = :__alt__
+
         def on_case_match(node)
           context.track! self
 
@@ -138,8 +140,10 @@ module RubyNext
         end
 
         def match_alt_clause(node)
-          children = node.children.map do |child|
-            send :"#{child.type}_clause", child
+          children = locals.with(ALTERNATION_MARKER => true) do
+            node.children.map do |child|
+              send :"#{child.type}_clause", child
+            end
           end
           s(:or, *children)
         end
@@ -151,6 +155,8 @@ module RubyNext
         end
 
         def match_var_clause(node, left = s(:lvar, locals[:matchee]))
+          check_match_var_alternation! node.children[0]
+
           s(:or,
             s(:lvasgn, node.children[0], left),
             s(:true)) # rubocop:disable Lint/BooleanSymbol
@@ -237,6 +243,7 @@ module RubyNext
           child = node.children[0]
           rest = arr_rest_items(index, tail.size).then do |r|
             next r unless child
+
             match_var_clause(
               child,
               r
@@ -357,6 +364,8 @@ module RubyNext
         end
 
         def match_var_hash_key(node)
+          check_match_var_alternation! node.children[0]
+
           s(:sym, node.children[0])
         end
 
@@ -535,6 +544,14 @@ module RubyNext
         private
 
         attr_reader :deconstructed
+
+        # Raise SyntaxError if match-var is used within alternation
+        # https://github.com/ruby/ruby/blob/672213ef1ca2b71312084057e27580b340438796/compile.c#L5900
+        def check_match_var_alternation!(name)
+          return unless locals.key?(ALTERNATION_MARKER)
+
+          raise ::SyntaxError, "illegal variable in alternative pattern (#{name})"
+        end
       end
     end
   end

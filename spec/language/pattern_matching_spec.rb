@@ -412,14 +412,13 @@ ruby_version_is "2.7" do
       end
 
       it "does not support variable binding" do
-        skip "TODO: parser"
         -> {
           eval(<<~RUBY, binding)
             case [0, 1]
               in [0, 0] | [0, a]
             end
           RUBY
-        }.should raise_error(Parser::SyntaxError)
+        }.should raise_error(SyntaxError)
       end
     end
 
