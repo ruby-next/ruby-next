@@ -179,12 +179,15 @@ require_relative "core/hash/deconstruct_keys"
 require_relative "core/struct/deconstruct"
 require_relative "core/struct/deconstruct_keys"
 
-# Generate refinements
-RubyNext.module_eval do
-  RubyNext::Core.patches.refined.each do |mod, patches|
-    refine mod do
-      patches.each do |patch|
-        module_eval(patch.body, *patch.location)
+# TruffleRuby doesn't support module refinements
+unless defined?(::TruffleRuby)
+  # Generate refinements
+  RubyNext.module_eval do
+    RubyNext::Core.patches.refined.each do |mod, patches|
+      refine mod do
+        patches.each do |patch|
+          module_eval(patch.body, *patch.location)
+        end
       end
     end
   end

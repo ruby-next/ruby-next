@@ -43,7 +43,7 @@ module TestUnitToMspec
     end
   end
 
-  if defined?(MSpecEnv)
+  if defined?(MSpecEnv) || !defined?(TruffleRuby)
     refine MSpecEnv do
       include MSpecEnvExt
     end
@@ -64,7 +64,7 @@ module TestUnitToMspec
     end
   end
 
-  refine Kernel do
+  refine Object do
     include KernelExt
   end
 end

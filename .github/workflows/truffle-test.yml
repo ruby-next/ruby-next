@@ -1,0 +1,43 @@
+name: TruffleRuby Build
+
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+
+jobs:
+  truffle-test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    env:
+      CORE_EXT: gem
+      RUBY_NEXT_CORE_STRATEGY: core_ext
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: truffleruby
+    - name: Download MSpec
+      run: |
+        git clone https://github.com/ruby/mspec.git mspec
+    - uses: actions/cache@v1
+      with:
+        path: vendor/bundle
+        key: bundle-use-truffleruby-${{ hashFiles('**/Gemfile') }}-${{ hashFiles('**/*.gemspec') }}
+        restore-keys: |
+          bundle-use-truffleruby-
+    - name: Bundle install
+      run: |
+        bundle config path /home/runner/bundle
+        bundle install
+        bundle update
+    - name: Run MSpec
+      run: |
+        bundle install
+        bundle exec mspec/bin/mspec
+    - name: Run language specs with source rewriting
+      env:
+        RUBY_NEXT_TRANSPILE_MODE: "rewrite"
+      run: bundle exec mspec/bin/mspec :language

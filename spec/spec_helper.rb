@@ -19,6 +19,8 @@ unless defined?(MSpecEnv)
       1.should == 1
     end
   end
+end
 
+if !defined?(MSpecEnv) || defined?(TruffleRuby)
   require_relative "test_unit_to_mspec"
 end
