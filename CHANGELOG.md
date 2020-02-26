@@ -2,6 +2,8 @@
 
 ## master
 
+- Add `Symbol#start_with?/end_with?`. ([@palkan][])
+
 ## 0.3.0 (2020-02-14) 💕
 
 - Add `Time#floor` and `Time#ceil`. ([@palkan][])

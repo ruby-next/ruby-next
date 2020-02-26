@@ -152,6 +152,9 @@ require_relative "core/hash/merge"
 
 require_relative "core/string/split"
 
+require_relative "core/symbol/start_with"
+require_relative "core/symbol/end_with"
+
 require_relative "core/unboundmethod/bind_call"
 
 require_relative "core/time/floor"

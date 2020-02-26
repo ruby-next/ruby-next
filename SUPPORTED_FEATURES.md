@@ -36,6 +36,8 @@
 
 - `UnboundMethod#bind_call` ([ref](https://rubyreferences.github.io/rubychanges/2.7.html#unboundmethodbind_call))
 
+- `Symbol#start_with?`, `Symbol#end_with?` ([ref](https://rubyreferences.github.io/rubychanges/2.7.html#symbolstart_with-and-end_with))
+
 ## Syntax
 
 ### 2.6
