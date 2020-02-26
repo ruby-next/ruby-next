@@ -990,6 +990,9 @@ ruby_version_is "2.7" do
     end
 
     describe "refinements" do
+      # https://github.com/jruby/jruby/issues/6017
+      next if defined?(JRUBY_VERSION)
+
       it "are used for #deconstruct" do
         refinery = Module.new do
           refine Array do
