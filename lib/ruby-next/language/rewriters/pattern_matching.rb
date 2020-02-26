@@ -104,7 +104,10 @@ module RubyNext
           else
             raise "Unexpected else in the middle of case ... in" if rest && rest.size > 0
             # else clause must be present
-            node || no_matching_pattern
+            (process(node) || no_matching_pattern).then do |else_node|
+              next else_node unless else_node.type == :empty_else
+              s(:empty)
+            end
           end
         end
 
@@ -117,7 +120,7 @@ module RubyNext
               ),
               clause.children[1] # guard
             ),
-            clause.children[2] || s(:nil) # expression
+            process(clause.children[2] || s(:nil)) # expression
           ].then do |children|
             if rest && rest.size > 0
               children << build_if_clause(rest.first, rest[1..-1])
@@ -168,7 +171,7 @@ module RubyNext
 
         def case_eq_clause(node, right = s(:lvar, locals[:matchee]))
           s(:send,
-            node, :===, right)
+            process(node), :===, right)
         end
 
         #=========== ARRAY PATTERN (START) ===============
@@ -549,6 +552,8 @@ module RubyNext
         # https://github.com/ruby/ruby/blob/672213ef1ca2b71312084057e27580b340438796/compile.c#L5900
         def check_match_var_alternation!(name)
           return unless locals.key?(ALTERNATION_MARKER)
+
+          return if name.start_with?("_")
 
           raise ::SyntaxError, "illegal variable in alternative pattern (#{name})"
         end

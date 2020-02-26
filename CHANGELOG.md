@@ -2,6 +2,8 @@
 
 ## master
 
+- Pattern matching is 100% compatible with RubySpec. ([@palkan][])
+
 - Add `Symbol#start_with?/end_with?`. ([@palkan][])
 
 ## 0.3.0 (2020-02-14) 💕
