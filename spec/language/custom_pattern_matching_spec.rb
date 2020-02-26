@@ -51,4 +51,21 @@ describe "custom tests" do
         end
     end
   end
+
+  it "nested pattern matching" do
+    assert_block do
+      val = [0, 1, 2]
+      case val
+      in [0, 0, *a]
+        false
+      else
+        val.shift
+
+        case val
+        in [1, 2]
+          true
+        end
+      end
+    end
+  end
 end

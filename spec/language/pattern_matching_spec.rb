@@ -1,12 +1,11 @@
-# source: https://github.com/ruby/spec/ruby/language/pattern_matching_spec.rb
+# source: https://github.com/ruby/spec/blob/master/language/pattern_matching_spec.rb
 
 # NOTE: the following changes to the original code should be made:
 # - Add `using RubyNext::Language::Eval`
 # - Remove expected messages from SyntaxError
 # - Replace SyntaxError with Parser::SyntaxError
-# - Add binding to all eval calls (e.g., `eval <<~CODE` => `eval(<<~CODE, binding)`)
+# - Add binding to all eval calls (e.g., `eval <<~CODE` => `eval(<<~CODE, binding)`), move locals to eval when necessary
 # - Skip warnings specs
-# - Replace empty else clauses with implicit `nil` (`else; end` => `else; nil; end`)
 
 require_relative '../spec_helper'
 
@@ -52,7 +51,7 @@ ruby_version_is "2.7" do
     end
 
     it "warns about pattern matching is experimental feature" do
-      skip "we do not warn :)"
+      skip
       -> {
         eval(<<~RUBY, binding)
           case 0
@@ -133,7 +132,7 @@ ruby_version_is "2.7" do
               true
           end
         RUBY
-      }.should raise_error(Parser::SyntaxError)
+      }.should raise_error(Parser::SyntaxError, /unexpected/)
     end
 
     describe "guards" do
@@ -191,7 +190,6 @@ ruby_version_is "2.7" do
           case 0
             in 1 if (ScratchPad << :foo) || true
           else
-            nil
           end
         RUBY
 
@@ -358,9 +356,9 @@ ruby_version_is "2.7" do
       end
 
       it "supports existing variables in a pattern specified with ^ operator" do
-        a = 0
-
         eval(<<~RUBY, binding).should == true
+          a = 0
+
           case 0
             in ^a
               true
@@ -387,7 +385,6 @@ ruby_version_is "2.7" do
       end
 
       it "requires bound variable to be specified in a pattern before ^ operator when it relies on a bound variable" do
-        skip "TODO: parser"
         -> {
           eval(<<~RUBY, binding)
             case [1, 2]
@@ -418,7 +415,18 @@ ruby_version_is "2.7" do
               in [0, 0] | [0, a]
             end
           RUBY
-        }.should raise_error(SyntaxError)
+        }.should raise_error(SyntaxError, /illegal variable in alternative pattern/)
+      end
+
+      it "support undescore prefixed variables in alternation" do
+        eval(<<~RUBY, binding).should == true
+          case [0, 1]
+            in [1, _]
+              false
+            in [0, 0] | [0, _a]
+              true
+          end
+        RUBY
       end
     end
 
@@ -517,7 +525,6 @@ ruby_version_is "2.7" do
       end
 
       it "does not match object without #deconstruct method" do
-        skip "TODO: parser (empty array should return array-pattern anyway)"
         obj = Object.new
 
         eval(<<~RUBY, binding).should == false
@@ -537,7 +544,7 @@ ruby_version_is "2.7" do
         -> {
           eval(<<~RUBY, binding)
             case obj
-              in Object[0]
+              in Object[]
             else
             end
           RUBY
@@ -574,7 +581,6 @@ ruby_version_is "2.7" do
           case [0, 1, 2]
             in [a, 1, 3]
           else
-            nil
           end
 
           a
@@ -753,20 +759,19 @@ ruby_version_is "2.7" do
               in {"a" => 1}
             end
           RUBY
-        }.should raise_error(Parser::SyntaxError)
+        }.should raise_error(Parser::SyntaxError, /unexpected/)
       end
 
       it "does not support string interpolation in keys" do
-        skip "TODO: parser"
         x = "a"
 
         -> {
-          eval(<<~'RUBY', binding)
+          eval <<~'RUBY'
             case {a: 1}
               in {"#{x}": 1}
             end
           RUBY
-        }.should raise_error(Parser::SyntaxError)
+        }.should raise_error(Parser::SyntaxError, /symbol literal with interpolation is not allowed/)
       end
 
       it "raise SyntaxError when keys duplicate in pattern" do
@@ -923,7 +928,6 @@ ruby_version_is "2.7" do
           case {a: 0, b: 1}
             in {a: x, b: 2}
           else
-            nil
           end
 
           x
@@ -982,6 +986,80 @@ ruby_version_is "2.7" do
               true
           end
         RUBY
+      end
+    end
+
+    describe "refinements" do
+      it "are used for #deconstruct" do
+        refinery = Module.new do
+          refine Array do
+            def deconstruct
+              [0]
+            end
+          end
+        end
+
+        result = nil
+        Module.new do
+          using refinery
+
+          result = eval(<<~RUBY, binding)
+            case []
+              in [0]
+                true
+            end
+          RUBY
+        end
+
+        result.should == true
+      end
+
+      it "are used for #deconstruct_keys" do
+        refinery = Module.new do
+          refine Hash do
+            def deconstruct_keys(_)
+              {a: 0}
+            end
+          end
+        end
+
+        result = nil
+        Module.new do
+          using refinery
+
+          result = eval(<<~RUBY, binding)
+            case {}
+              in a: 0
+                true
+            end
+          RUBY
+        end
+
+        result.should == true
+      end
+
+      it "are used for #=== in constant pattern" do
+        refinery = Module.new do
+          refine Array.singleton_class do
+            def ===(obj)
+              obj.is_a?(Hash)
+            end
+          end
+        end
+
+        result = nil
+        Module.new do
+          using refinery
+
+          result = eval(<<~RUBY, binding)
+            case {}
+              in Array
+                true
+            end
+          RUBY
+        end
+
+        result.should == true
       end
     end
   end

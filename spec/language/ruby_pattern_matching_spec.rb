@@ -257,13 +257,12 @@ class TestPatternMatching < Test::Unit::TestCase
       end
     }, /duplicated variable name/)
 
-    # TODO: support rucursive pattern matching?
-    # assert_block do
-    #   case [0, "1"]
-    #   in a, "#{case 1; in a; a; end}"
-    #     true
-    #   end
-    # end
+    assert_block do
+      case [0, "1"]
+      in a, "#{case 1; in a; a; end}"
+        true
+      end
+    end
 
     assert_syntax_error(%q{
       case [0, "1"]
