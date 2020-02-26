@@ -298,7 +298,7 @@ Then, add to your Gemfile:
 
 ```ruby
 source "https://rubygems.pkg.github.com/ruby-next" do
-  gem "parser", "2.7.0.100"
+  gem "parser", "~> 2.7.0.100", "< 2.7.1"
 end
 
 gem "ruby-next"
@@ -311,7 +311,7 @@ gem "ruby-next"
 You can install `ruby-next` globally by running the following commands:
 
 ```sh
-gem install parser -v "2.7.0.100" --source "https://USERNAME:ACCESS_TOKEN@rubygems.pkg.github.com/ruby-next"
+gem install parser -v "~> 2.7.0.100" -v "< 2.7.1" --source "https://USERNAME:ACCESS_TOKEN@rubygems.pkg.github.com/ruby-next"
 gem install ruby-next
 ```
 
