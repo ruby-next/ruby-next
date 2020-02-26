@@ -130,10 +130,10 @@ module RubyNext
           end
         end
 
-        def const_pattern_clause(node)
+        def const_pattern_clause(node, right = s(:lvar, locals[:matchee]))
           const, pattern = *node.children
 
-          case_eq_clause(const).then do |node|
+          case_eq_clause(const, right).then do |node|
             next node if pattern.nil?
 
             s(:and,
@@ -153,7 +153,7 @@ module RubyNext
 
         def match_as_clause(node, right = s(:lvar, locals[:matchee]))
           s(:and,
-            case_eq_clause(node.children[0]),
+            send(:"#{node.children[0].type}_clause", node.children[0], right),
             match_var_clause(node.children[1], right))
         end
 
@@ -165,8 +165,8 @@ module RubyNext
             s(:true)) # rubocop:disable Lint/BooleanSymbol
         end
 
-        def pin_clause(node)
-          case_eq_clause node.children[0]
+        def pin_clause(node, right = s(:lvar, locals[:matchee]))
+          case_eq_clause node.children[0], right
         end
 
         def case_eq_clause(node, right = s(:lvar, locals[:matchee]))
@@ -433,7 +433,9 @@ module RubyNext
 
         def pair_hash_element(node, _key = nil)
           key, val = *node.children
-          send("#{val.type}_hash_element", val, key)
+          s(:and,
+            hash_has_key(key),
+            send("#{val.type}_hash_element", val, key))
         end
 
         def match_alt_hash_element(node, key)
@@ -450,6 +452,12 @@ module RubyNext
               element_node,
               s(:true)), # rubocop:disable Lint/BooleanSymbol
             s(:or, *children))
+        end
+
+        def match_as_hash_element(node, key)
+          s(:and,
+            hash_has_key(key),
+            match_as_clause(node, hash_value_at(key)))
         end
 
         def match_var_hash_element(node, key = nil)
@@ -538,7 +546,7 @@ module RubyNext
         end
 
         def method_missing(mid, *args, &block)
-          return case_eq_clause(args.first) if mid.match?(/_clause$/)
+          return case_eq_clause(*args) if mid.match?(/_clause$/)
           return case_eq_array_element(*args) if mid.match?(/_array_element$/)
           return case_eq_hash_element(*args) if mid.match?(/_hash_element$/)
           super

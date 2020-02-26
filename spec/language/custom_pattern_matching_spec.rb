@@ -68,4 +68,44 @@ describe "custom tests" do
       end
     end
   end
+
+  describe "AS pattern" do
+    it "can be used with array pattern" do
+      eval(<<~RUBY, binding).should == [2, 3]
+        case [1, [2, 3]]
+          in [Integer, Array] => ary
+            ary[1]
+        end
+      RUBY
+    end
+
+    it "can be used with array pattern element" do
+      eval(<<~RUBY, binding).should == 1
+        case [1]
+          in [Integer => res]
+            res
+        end
+      RUBY
+    end
+
+    it "can be used with hash pattern" do
+      eval(<<~RUBY, binding).should == [2, 3]
+        case {a: 1, b: [2, 3]}
+          in {a: Integer, b: Array} => data
+            data[:b]
+        end
+      RUBY
+    end
+
+    it "can be used with hash pattern key" do
+      eval(<<~RUBY, binding).should == 1
+        case {a: 1}
+          in {b: NilClass}
+            0
+          in {a: Integer => res}
+            res
+        end
+      RUBY
+    end
+  end
 end
