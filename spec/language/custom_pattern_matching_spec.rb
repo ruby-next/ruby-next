@@ -4,7 +4,7 @@ using TestUnitToMspec
 
 # These tests are not copied from ruby/ruby
 describe "custom tests" do
-  it "multiple clauses" do
+  it "array pattern multiple clauses" do
     # multiple clauses with arrays
     assert_block do
       case [0, 1, 2]
@@ -23,6 +23,20 @@ describe "custom tests" do
         in a:, **b
           a == 0 && b == {b: 1}
         end
+    end
+  end
+
+  it "hash pattern with multiple clauses" do
+    s = Struct.new(:a, :b, keyword_init: true)
+    assert_block do
+      case s[a: 0, b: 1]
+      in a:, c:
+        false
+      in a:, b:, c:
+        false
+      in b:
+        b == 1
+      end
     end
   end
 

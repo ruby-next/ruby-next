@@ -375,34 +375,35 @@ module RubyNext
         end
 
         def deconstruct_keys_node(keys, matchee = s(:lvar, locals[:matchee]))
-          # Deconstruct once and use a copy of the hash for each pattern if we need **rest.
+          # Use original hash returned by #deconstruct_keys if not **rest matching,
+          # 'cause it remains immutable
+          deconstruct_name = @hash_match_rest ? locals[:hash, :src] : locals[:hash]
+
+          # Duplicate the source hash when matching **rest, 'cause we mutate it
           hash_dup =
             if @hash_match_rest
               s(:lvasgn, locals[:hash], s(:send, s(:lvar, locals[:hash, :src]), :dup))
             else
-              s(:lvasgn, locals[:hash], s(:lvar, locals[:hash, :src]))
+              s(:true) # rubocop:disable Lint/BooleanSymbol
             end
-
-          # Create a copy of the original hash if already deconstructed
-          # FIXME: need better algorithm to handle different key sets
-          # return hash_dup if deconstructed&.include?(locals[:hash])
 
           context.use_ruby_next!
 
-          deconstructed << locals[:hash] if deconstructed
-
-          right = s(:send,
-            matchee, :deconstruct_keys, keys)
-
           s(:and,
             s(:or,
-              s(:lvasgn, locals[:hash, :src], right),
+              s(:lvasgn, deconstruct_name,
+                s(:send,
+                  matchee, :deconstruct_keys, keys)),
               s(:true)), # rubocop:disable Lint/BooleanSymbol
+            s(:or,
+              case_eq_clause(s(:const, nil, :Hash), s(:lvar, deconstruct_name)),
+              raise_error(:TypeError, "#deconstruct_keys must return Hash"))).then do |dnode|
+            next dnode unless @hash_match_rest
+
             s(:and,
-              s(:or,
-                case_eq_clause(s(:const, nil, :Hash), s(:lvar, locals[:hash, :src])),
-                raise_error(:TypeError, "#deconstruct_keys must return Hash")),
-              hash_dup))
+              dnode,
+              hash_dup)
+          end
         end
 
         def hash_pattern_hash_element(node, key)
