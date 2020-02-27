@@ -5,7 +5,7 @@
 
 > Make all Rubies quack like edge Ruby!
 
-Ruby Next is a collection of **polyfills** and a **transpiler** for supporting the latest and upcoming Ruby features (APIs and syntax) in older versions and alternative implementations. For example, you can use pattern matching and `Kernel#then` in Ruby 2.5 or [mruby][].
+Ruby Next is a **transpiler** and a collection of **polyfills** for supporting the latest and upcoming Ruby features (APIs and syntax) in older versions and alternative implementations. For example, you can use pattern matching and `Kernel#then` in Ruby 2.5 or [mruby][].
 
 Who might be interested in Ruby Next?
 
