@@ -68,6 +68,8 @@ module RubyNext
         def on_in_match(node)
           context.track! self
 
+          @deconstructed = []
+
           matchee =
             s(:lvasgn, MATCHEE, node.children[0])
 
@@ -204,7 +206,7 @@ module RubyNext
               right)
           end.then do |right|
             s(:and,
-              respond_to_check(matchee, :deconstruct),
+              respond_to_check(matchee, :deconstruct, locals[:arr, :rtd]),
               right)
           end
         end
@@ -345,7 +347,7 @@ module RubyNext
               right)
           end.then do |right|
             s(:and,
-              respond_to_check(matchee, :deconstruct_keys),
+              respond_to_check(matchee, :deconstruct_keys, locals[:hash, :rtdk]),
               right)
           end
         end
@@ -536,8 +538,14 @@ module RubyNext
             msg.to_ast_node)
         end
 
-        def respond_to_check(node, mid)
-          s(:send, node, :respond_to?, mid.to_ast_node)
+        # Add respond_to? check and keep its value in the local var
+        def respond_to_check(node, mid, lvar_name)
+          return s(:lvar, lvar_name) if deconstructed.include?(lvar_name)
+
+          deconstructed << lvar_name
+
+          s(:lvasgn, lvar_name,
+            s(:send, node, :respond_to?, mid.to_ast_node))
         end
 
         def respond_to_missing?(mid, *)
