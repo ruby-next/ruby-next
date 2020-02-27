@@ -9,15 +9,15 @@ require "benchmark_driver"
 
 require "ruby-next/language"
 
-# Inspired by https://learnyousomeerlang.com/syntax-in-functions#in-case-of
+# Based on https://github.com/hanami/api/blob/b1823e3bf6bb832d60818b533666c0c9788b52cf/lib/hanami/api/block/context.rb#L129-L141
 source = %{
 def call(val)
   status, headers, body = 200, {}, ""
 
   case val
-    in [String => body,]
+    in [String => body]
       [status, headers, [body]]
-    in [Integer => status,]
+    in [Integer => status]
       [status, headers, [body]]
     in [Integer, String] => response
       [response[0], headers, [response[1]]]
