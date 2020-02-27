@@ -40,6 +40,7 @@ module RubyNext
         MATCHEE_HASH = :__m_hash__
 
         ALTERNATION_MARKER = :__alt__
+        CURRENT_HASH_KEY = :__chk__
 
         def on_case_match(node)
           context.track! self
@@ -436,9 +437,7 @@ module RubyNext
 
         def pair_hash_element(node, _key = nil)
           key, val = *node.children
-          s(:and,
-            hash_has_key(key),
-            send("#{val.type}_hash_element", val, key))
+          having_hash_key(key) { send("#{val.type}_hash_element", val, key) }
         end
 
         def match_alt_hash_element(node, key)
@@ -458,17 +457,12 @@ module RubyNext
         end
 
         def match_as_hash_element(node, key)
-          s(:and,
-            hash_has_key(key),
-            match_as_clause(node, hash_value_at(key)))
+          having_hash_key(key) { match_as_clause(node, hash_value_at(key)) }
         end
 
         def match_var_hash_element(node, key = nil)
           key ||= node.children[0]
-          # We need to check whether key is present first
-          s(:and,
-            hash_has_key(key),
-            match_var_clause(node, hash_value_at(key)))
+          having_hash_key(key) { match_var_clause(node, hash_value_at(key)) }
         end
 
         def match_nil_pattern_hash_element(node, _key = nil)
@@ -503,6 +497,17 @@ module RubyNext
             s(:index,
               hash,
               key.to_ast_node)
+          end
+        end
+
+        # Add key check if haven't been already checked
+        def having_hash_key(key)
+          return yield if locals.fetch(CURRENT_HASH_KEY) { nil } == key
+
+          locals.with(CURRENT_HASH_KEY => key) do
+            s(:and,
+              hash_has_key(key),
+              yield)
           end
         end
 
