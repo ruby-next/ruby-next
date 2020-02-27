@@ -44,7 +44,7 @@ module RubyNext
         def on_case_match(node)
           context.track! self
 
-          @deconstructed = []
+          @deconstructed = {}
 
           matchee_ast =
             s(:lvasgn, MATCHEE, node.children[0])
@@ -68,7 +68,7 @@ module RubyNext
         def on_in_match(node)
           context.track! self
 
-          @deconstructed = []
+          @deconstructed = {}
 
           matchee =
             s(:lvasgn, MATCHEE, node.children[0])
@@ -215,13 +215,13 @@ module RubyNext
 
         def deconstruct_node(matchee)
           # only deconstruct once per case
-          return if deconstructed&.include?(locals[:arr])
+          return if deconstructed.key?(locals[:arr])
 
           context.use_ruby_next!
 
           right = s(:send, matchee, :deconstruct)
 
-          deconstructed << locals[:arr] if deconstructed
+          deconstructed[locals[:arr]] = true
 
           s(:and,
             s(:or,
@@ -541,9 +541,9 @@ module RubyNext
 
         # Add respond_to? check and keep its value in the local var
         def respond_to_check(node, mid, lvar_name)
-          return s(:lvar, lvar_name) if deconstructed.include?(lvar_name)
+          return s(:lvar, lvar_name) if deconstructed.key?(lvar_name)
 
-          deconstructed << lvar_name
+          deconstructed[lvar_name] = true
 
           s(:lvasgn, lvar_name,
             s(:send, node, :respond_to?, mid.to_ast_node))
