@@ -15,9 +15,10 @@ Who might be interested in Ruby Next?
 - **Users of non-MRI implementations** such as [mruby][], [JRuby][], [TruffleRuby][], [Opal][], [RubyMotion][], [Artichoke][], [Prism][].
 
 Ruby Next also aims to help the community to assess new, _experimental_, MRI features by making it easier to play with them.
-That's why Ruby Next implements the `trunk` features as fast as possible.
+That's why Ruby Next implements the `master` features as fast as possible.
 
-_⚡️ The project is in a **beta** phase. That means that the main functionality has been implemented (see [the list][features]) and APIs shouldn't change a lot in the nearest future. On the other hand, the number of users/projects is not enough to say we're "production-ready". So, can't wait to hear your feedback 🙂_
+<a href="https://evilmartians.com/?utm_source=ruby-next">
+<img src="https://evilmartians.com/badges/sponsored-by-evil-martians.svg" alt="Sponsored by Evil Martians" width="236" height="54"></a>
 
 ## Links
 
