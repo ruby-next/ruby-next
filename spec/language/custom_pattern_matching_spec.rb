@@ -40,6 +40,19 @@ describe "custom tests" do
     end
   end
 
+  it "array pattern with different sizes" do
+    assert_block do
+      case [0, 1, 2]
+      in [0]
+        false
+      in [0, 1]
+        false
+      else
+        true
+      end
+    end
+  end
+
   it "in operator" do
     # in with hash
     assert_block do
