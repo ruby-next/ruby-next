@@ -188,9 +188,6 @@ module RubyNext
                 array_element(0, *node.children)
               end
 
-            # already deconsrtructed
-            next right if dnode.nil?
-
             # if there is no rest or tail, match the size first
             unless node.type == :array_pattern_with_tail || node.children.any? { |n| n.type == :match_rest }
               right =
@@ -201,6 +198,8 @@ module RubyNext
                     s(:send, s(:lvar, locals[:arr]), :size)),
                   right)
             end
+
+            return right unless dnode
 
             s(:and,
               dnode,
