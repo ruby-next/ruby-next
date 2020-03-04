@@ -554,25 +554,28 @@ module RubyNext
 
           context.use_ruby_next!
 
-          respond_check = predicates.respond_to_deconstruct_keys(
-            respond_to_check(matchee, :deconstruct_keys)
-          )
+          respond_to_checked = predicates.pred?(:respond_to_deconstruct_keys)
+          respond_check = predicates.respond_to_deconstruct_keys(respond_to_check(matchee, :deconstruct_keys))
 
           key_names = keys.children.map { |node| node.children.last }
           predicates.push locals[:hash]
 
-          s(:and,
-            respond_check,
+          s(:lvasgn, deconstruct_name,
+            s(:send,
+              matchee, :deconstruct_keys, keys)).then do |dnode|
+            next dnode if respond_to_checked
+
             s(:and,
-              s(:or,
-                s(:lvasgn, deconstruct_name,
+              respond_check,
+              s(:and,
+                s(:or,
+                  dnode,
+                  s(:true)), # rubocop:disable Lint/BooleanSymbol
+                s(:or,
                   s(:send,
-                    matchee, :deconstruct_keys, keys)),
-                s(:true)), # rubocop:disable Lint/BooleanSymbol
-              s(:or,
-                s(:send,
-                  s(:const, nil, :Hash), :===, s(:lvar, deconstruct_name)),
-                raise_error(:TypeError, "#deconstruct_keys must return Hash")))).then do |dnode|
+                    s(:const, nil, :Hash), :===, s(:lvar, deconstruct_name)),
+                  raise_error(:TypeError, "#deconstruct_keys must return Hash"))))
+          end.then do |dnode|
             predicates.hash_deconstructed(dnode, key_names)
           end.then do |dnode|
             next dnode unless @hash_match_rest
