@@ -96,6 +96,56 @@ describe "custom tests" do
     end
   end
 
+  it "nested alternation" do
+    assert_block do
+      case [[1], ["2"]]
+        in [[0] | nil, _]
+          false
+        in [[1], [1]]
+          false
+        in [[1], [2 | "2"]]
+          true
+      end
+    end
+
+    assert_block do
+      case [1, 2]
+        in [0, _] | {a: 0}
+          false
+        in {a: 1, b: 2} | [1, 2]
+          true
+      end
+    end
+  end
+
+  describe "multi-level patterns" do
+    it "with arrays" do
+      assert_block do
+        case [[1], [2]]
+          in [[0], _]
+            false
+          in [[1], [1]]
+            false
+          in [[1], [2]]
+            true
+        end
+      end
+    end
+
+    it "with hashes" do
+      assert_block do
+        case {a: {a: 1, b: 1}, b: {a: 1, b: 2}}
+          in {a: {a: 0}}
+            false
+          in {a: {a: 1}, b: {b: 1}}
+            false
+          in {a: {a: 1}, b: {b: 2}}
+            true
+        end
+      end
+    end
+  end
+
   describe "AS pattern" do
     it "can be used with array pattern" do
       eval(<<~RUBY, binding).should == [2, 3]
