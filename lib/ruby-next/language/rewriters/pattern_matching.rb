@@ -52,11 +52,34 @@ module RubyNext
       #
       # This way we mimic a naive decision tree algorithim.
       module Predicates
+        class Processor < ::Parser::TreeRewriter
+          attr_reader :predicates
+
+          def initialize(predicates)
+            @predicates = predicates
+            super()
+          end
+
+          def on_lvasgn(node)
+            lvar, val = *node.children
+            if predicates.store[lvar] == false
+              process(val)
+            else
+              node
+            end
+          end
+        end
+
         class Base
+          attr_reader :store, :predicates_by_path, :count, :terminated, :current_path
+          alias terminated? terminated
+
           def initialize
             # total number of predicates
             @count = 0
-            # cache of all predicates
+            # cache of all predicates by path
+            @predicates_by_path = {}
+            # all predicates and their dirty state
             @store = {}
 
             @current_path = []
@@ -88,25 +111,33 @@ module RubyNext
           end
 
           def pred?(name)
-            store.key?(current_path + [name])
+            predicates_by_path.key?(current_path + [name])
           end
 
           def read_pred(name)
-            s(:lvar, store.fetch(current_path + [name]))
+            lvar = predicates_by_path.fetch(current_path + [name])
+            # mark as used
+            store[lvar] = true
+            s(:lvar, lvar)
           end
 
           def write_pred(name, node)
             return node if terminated?
             @count += 1
+            lvar = :"__p_#{count}__"
+            predicates_by_path[current_path + [name]] = lvar
+            store[lvar] = false
+
             s(:lvasgn,
-              store[current_path + [name]] = :"__p_#{count}__",
+              lvar,
               node)
           end
 
-          private
+          def process(ast)
+            Processor.new(self).process(ast)
+          end
 
-          attr_reader :store, :count, :terminated, :current_path
-          alias terminated? terminated
+          private
 
           def s(type, *children)
             ::Parser::AST::Node.new(type, children)
@@ -176,7 +207,7 @@ module RubyNext
           matchee_ast =
             s(:lvasgn, MATCHEE, node.children[0])
 
-          ifs_ast = locals.with(
+          patterns = locals.with(
             matchee: MATCHEE,
             arr: MATCHEE_ARR,
             hash: MATCHEE_HASH
@@ -184,10 +215,13 @@ module RubyNext
             build_if_clause(node.children[1], node.children[2..-1])
           end
 
+          # remove unused predicate assignments
+          patterns = predicates.process(patterns)
+
           node.updated(
             :begin,
             [
-              matchee_ast, ifs_ast
+              matchee_ast, patterns
             ]
           )
         end
@@ -344,9 +378,9 @@ module RubyNext
         def deconstruct_node(matchee)
           context.use_ruby_next!
 
-          respond_check = predicates.respond_to_deconstruct(
-            respond_to_check(matchee, :deconstruct)
-          )
+          # we do not memoize respond_to_check for arrays, 'cause
+          # we can memoize is together with #deconstruct result
+          respond_check = respond_to_check(matchee, :deconstruct)
           right = s(:send, matchee, :deconstruct)
 
           predicates.array_deconstructed(
@@ -525,7 +559,7 @@ module RubyNext
           )
 
           key_names = keys.children.map { |node| node.children.last }
-          predicates.push :"hash_#{key_names.join("_k_")}"
+          predicates.push locals[:hash]
 
           s(:and,
             respond_check,
