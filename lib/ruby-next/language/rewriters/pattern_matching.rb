@@ -31,6 +31,131 @@ module RubyNext
         end
       end)
 
+      # We can memoize structural predicates to avoid double calculation.
+      #
+      # For example, consider the following case and the corresponding predicate chains:
+      #
+      #    case val
+      #    in [:ok, 200] #=> [:respond_to_deconstruct, :deconstruct_type, :arr_size_is_2]
+      #    in [:created, 201] #=> [:respond_to_deconstruct, :deconstruct_type, :arr_size_is_2]
+      #    in [401 | 403] #=> [:respond_to_deconstruct, :deconstruct_type, :arr_size_is_1]
+      #    end
+      #
+      # We can minimize the number of predicate calls by storing the intermediate values (prefixed with `p_`) and using them
+      # in the subsequent calls:
+      #
+      #    case val
+      #    in [:ok, 200] #=> [:respond_to_deconstruct, :deconstruct_type, :arr_size_is_2]
+      #    in [:created, 201] #=> [:p_deconstructed, :p_arr_size_2]
+      #    in [401 | 403] #=> [:p_deconstructed, :arr_size_is_1]
+      #    end
+      #
+      # This way we mimic a naive decision tree algorithim.
+      module Predicates
+        class Base
+          def initialize
+            # total number of predicates
+            @count = 0
+            # cache of all predicates
+            @store = {}
+
+            @current_path = []
+          end
+
+          def reset!
+            @current_path = []
+            @terminated = false
+          end
+
+          def push(path)
+            current_path << path
+          end
+
+          def pop
+            current_path.pop
+          end
+
+          def terminate!
+            @terminated = true
+          end
+
+          def predicate_clause(name, node)
+            if pred?(name)
+              read_pred(name)
+            else
+              write_pred(name, node)
+            end
+          end
+
+          def pred?(name)
+            store.key?(current_path + [name])
+          end
+
+          def read_pred(name)
+            s(:lvar, store.fetch(current_path + [name]))
+          end
+
+          def write_pred(name, node)
+            return node if terminated?
+            @count += 1
+            s(:lvasgn,
+              store[current_path + [name]] = :"__p_#{count}__",
+              node)
+          end
+
+          private
+
+          attr_reader :store, :count, :terminated, :current_path
+          alias terminated? terminated
+
+          def s(type, *children)
+            ::Parser::AST::Node.new(type, children)
+          end
+        end
+
+        # rubocop:disable Style/MethodMissingSuper
+        # rubocop:disable Style/MissingRespondToMissing
+        class Noop < Base
+          # Return node itself, no memoization
+          def method_missing(mid, node, *)
+            node
+          end
+        end
+        # rubocop:enable Style/MethodMissingSuper
+        # rubocop:enable Style/MissingRespondToMissing
+
+        class CaseIn < Base
+          def const(node, const)
+            node
+          end
+
+          def respond_to_deconstruct(node)
+            predicate_clause(:respond_to_deconstruct, node)
+          end
+
+          def array_size(node, size)
+            predicate_clause(:"array_size_#{size}", node)
+          end
+
+          def array_deconstructed(node)
+            predicate_clause(:array_deconstructed, node)
+          end
+
+          def hash_deconstructed(node, keys)
+            predicate_clause(:"hash_deconstructed_#{keys.join("_p_")}", node)
+          end
+
+          def respond_to_deconstruct_keys(node)
+            predicate_clause(:respond_to_deconstruct_keys, node)
+          end
+
+          def hash_key(node, key)
+            key = key.children.first if key.is_a?(::Parser::AST::Node)
+            predicate_clause(:"hash_key_#{key}", node)
+          end
+        end
+      end
+
       class PatternMatching < Base
         SYNTAX_PROBE = "case 0; in 0; true; else; 1; end"
         MIN_SUPPORTED_VERSION = Gem::Version.new("2.7.0")
@@ -45,7 +170,8 @@ module RubyNext
         def on_case_match(node)
           context.track! self
 
-          @deconstructed = {}
+          @deconstructed_keys = {}
+          @predicates = Predicates::CaseIn.new
 
           matchee_ast =
             s(:lvasgn, MATCHEE, node.children[0])
@@ -69,7 +195,8 @@ module RubyNext
         def on_in_match(node)
           context.track! self
 
-          @deconstructed = {}
+          @deconstructed_keys = {}
+          @predicates = Predicates::Noop.new
 
           matchee =
             s(:lvasgn, MATCHEE, node.children[0])
@@ -103,6 +230,7 @@ module RubyNext
 
         def build_if_clause(node, rest)
           if node&.type == :in_pattern
+            predicates.reset!
             build_in_pattern(node, rest)
           else
             raise "Unexpected else in the middle of case ... in" if rest && rest.size > 0
@@ -136,7 +264,7 @@ module RubyNext
         def const_pattern_clause(node, right = s(:lvar, locals[:matchee]))
           const, pattern = *node.children
 
-          case_eq_clause(const, right).then do |node|
+          predicates.const(case_eq_clause(const, right), const).then do |node|
             next node if pattern.nil?
 
             s(:and,
@@ -147,7 +275,8 @@ module RubyNext
 
         def match_alt_clause(node)
           children = locals.with(ALTERNATION_MARKER => true) do
-            node.children.map do |child|
+            node.children.map.with_index do |child, i|
+              predicates.terminate! if i == 1
               send :"#{child.type}_clause", child
             end
           end
@@ -169,10 +298,12 @@ module RubyNext
         end
 
         def pin_clause(node, right = s(:lvar, locals[:matchee]))
+          predicates.terminate!
           case_eq_clause node.children[0], right
         end
 
         def case_eq_clause(node, right = s(:lvar, locals[:matchee]))
+          predicates.terminate!
           s(:send,
             process(node), :===, right)
         end
@@ -181,6 +312,18 @@ module RubyNext
 
         def array_pattern_clause(node, matchee = s(:lvar, locals[:matchee]))
           deconstruct_node(matchee).then do |dnode|
+            size_check = nil
+            # if there is no rest or tail, match the size first
+            unless node.type == :array_pattern_with_tail || node.children.any? { |n| n.type == :match_rest }
+              size_check = predicates.array_size(
+                s(:send,
+                  node.children.size.to_ast_node,
+                  :==,
+                  s(:send, s(:lvar, locals[:arr]), :size)),
+                node.children.size
+              )
+            end
+
             right =
               if node.children.empty?
                 case_eq_clause(s(:array), s(:lvar, locals[:arr]))
@@ -188,25 +331,10 @@ module RubyNext
                 array_element(0, *node.children)
               end
 
-            # if there is no rest or tail, match the size first
-            unless node.type == :array_pattern_with_tail || node.children.any? { |n| n.type == :match_rest }
-              right =
-                s(:and,
-                  s(:send,
-                    node.children.size.to_ast_node,
-                    :==,
-                    s(:send, s(:lvar, locals[:arr]), :size)),
-                  right)
-            end
-
-            return right unless dnode
+            right = s(:and, size_check, right) if size_check
 
             s(:and,
               dnode,
-              right)
-          end.then do |right|
-            s(:and,
-              respond_to_check(matchee, :deconstruct, locals[:arr, :rtd]),
               right)
           end
         end
@@ -214,22 +342,25 @@ module RubyNext
         alias array_pattern_with_tail_clause array_pattern_clause
 
         def deconstruct_node(matchee)
-          # only deconstruct once per case
-          return if deconstructed.key?(locals[:arr])
-
           context.use_ruby_next!
 
+          respond_check = predicates.respond_to_deconstruct(
+            respond_to_check(matchee, :deconstruct)
+          )
           right = s(:send, matchee, :deconstruct)
 
-          deconstructed[locals[:arr]] = true
-
-          s(:and,
-            s(:or,
-              s(:lvasgn, locals[:arr], right),
-              s(:true)), # rubocop:disable Lint/BooleanSymbol
-            s(:or,
-              case_eq_clause(s(:const, nil, :Array), s(:lvar, locals[:arr])),
-              raise_error(:TypeError, "#deconstruct must return Array")))
+          predicates.array_deconstructed(
+            s(:and,
+              respond_check,
+              s(:and,
+                s(:or,
+                  s(:lvasgn, locals[:arr], right),
+                  s(:true)), # rubocop:disable Lint/BooleanSymbol
+                s(:or,
+                  s(:send,
+                    s(:const, nil, :Array), :===, s(:lvar, locals[:arr])),
+                  raise_error(:TypeError, "#deconstruct must return Array"))))
+          )
         end
 
         def array_element(index, head, *tail)
@@ -275,14 +406,16 @@ module RubyNext
         def array_pattern_array_element(node, index)
           element = arr_item_at(index)
           locals.with(arr: locals[:arr, index]) do
-            array_pattern_clause(node, element)
+            predicates.push :"i#{index}"
+            array_pattern_clause(node, element).tap { predicates.pop }
           end
         end
 
         def hash_pattern_array_element(node, index)
           element = arr_item_at(index)
           locals.with(hash: locals[:arr, index]) do
-            hash_pattern_clause(node, element)
+            predicates.push :"i#{index}"
+            hash_pattern_clause(node, element).tap { predicates.pop }
           end
         end
 
@@ -340,14 +473,12 @@ module RubyNext
                 hash_element(*node.children)
               end
 
+            predicates.pop
+
             next dnode if right.nil?
 
             s(:and,
               dnode,
-              right)
-          end.then do |right|
-            s(:and,
-              respond_to_check(matchee, :deconstruct_keys, locals[:hash, :rtdk]),
               right)
           end
         end
@@ -389,15 +520,27 @@ module RubyNext
 
           context.use_ruby_next!
 
+          respond_check = predicates.respond_to_deconstruct_keys(
+            respond_to_check(matchee, :deconstruct_keys)
+          )
+
+          key_names = keys.children.map { |node| node.children.last }
+          predicates.push :"hash_#{key_names.join("_k_")}"
+
           s(:and,
-            s(:or,
-              s(:lvasgn, deconstruct_name,
+            respond_check,
+            s(:and,
+              s(:or,
+                s(:lvasgn, deconstruct_name,
+                  s(:send,
+                    matchee, :deconstruct_keys, keys)),
+                s(:true)), # rubocop:disable Lint/BooleanSymbol
+              s(:or,
                 s(:send,
-                  matchee, :deconstruct_keys, keys)),
-              s(:true)), # rubocop:disable Lint/BooleanSymbol
-            s(:or,
-              case_eq_clause(s(:const, nil, :Hash), s(:lvar, deconstruct_name)),
-              raise_error(:TypeError, "#deconstruct_keys must return Hash"))).then do |dnode|
+                  s(:const, nil, :Hash), :===, s(:lvar, deconstruct_name)),
+                raise_error(:TypeError, "#deconstruct_keys must return Hash")))).then do |dnode|
+            predicates.hash_deconstructed(dnode, key_names)
+          end.then do |dnode|
             next dnode unless @hash_match_rest
 
             s(:and,
@@ -408,15 +551,19 @@ module RubyNext
 
         def hash_pattern_hash_element(node, key)
           element = hash_value_at(key)
-          locals.with(hash: locals[:hash, deconstructed.size]) do
-            hash_pattern_clause(node, element)
+          key_index = deconstructed_key(key)
+          locals.with(hash: locals[:hash, key_index]) do
+            predicates.push :"k#{key_index}"
+            hash_pattern_clause(node, element).tap { predicates.pop }
           end
         end
 
         def array_pattern_hash_element(node, key)
           element = hash_value_at(key)
-          locals.with(arr: locals[:hash, deconstructed.size]) do
-            array_pattern_clause(node, element)
+          key_index = deconstructed_key(key)
+          locals.with(arr: locals[:hash, key_index]) do
+            predicates.push :"k#{key_index}"
+            array_pattern_clause(node, element).tap { predicates.pop }
           end
         end
 
@@ -505,7 +652,7 @@ module RubyNext
 
           locals.with(CURRENT_HASH_KEY => key) do
             s(:and,
-              hash_has_key(key),
+              predicates.hash_key(hash_has_key(key), key),
               yield)
           end
         end
@@ -543,14 +690,9 @@ module RubyNext
             msg.to_ast_node)
         end
 
-        # Add respond_to? check and keep its value in the local var
-        def respond_to_check(node, mid, lvar_name)
-          return s(:lvar, lvar_name) if deconstructed.key?(lvar_name)
-
-          deconstructed[lvar_name] = true
-
-          s(:lvasgn, lvar_name,
-            s(:send, node, :respond_to?, mid.to_ast_node))
+        # Add respond_to? check
+        def respond_to_check(node, mid)
+          s(:send, node, :respond_to?, mid.to_ast_node)
         end
 
         def respond_to_missing?(mid, *)
@@ -567,7 +709,7 @@ module RubyNext
 
         private
 
-        attr_reader :deconstructed
+        attr_reader :deconstructed_keys, :predicates
 
         # Raise SyntaxError if match-var is used within alternation
         # https://github.com/ruby/ruby/blob/672213ef1ca2b71312084057e27580b340438796/compile.c#L5900
@@ -577,6 +719,12 @@ module RubyNext
           return if name.start_with?("_")
 
           raise ::SyntaxError, "illegal variable in alternative pattern (#{name})"
+        end
+
+        def deconstructed_key(key)
+          return deconstructed_keys[key] if deconstructed_keys.key?(key)
+
+          deconstructed_keys[key] = :"k#{deconstructed_keys.size}"
         end
       end
     end
