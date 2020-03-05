@@ -8,8 +8,6 @@ RubyNext::Core.patch Struct, method: :deconstruct_keys, version: "2.7" do
 
       return to_h unless keys
 
-      return {} if size < keys.size
-
       keys.each_with_object({}) do |k, acc|
         # if k is Symbol and not a member of a Struct return {}
         next if (Symbol === k || String === k) && !members.include?(k.to_sym)
