@@ -497,14 +497,20 @@ module RubyNext
           # (we use #dup and #delete when "reading" values when **rest is present
           # to assign the rest of the hash copy to it)
           @hash_match_rest = node.children.any? { |child| child.type == :match_rest || child.type == :match_nil_pattern }
-          keys = hash_pattern_keys(node.children)
+          keys = hash_pattern_destruction_keys(node.children)
+
+          specified_key_names = hash_pattern_keys(node.children)
 
           deconstruct_keys_node(keys, matchee).then do |dnode|
             right =
               if node.children.empty?
                 case_eq_clause(s(:hash), s(:lvar, locals[:hash]))
-              else
+              elsif specified_key_names.empty?
                 hash_element(*node.children)
+              else
+                s(:and,
+                  having_hash_keys(specified_key_names),
+                  hash_element(*node.children))
               end
 
             predicates.pop
@@ -518,6 +524,15 @@ module RubyNext
         end
 
         def hash_pattern_keys(children)
+          children.filter_map do |child|
+            # Skip ** without var
+            next if child.type == :match_rest || child.type == :match_nil_pattern
+
+            send("#{child.type}_hash_key", child)
+          end
+        end
+
+        def hash_pattern_destruction_keys(children)
           return s(:nil) if children.empty?
 
           children.filter_map do |child|
@@ -620,7 +635,7 @@ module RubyNext
 
         def pair_hash_element(node, _key = nil)
           key, val = *node.children
-          having_hash_key(key) { send("#{val.type}_hash_element", val, key) }
+          send("#{val.type}_hash_element", val, key)
         end
 
         def match_alt_hash_element(node, key)
@@ -640,12 +655,12 @@ module RubyNext
         end
 
         def match_as_hash_element(node, key)
-          having_hash_key(key) { match_as_clause(node, hash_value_at(key)) }
+          match_as_clause(node, hash_value_at(key))
         end
 
         def match_var_hash_element(node, key = nil)
           key ||= node.children[0]
-          having_hash_key(key) { match_var_clause(node, hash_value_at(key)) }
+          match_var_clause(node, hash_value_at(key))
         end
 
         def match_nil_pattern_hash_element(node, _key = nil)
@@ -683,21 +698,21 @@ module RubyNext
           end
         end
 
-        # Add key check if haven't been already checked
-        def having_hash_key(key)
-          return yield if locals.fetch(CURRENT_HASH_KEY) { nil } == key
-
-          locals.with(CURRENT_HASH_KEY => key) do
-            s(:and,
-              predicates.hash_key(hash_has_key(key), key),
-              yield)
-          end
-        end
-
         def hash_has_key(key, hash = s(:lvar, locals[:hash]))
           s(:send,
             hash, :key?,
             key.to_ast_node)
+        end
+
+        def having_hash_keys(keys, hash = s(:lvar, locals[:hash]))
+          key = keys.shift
+          node = predicates.hash_key(hash_has_key(key, hash), key)
+
+          keys.reduce(node) do |res, key|
+            s(:and,
+              res,
+              predicates.hash_key(hash_has_key(key, hash), key))
+          end
         end
 
         #=========== HASH PATTERN (END) ===============
