@@ -2,6 +2,8 @@
 
 ## master
 
+## 0.4.0 (2020-03-09)
+
 - Optimize pattern matching transpiled code. ([@palkan][])
 
 For array patterns, transpiled code is ~1.5-2x faster than native.
