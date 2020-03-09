@@ -6,6 +6,7 @@
 /pkg/
 tmp/
 
+gemfiles/*.lock
 Gemfile.lock
 
 mspec/

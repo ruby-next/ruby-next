@@ -19,7 +19,6 @@ AllCops:
     - 'spec/integration/fixtures/**/*'
     - 'mspec/**/*'
     - 'benchmarks/**/*'
-    - 'lib/ruby-next/language/ruby27.rb'
   DisplayCopNames: true
   TargetRubyVersion: 2.7
 

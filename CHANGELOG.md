@@ -52,7 +52,7 @@ You can still use this feature by enabling it explicitly (see Readme).
 - Support in modifier. ([@palkan][])
 
 ```ruby
-{a:1, b: 2} in {a:, **}
+{a: 1, b: 2} in {a:, **}
 p a #=> 1
 ```
 

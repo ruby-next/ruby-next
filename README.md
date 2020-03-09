@@ -94,7 +94,9 @@ gem "ruby-next"
 
 # gemspec
 spec.add_dependency "ruby-next"
+```
 
+```sh
 # or install globally
 gem install ruby-next
 ```
