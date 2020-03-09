@@ -2,6 +2,11 @@
 
 ## master
 
+- Optimize pattern matching transpiled code. ([@palkan][])
+
+For array patterns, transpiled code is ~1.5-2x faster than native.
+For hash patterns it's about the same.
+
 - Pattern matching is 100% compatible with RubySpec. ([@palkan][])
 
 - Add `Symbol#start_with?/end_with?`. ([@palkan][])

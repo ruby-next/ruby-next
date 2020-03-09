@@ -324,7 +324,7 @@ ruby_version_is "2.7" do
         eval(<<~RUBY, binding).should == 2
           case [0, 1, 2]
             in [0, _, _]
-              _
+              2
           end
         RUBY
       end

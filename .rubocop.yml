@@ -45,3 +45,7 @@ Lint/AmbiguousBlockAssociation:
 
 Naming/FileName:
   Enabled: false
+
+Lint/BooleanSymbol:
+  Exclude:
+    - 'lib/ruby-next/language/rewriters/**/*.rb'
