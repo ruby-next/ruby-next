@@ -68,6 +68,34 @@ module RubyNext
               node
             end
           end
+
+          def on_and(node)
+            left, right = *node.children
+
+            if truthy(left)
+              process(right)
+            elsif truthy(right)
+              process(left)
+            else
+              node.updated(
+                :and,
+                [
+                  process(left),
+                  process(right)
+                ]
+              )
+            end
+          end
+
+          private
+
+          def truthy(node)
+            return false unless node.is_a?(::Parser::AST::Node)
+            return true if node.type == :true
+            return false if node.children.empty?
+
+            node.children.all? { |child| truthy(child) }
+          end
         end
 
         class Base
@@ -215,7 +243,7 @@ module RubyNext
             build_if_clause(node.children[1], node.children[2..-1])
           end
 
-          # remove unused predicate assignments
+          # remove unused predicate assignments and truthy expressions
           patterns = predicates.process(patterns)
 
           node.updated(
@@ -324,11 +352,13 @@ module RubyNext
         end
 
         def match_var_clause(node, left = s(:lvar, locals[:matchee]))
+          return s(:true) if node.children[0] == :_
+
           check_match_var_alternation! node.children[0]
 
           s(:or,
             s(:lvasgn, node.children[0], left),
-            s(:true)) # rubocop:disable Lint/BooleanSymbol
+            s(:true))
         end
 
         def pin_clause(node, right = s(:lvar, locals[:matchee]))
@@ -389,7 +419,7 @@ module RubyNext
               s(:and,
                 s(:or,
                   s(:lvasgn, locals[:arr], right),
-                  s(:true)), # rubocop:disable Lint/BooleanSymbol
+                  s(:true)),
                 s(:or,
                   s(:send,
                     s(:const, nil, :Array), :===, s(:lvar, locals[:arr])),
@@ -564,7 +594,7 @@ module RubyNext
             if @hash_match_rest
               s(:lvasgn, locals[:hash], s(:send, s(:lvar, locals[:hash, :src]), :dup))
             else
-              s(:true) # rubocop:disable Lint/BooleanSymbol
+              s(:true)
             end
 
           context.use_ruby_next!
@@ -585,7 +615,7 @@ module RubyNext
               s(:and,
                 s(:or,
                   dnode,
-                  s(:true)), # rubocop:disable Lint/BooleanSymbol
+                  s(:true)),
                 s(:or,
                   s(:send,
                     s(:const, nil, :Hash), :===, s(:lvar, deconstruct_name)),
@@ -650,7 +680,7 @@ module RubyNext
           s(:and,
             s(:or,
               element_node,
-              s(:true)), # rubocop:disable Lint/BooleanSymbol
+              s(:true)),
             s(:or, *children))
         end
 
