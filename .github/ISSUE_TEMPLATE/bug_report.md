@@ -19,4 +19,4 @@ assignees: palkan
 
 **Ruby version**: 2.?
 
-**RubyNext version:**
+**Ruby Next version:**

@@ -48,4 +48,4 @@ else
   require "ruby-next/core/runtime"
 end
 
-$stdout.puts "RubyNext core strategy: #{RubyNext::Core.strategy}"
+$stdout.puts "Ruby Next core strategy: #{RubyNext::Core.strategy}"

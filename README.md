@@ -4,7 +4,7 @@
 # Ruby Next
 
 <img align="right" height="184"
-     title="RubyNext logo" src="./assets/images/logo.svg">
+     title="Ruby Next logo" src="./assets/images/logo.svg">
 
 Ruby Next is a **transpiler** and a collection of **polyfills** for supporting the latest and upcoming Ruby features (APIs and syntax) in older versions and alternative implementations. For example, you can use pattern matching and `Kernel#then` in Ruby 2.5 or [mruby][].
 
@@ -166,7 +166,7 @@ The behaviour depends on whether you transpile a single file or a directory:
 
 ```sh
 $ ruby-next nextify my_ruby.rb -o my_ruby_next.rb -V
-RubyNext core strategy: refine
+Ruby Next core strategy: refine
 Generated: my_ruby_next.rb
 ```
 

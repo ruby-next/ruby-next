@@ -3,7 +3,7 @@
 ## Testing
 
 We use [ruby/spec][] along with [MSpec][] to
-make sure RubyNext passes the latest Ruby specification.
+make sure Ruby Next passes the latest Ruby specification.
 
 ### Running tests
 
