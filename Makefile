@@ -11,4 +11,4 @@ lint:
 release: test lint
 	gem release ruby-next-core
 	gem release ruby-next -t
-	gem push --tags
+	git push --tags
