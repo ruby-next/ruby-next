@@ -24,7 +24,7 @@ module RubyNext
 
           $stdout.puts source_with_lines(new_contents, path) if ENV["RUBY_NEXT_DEBUG"] == "1"
 
-          TOPLEVEL_BINDING.eval(new_contents, path)
+          evaluate(new_contents, path)
           true
         end
 
@@ -38,6 +38,25 @@ module RubyNext
           return if File.extname(path) != ".rb"
           return unless Language.transformable?(path)
           path
+        end
+
+        if defined?(JRUBY_VERSION)
+          def evaluate(code, filepath)
+            new_toplevel.eval(code, filepath)
+          end
+
+          def new_toplevel
+            # Create new "toplevel" binding to avoid lexical scope re-use
+            # (aka "leaking refinements")
+            eval "proc{binding}.call", TOPLEVEL_BINDING, __FILE__, __LINE__
+          end
+        else
+          def evaluate(code, filepath)
+            # This is workaround to solve the "leaking refinements" problem in MRI
+            RubyVM::InstructionSequence.compile(code, filepath).then do |iseq|
+              iseq.eval
+            end
+          end
         end
       end
     end
