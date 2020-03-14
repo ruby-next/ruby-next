@@ -11,9 +11,8 @@ describe "patch has source location meta" do
     source_path = Pathname.new(File.join(__dir__, "../../lib/ruby-next/core/enumerator/produce.rb")).realpath
     source_line = File.open(source_path).each_line.with_index { |line, i| break i + 1 if /wrong number of arguments/.match?(line) }
 
-    run(
-      "ruby -rbundler/setup -I#{File.join(__dir__, "../../lib")} "\
-      "#{File.join(__dir__, "fixtures", "backtrace.rb")}"
+    run_ruby(
+      File.join(__dir__, "fixtures", "backtrace.rb").to_s
     ) do |_status, output, _err|
       output.should include("TRACE: #{source_path}:#{source_line}")
     end
