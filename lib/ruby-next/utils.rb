@@ -20,7 +20,7 @@ module RubyNext
 
         $LOAD_PATH.find do |lp|
           lpath = File.join(lp, path)
-          return lpath if File.file?(lpath)
+          return File.realpath(lpath) if File.file?(lpath)
         end
       end
     end
