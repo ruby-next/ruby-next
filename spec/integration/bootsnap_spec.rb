@@ -13,9 +13,8 @@ describe "bootsnap compatibility" do
       FileUtils.rm_rf(cache_path)
     end
 
-    run(
-      "ruby -rbundler/setup -I#{File.join(__dir__, "../../lib")} "\
-      "#{File.join(__dir__, "fixtures", "bootsnap", "test.rb")}"
+    run_ruby(
+      File.join(__dir__, "fixtures", "bootsnap", "test.rb").to_s
     ) do |_status, output, _err|
       output.should include("PERFORM: ruby_next#test\n")
       output.should include("UNKNOWN: perform\n")

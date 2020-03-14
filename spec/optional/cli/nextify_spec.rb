@@ -11,8 +11,8 @@ describe "ruby-next nextify" do
   end
 
   it "--enable-method-reference" do
-    run(
-      "bin/ruby-next nextify #{File.join(__dir__, "..", "integration", "fixtures", "method_reference.rb")} --enable-method-reference",
+    run_ruby_next(
+      "nextify #{File.join(__dir__, "..", "integration", "fixtures", "method_reference.rb")} --enable-method-reference " \
       "-o #{File.join(__dir__, ".rbnext", "method_reference_old.rb")}"
     ) do |_status, _output, err|
       File.exist?(File.join(__dir__, ".rbnext", "method_reference_old.rb")).should equal true
