@@ -240,17 +240,16 @@ module RubyNext
             arr: MATCHEE_ARR,
             hash: MATCHEE_HASH
           ) do
-            build_if_clause(node.children[1], node.children[2..-1])
+            build_case_when(node.children[1..-1])
           end
 
-          # remove unused predicate assignments and truthy expressions
-          patterns = predicates.process(patterns)
-
-          node.updated(
-            :begin,
-            [
-              matchee_ast, patterns
-            ]
+          predicates.process(
+            node.updated(
+              :begin,
+              [
+                matchee_ast, s(:case, *patterns)
+              ]
+            )
           )
         end
 
@@ -290,21 +289,29 @@ module RubyNext
 
         private
 
-        def build_if_clause(node, rest)
-          if node&.type == :in_pattern
-            predicates.reset!
-            build_in_pattern(node, rest)
-          else
-            raise "Unexpected else in the middle of case ... in" if rest && rest.size > 0
-            # else clause must be present
-            (process(node) || no_matching_pattern).then do |else_node|
-              next else_node unless else_node.type == :empty_else
-              s(:empty)
+        def build_case_when(nodes)
+          else_clause = nil
+          clauses = []
+
+          nodes.each do |clause|
+            if clause&.type == :in_pattern
+              clauses << build_when_clause(clause)
+            else
+              else_clause = process(clause)
             end
           end
+
+          else_clause = (else_clause || no_matching_pattern).then do |node|
+            next node unless node.type == :empty_else
+            s(:empty)
+          end
+
+          clauses << else_clause
+          clauses
         end
 
-        def build_in_pattern(clause, rest)
+        def build_when_clause(clause)
+          predicates.reset!
           [
             with_guard(
               send(
@@ -315,11 +322,7 @@ module RubyNext
             ),
             process(clause.children[2] || s(:nil)) # expression
           ].then do |children|
-            if rest && rest.size > 0
-              children << build_if_clause(rest.first, rest[1..-1])
-            end
-
-            s(:if, *children)
+            s(:when, *children)
           end
         end
 
