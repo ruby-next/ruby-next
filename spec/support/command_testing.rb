@@ -3,14 +3,14 @@
 require "open3"
 
 module CommandTesting
-  refine MSpecEnv do
-    RUBY_RUNNER = if defined?(JRUBY_VERSION)
-      # See https://github.com/jruby/jruby/wiki/Improving-startup-time#bundle-exec
-      "jruby -G"
-    else
-      "bundle exec ruby"
-    end
+  RUBY_RUNNER = if defined?(JRUBY_VERSION)
+    # See https://github.com/jruby/jruby/wiki/Improving-startup-time#bundle-exec
+    "jruby -G"
+  else
+    "bundle exec ruby"
+  end
 
+  refine MSpecEnv do
     def run(command, chdir: nil, should_fail: false, env: {})
       output, err, status =
         Open3.capture3(
