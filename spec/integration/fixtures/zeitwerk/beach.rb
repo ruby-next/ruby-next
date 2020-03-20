@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Array
   alias deconstruct to_a
 end

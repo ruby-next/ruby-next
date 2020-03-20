@@ -2,6 +2,10 @@
 
 ## master
 
+- Add RuboCop integration. ([@palkan][])
+
+Adds support for missing node types and fixes some bugs with 2.7.
+
 ## 0.5.0 (2020-03-20)
 
 - Add `rewrite` transpiler mode. ([@palkan][])

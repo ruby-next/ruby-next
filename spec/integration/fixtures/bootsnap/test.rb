@@ -15,5 +15,5 @@ RubyNext::Language.watch_dirs << __dir__
 
 require_relative "pattern"
 
-puts main(%q({"command": "perform", "channel": "ruby_next", "action": "test"}))
-puts main(%q({"command": "perform", "channel": "bootsnap"}))
+puts main('{"command": "perform", "channel": "ruby_next", "action": "test"}')
+puts main('{"command": "perform", "channel": "bootsnap"}')

@@ -35,6 +35,7 @@ That's why Ruby Next implements the `master` features as fast as possible.
   - [Runtime usage](#runtime-usage)
   - [Bootsnap integration](#using-with-bootsnap)
   - [`ruby -ruby-next`](#uby-next)
+- [RuboCop](#rubocop)
 - [Proposed & edge features](#proposed-and-edge-features)
 
 ## Overview
@@ -304,6 +305,28 @@ RUBYOPT="-ruby-next" ruby my_ruby_script.rb
 ruby -ruby-next -e "puts [2, 4, 5].tally"
 ```
 
+## RuboCop
+
+Since Ruby Next provides support for features not available in RuboCop yet, you need to add a patch for compatibility.
+In you `.rubocop.yml` add the following:
+
+```yml
+require:
+  - ruby-next/rubocop
+```
+
+**NOTE:** You should use `TargetRubyVersion: 2.7`.
+
+Alternatively, you can load the patch from the command line by running: `rubocop -r ruby-next/rubocop ...`.
+
+Also, when pre-transpiling source code with `ruby-next nextify`, we suggest ignoring the transpiled files:
+
+```yml
+AllCops:
+  Exclude:
+    - 'lib/.rbnext/**/*'
+```
+
 ## Proposed and edge features
 
 Ruby Next aims to bring edge and proposed features to Ruby community before they (hopefully) reach an official Ruby release.
@@ -380,3 +403,4 @@ The gem is available as open source under the terms of the [MIT License](https:/
 [unparser]: https://github.com/mbj/unparser
 [next_parser]: https://github.com/ruby-next/parser
 [Bootsnap]: https://github.com/Shopify/bootsnap
+[rubocop]: https://github.com/rubocop-hq/rubocop

@@ -18,4 +18,3 @@ module Test
       puts "Refined: #{"1".to_i}" #=> Refined: 0
   end
 end
-

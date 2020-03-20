@@ -1,5 +1,6 @@
 require:
   - standard/cop/semantic_blocks
+  - ./lib/ruby-next/rubocop.rb
 
 inherit_gem:
   standard: config/base.yml
@@ -14,9 +15,6 @@ AllCops:
     - 'spec/core/**/*'
     - 'spec/language/**/*'
     - 'spec/optional/language/**/*'
-    - 'spec/cli/dummy/**/*'
-    - 'spec/optional/integration/fixtures/**/*'
-    - 'spec/integration/fixtures/**/*'
     - 'mspec/**/*'
     - 'benchmarks/**/*'
   DisplayCopNames: true
