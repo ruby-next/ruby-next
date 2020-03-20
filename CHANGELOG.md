@@ -2,6 +2,8 @@
 
 ## master
 
+## 0.5.1 (2020-03-20)
+
 - Add RuboCop integration. ([@palkan][])
 
 Adds support for missing node types and fixes some bugs with 2.7.
