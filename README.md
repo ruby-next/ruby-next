@@ -75,7 +75,7 @@ require "ruby-next/core_ext"
 The following _rule of thumb_ is recommended when choosing between refinements and monkey-patches:
 
 - Use refinements for libraries development (to avoid conflicts with others code)
-- Using core extensions could be considered for application development (no need to think about `using RubyNext`); this approach could potentially lead to conflicts with dependendices (if these dependencies are not using refinements 🙂)
+- Using core extensions could be considered for application development (no need to think about `using RubyNext`); this approach could potentially lead to conflicts with dependencies (if these dependencies are not using refinements 🙂)
 - Use core extensions if refinements are not supported by your platform
 
 [**The list of supported APIs.**][features_core]
@@ -210,7 +210,7 @@ Usage: ruby-next core_ext [options]
     -V                               Turn on verbose mode
 ```
 
-The most common usecase is to backport the APIs required by pattern matching. You can do this, for example,
+The most common use-case is to backport the APIs required by pattern matching. You can do this, for example,
 by including only monkey-patches containing the `"deconstruct"` in their names:
 
 ```sh
@@ -295,7 +295,7 @@ Ruby Next also provides support for some features not-yet-merged into Ruby maste
 
 These features require a [custom parser](#using-ruby-next-parser).
 
-Currenly, the only such feature is the [_method reference_ operator](https://bugs.ruby-lang.org/issues/13581):
+Currently, the only such feature is the [_method reference_ operator](https://bugs.ruby-lang.org/issues/13581):
 
 - Add `--enable-method-reference` option to `nextify` command when using CLI.
 - OR add it programmatically when using a runtime mode (see [example](https://github.com/ruby-next/ruby-next/blob/master/default.mspec)).

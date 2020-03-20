@@ -60,4 +60,4 @@ You can still use this feature with Ruby Next by enabling it explicitly (see [Re
 
 - (_WONTFIX_) Startless ranges (`..1` or `...1`) ([ref](https://rubyreferences.github.io/rubychanges/2.7.html#beginless-range))
 
-The possible translation depends on the _end_ type which is hardly inferrable from the source code.
+The possible translation depends on the _end_ type which could hardly be inferred from the source code.
