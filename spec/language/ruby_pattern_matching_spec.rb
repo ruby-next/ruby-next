@@ -431,16 +431,15 @@ END
       end
     end
 
-    # FIXME: parser https://github.com/whitequark/parser/pull/659
-    #  assert_block do
-    #   [[], C.new([])].all? do |i|
-    #     case i
-    #     in 0,;
-    #     else
-    #       true
-    #     end
-    #   end
-    # end
+     assert_block do
+      [[], C.new([])].all? do |i|
+        case i
+        in 0,;
+        else
+          true
+        end
+      end
+    end
 
     assert_block do
       [[0, 1], C.new([0, 1])].all? do |i|

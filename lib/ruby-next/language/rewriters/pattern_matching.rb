@@ -316,19 +316,12 @@ module RubyNext
                   new_node.children[i].children[0]
                 )
                 remove(clause.children[1].loc.expression) if clause.children[1]
-                remove_array_tail(clause) if clause.children[0].type == :array_pattern_with_tail
                 replace(clause.loc.keyword, "when ")
               end
             elsif clause.nil?
               insert_after(node.children[-2].loc.expression, "; else; #{unparse(new_node.children.last)}")
             end
           end
-        end
-
-        def remove_array_tail(node)
-          buggy_tail = node.loc.expression.source.match(/(,\s*;)/)&.[](1)
-          return unless buggy_tail
-          remove(node.children[0].loc.expression.end.adjust(end_pos: buggy_tail.size))
         end
 
         def build_case_when(nodes)
