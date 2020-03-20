@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Eternal
   def self.call
     case 4

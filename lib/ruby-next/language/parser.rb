@@ -21,7 +21,16 @@ module RubyNext
         buffer = ::Parser::Source::Buffer.new(file).tap do |buffer|
           buffer.source = source
         end
+
         parser.parse(buffer)
+      end
+
+      def parse_with_comments(source, file = "(string)")
+        buffer = ::Parser::Source::Buffer.new(file).tap do |buffer|
+          buffer.source = source
+        end
+
+        parser.parse_with_comments(buffer)
       end
     end
   end
