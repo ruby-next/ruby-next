@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require "ruby-next/language/runtime"
 
@@ -10,4 +11,4 @@ loader = Zeitwerk::Loader.new
 loader.push_dir(File.join(__dir__))
 loader.setup
 
-p Beach.(:k, 304) #=> :scientifically_favorable
+p Beach.call(:k, 304) #=> :scientifically_favorable

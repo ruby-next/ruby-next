@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-
 require "ruby-next/language/runtime"
 RubyNext::Language.watch_dirs << __dir__
 

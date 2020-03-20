@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 def main(data)
   case data
   in a, [b]

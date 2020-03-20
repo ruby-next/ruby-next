@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # source: https://learnyousomeerlang.com/syntax-in-functions#in-case-of
 
 def beach(*temperature)
