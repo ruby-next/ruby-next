@@ -19,6 +19,8 @@ module RubyNext
           dirname = File.dirname(basename)
         end
 
+        dirname = File.realpath(dirname)
+
         current_index = $LOAD_PATH.index(dirname)
 
         raise "Gem's lib is not in the $LOAD_PATH: #{dirname}" if current_index.nil?
