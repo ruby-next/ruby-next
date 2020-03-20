@@ -104,4 +104,16 @@ describe "ruby-next nextify" do
       File.read(File.join(__dir__, "dummy", ".rbnext", "transpile_me_old.rb")).should_not include("using RubyNext")
     end
   end
+
+  it "--transpile-mode=rewrite" do
+    run_ruby_next(
+      "nextify #{File.join(__dir__, "dummy", "endless_pattern.rb")} " \
+      "--transpile-mode=rewrite -o #{File.join(__dir__, "dummy", ".rbnext", "endless_pattern_old.rb")}"
+    ) do |_status, _output, err|
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "endless_pattern_old.rb")).should equal true
+      File.read(File.join(__dir__, "dummy", ".rbnext", "endless_pattern_old.rb")).lines.size.should equal(
+        File.read(File.join(__dir__, "dummy", "endless_pattern.rb")).lines.size
+      )
+    end
+  end
 end
