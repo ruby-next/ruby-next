@@ -132,7 +132,7 @@ module RubyNext
     end
 
     # Use refinements by default
-    self.strategy = :refine
+    self.strategy = ENV.fetch("RUBY_NEXT_CORE_STRATEGY", "refine").to_sym
   end
 end
 

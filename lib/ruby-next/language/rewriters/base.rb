@@ -98,6 +98,27 @@ module RubyNext
 
         private
 
+        def replace(range, ast)
+          @source_rewriter&.replace(range, unparse(ast))
+        end
+
+        def remove(range)
+          @source_rewriter&.remove(range)
+        end
+
+        def insert_after(range, ast)
+          @source_rewriter&.insert_after(range, unparse(ast))
+        end
+
+        def insert_before(range, ast)
+          @source_rewriter&.insert_before(range, unparse(ast))
+        end
+
+        def unparse(ast)
+          return ast if ast.is_a?(String)
+          Unparser.unparse(ast)
+        end
+
         attr_reader :context
       end
     end

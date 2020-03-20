@@ -12,6 +12,13 @@ module RubyNext
 
           receiver, mid = *node.children
 
+          replace(
+            node.children.first.loc.expression.end.join(
+              node.loc.expression.end
+            ),
+            ".method(:#{mid})"
+          )
+
           node.updated(
             :send,
             [

@@ -243,13 +243,15 @@ module RubyNext
             build_case_when(node.children[1..-1])
           end
 
-          predicates.process(
-            node.updated(
-              :begin,
-              [
-                matchee_ast, s(:case, *patterns)
-              ]
-            )
+          case_clause = predicates.process(s(:case, *patterns))
+
+          rewrite_case_in! node, matchee_ast, case_clause
+
+          node.updated(
+            :begin,
+            [
+              matchee_ast, case_clause
+            ]
           )
         end
 
@@ -284,10 +286,50 @@ module RubyNext
               matchee,
               pattern
             ]
-          )
+          ).tap do |new_node|
+            replace(node.loc.expression, new_node)
+          end
         end
 
         private
+
+        def rewrite_case_in!(node, matchee, new_node)
+          replace(node.loc.keyword, "case; when (#{unparse(matchee)}) && false")
+          remove(node.children[0].loc.expression)
+
+          node.children[1..-1].each.with_index do |clause, i|
+            if clause&.type == :in_pattern
+              # handle multiline clauses differently
+              if clause.loc.last_line > clause.children[0].loc.last_line + 1
+                height = clause.loc.last_line - clause.children[0].loc.last_line
+                padding = "\n" * height
+                body_indent = " " * clause.children[2].loc.column
+                replace(
+                  clause.loc.expression,
+                  "when #{unparse(new_node.children[i].children[0])}" \
+                  "#{padding}" \
+                  "#{body_indent}#{clause.children[2].loc.expression.source}"
+                )
+              else
+                replace(
+                  clause.loc.keyword.end.join(clause.children[0].loc.expression.end),
+                  new_node.children[i].children[0]
+                )
+                remove(clause.children[1].loc.expression) if clause.children[1]
+                remove_array_tail(clause) if clause.children[0].type == :array_pattern_with_tail
+                replace(clause.loc.keyword, "when ")
+              end
+            elsif clause.nil?
+              insert_after(node.children[-2].loc.expression, "; else; #{unparse(new_node.children.last)}")
+            end
+          end
+        end
+
+        def remove_array_tail(node)
+          buggy_tail = node.loc.expression.source.match(/(,\s*;)/)&.[](1)
+          return unless buggy_tail
+          remove(node.children[0].loc.expression.end.adjust(end_pos: buggy_tail.size))
+        end
 
         def build_case_when(nodes)
           else_clause = nil

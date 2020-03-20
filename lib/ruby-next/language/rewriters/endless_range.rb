@@ -36,6 +36,8 @@ module RubyNext
                 :INFINITY)
             end
 
+          replace(node.loc.expression, "#{node.children.first.loc.expression.source}..#{unparse(new_end)}")
+
           node.updated(
             :irange,
             [
