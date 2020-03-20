@@ -4,6 +4,8 @@ require "ruby-next"
 require "ruby-next/utils"
 require "ruby-next/language"
 
+RubyNext::Language.runtime!
+
 # Patch bootsnap to transform source code.
 # Based on https://github.com/kddeisz/preval/blob/master/lib/preval.rb
 load_iseq = RubyVM::InstructionSequence.method(:load_iseq)

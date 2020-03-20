@@ -248,6 +248,8 @@ due to the way feature resolving works in Ruby (scanning the `$LOAD_PATH` and ha
 
 **NOTE:** `require_relative` should be avoided due to the way we _hijack_ the features loading mechanism.
 
+If you're using [runtime mode](#runtime-usage) a long with `setup_gem_load_path` (e.g., in tests), the transpiled files are ignored (i.e., we do not modify `$LOAD_PATH`).
+
 \* Ruby Next avoids storing duplicates; instead, only the code for the earlier version is created and is assumed to be used with other versions. For example, if the transpiled code is the same for Ruby 2.5 and Ruby 2.6, only the `.rbnext/2.7/path/to/file.rb` is kept. That's why multiple entries are added to the `$LOAD_PATH` (`.rbnext/2.6` and `.rbnext/2.7` in the specified order for Ruby 2.5 and only `.rbnext/2.7` for Ruby 2.6).
 
 ## Runtime usage

@@ -9,6 +9,8 @@ require "ruby-next/language/eval"
 
 module RubyNext
   module Language
+    runtime!
+
     # Module responsible for runtime transformations
     module Runtime
       using RubyNext

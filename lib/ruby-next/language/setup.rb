@@ -6,6 +6,12 @@ require "ruby-next"
 module RubyNext
   module Language
     class << self
+      unless method_defined?(:runtime?)
+        def runtime?
+          false
+        end
+      end
+
       def setup_gem_load_path(lib_dir = "lib", rbnext_dir: RUBY_NEXT_DIR)
         called_from = caller_locations(1, 1).first.path
         dirname = File.dirname(called_from)
@@ -20,6 +26,8 @@ module RubyNext
         end
 
         dirname = File.realpath(dirname)
+
+        return if Language.runtime? && Language.watch_dirs.include?(dirname)
 
         current_index = $LOAD_PATH.index(dirname)
 

@@ -82,6 +82,14 @@ module RubyNext
         mode == :ast
       end
 
+      def runtime!
+        @runtime = true
+      end
+
+      def runtime?
+        @runtime
+      end
+
       def transform(*args, **kwargs)
         if mode == :rewrite
           rewrite(*args, **kwargs)
