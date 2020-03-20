@@ -43,6 +43,13 @@ module RubyNext
             Language.rewriters << Language::Rewriters::MethodReference
           end
 
+          opts.on(
+            "--transpile-mode=MODE",
+            "Transpiler mode (ast or rewrite). Default: ast"
+          ) do |val|
+            Language.mode = val.to_sym
+          end
+
           opts.on("--[no-]refine", "Do not inject `using RubyNext`") do |val|
             Core.strategy = :core_ext unless val
           end
