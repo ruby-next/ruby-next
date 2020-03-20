@@ -24,6 +24,19 @@ That's why Ruby Next implements the `master` features as fast as possible.
 
 - [Ruby Next: Make old Rubies quack like a new one](https://noti.st/palkan/j3i2Dr/ruby-next-make-old-rubies-quack-like-a-new-one) (RubyConf 2019)
 
+## Table of contents
+
+- [Overview](#overview)
+- [Polyfills](#using-only-polyfills)
+- [Transpiling](#transpiling)
+  - [Modes](#transpiler-modes)
+  - [CLI](#cli)
+  - [Using in gems](#integrating-into-a-gem-development)
+  - [Runtime usage](#runtime-usage)
+  - [Bootsnap integration](#using-with-bootsnap)
+  - [`ruby -ruby-next`](#uby-next)
+- [Proposed & edge features](#proposed-and-edge-features)
+
 ## Overview
 
 Ruby Next consists of two parts: **core** and **language**.
@@ -80,9 +93,11 @@ The following _rule of thumb_ is recommended when choosing between refinements a
 
 [**The list of supported APIs.**][features_core]
 
-## Transpiling, or using edge Ruby syntax features
+## Transpiling
 
-Ruby Next transpiler relies on two libraries: [parser][] and [unparser][].
+Ruby Next allows you to transpile\* edge Ruby syntax to older versions.
+
+Transpiler relies on two libraries: [parser][] and [unparser][].
 
 **NOTE:** The "official" parser gem only supports the latest stable Ruby version, while Ruby Next aims to support edge and experimental Ruby features. To enable them, you should use our version of Parser (see [instructions](#using-ruby-next-parser) below).
 
@@ -120,41 +135,6 @@ You can change the transpiler mode:
 - From code by setting `RubyNext::Language.mode = :ast` or `RubyNext::Language.mode = :rewrite`.
 - Via environmental variable `RUBY_NEXT_TRANSPILE_MODE=rewrite`.
 - Via CLI option ([see below](#cli)).
-
-### Integrating into a gem development
-
-We recommend _pre-transpiling_ source code to work with older versions before releasing it.
-
-This is how you can do that with Ruby Next:
-
-- Write source code using the modern/edge Ruby syntax.
-
-- Generate transpiled code by calling `ruby-next nextify ./lib` (e.g., before releasing or pushing to VCS).
-
-This will produce `lib/.rbnext` folder containing the transpiled files, `lib/.rbnext/2.6`, `lib/.rbnext/2.7`. The version in the path indicates which Ruby version is required for the original functionality. Only the source files containing new syntax are added to this folder.
-
-**NOTE:** Do not edit these files manually, either run linters/type checkers/whatever against these files.
-
-- Add the following code to your gem's _entrypoint_ (the file that is required first and contains other `require`-s):
-
-```ruby
-require "ruby-next/language/setup"
-
-RubyNext::Language.setup_gem_load_path
-```
-
-The `setup_gem_load_path` does the following:
-
-- Resolves the current ruby version.
-- Checks whether there are directories corresponding to the current and earlier\* Ruby versions within the `.rbnext` folder.
-- Add the path to this directory to the `$LOAD_PATH` before the path to the gem's directory.
-
-That's why need an _entrypoint_: all the subsequent `require` calls will load the transpiled files instead of the original ones
-due to the way feature resolving works in Ruby (scanning the `$LOAD_PATH` and halting as soon as the matching file is found).
-
-**NOTE:** `require_relative` should be avoided due to the way we _hijack_ the features loading mechanism.
-
-\* Ruby Next avoids storing duplicates; instead, only the code for the earlier version is created and is assumed to be used with other versions. For example, if the transpiled code is the same for Ruby 2.5 and Ruby 2.6, only the `.rbnext/2.7/path/to/file.rb` is kept. That's why multiple entries are added to the `$LOAD_PATH` (`.rbnext/2.6` and `.rbnext/2.7` in the specified order for Ruby 2.5 and only `.rbnext/2.7` for Ruby 2.6).
 
 ## CLI
 
@@ -234,7 +214,42 @@ $ ruby-next core_ext -l --name=filter --name=deconstruct
   - StructDeconstruct
 ```
 
-## Runtime mode
+### Integrating into a gem development
+
+We recommend _pre-transpiling_ source code to work with older versions before releasing it.
+
+This is how you can do that with Ruby Next:
+
+- Write source code using the modern/edge Ruby syntax.
+
+- Generate transpiled code by calling `ruby-next nextify ./lib` (e.g., before releasing or pushing to VCS).
+
+This will produce `lib/.rbnext` folder containing the transpiled files, `lib/.rbnext/2.6`, `lib/.rbnext/2.7`. The version in the path indicates which Ruby version is required for the original functionality. Only the source files containing new syntax are added to this folder.
+
+**NOTE:** Do not edit these files manually, either run linters/type checkers/whatever against these files.
+
+- Add the following code to your gem's _entrypoint_ (the file that is required first and contains other `require`-s):
+
+```ruby
+require "ruby-next/language/setup"
+
+RubyNext::Language.setup_gem_load_path
+```
+
+The `setup_gem_load_path` does the following:
+
+- Resolves the current ruby version.
+- Checks whether there are directories corresponding to the current and earlier\* Ruby versions within the `.rbnext` folder.
+- Add the path to this directory to the `$LOAD_PATH` before the path to the gem's directory.
+
+That's why need an _entrypoint_: all the subsequent `require` calls will load the transpiled files instead of the original ones
+due to the way feature resolving works in Ruby (scanning the `$LOAD_PATH` and halting as soon as the matching file is found).
+
+**NOTE:** `require_relative` should be avoided due to the way we _hijack_ the features loading mechanism.
+
+\* Ruby Next avoids storing duplicates; instead, only the code for the earlier version is created and is assumed to be used with other versions. For example, if the transpiled code is the same for Ruby 2.5 and Ruby 2.6, only the `.rbnext/2.7/path/to/file.rb` is kept. That's why multiple entries are added to the `$LOAD_PATH` (`.rbnext/2.6` and `.rbnext/2.7` in the specified order for Ruby 2.5 and only `.rbnext/2.7` for Ruby 2.6).
+
+## Runtime usage
 
 It is also possible to transpile Ruby source code in run-time via Ruby Next.
 
@@ -289,9 +304,14 @@ RUBYOPT="-ruby-next" ruby my_ruby_script.rb
 ruby -ruby-next -e "puts [2, 4, 5].tally"
 ```
 
-## Unofficial/experimental features
+## Proposed and edge features
 
-Ruby Next also provides support for some features not-yet-merged into Ruby master (or reverted).
+Ruby Next aims to bring edge and proposed features to Ruby community before they (hopefully) reach an official Ruby release.
+This includes:
+
+- Features already merged to [master](https://github.com/ruby/ruby) (_edge_)
+- Features proposed in [Ruby bug tracker](https://bugs.ruby-lang.org/) (_proposed_)
+- Features once merged to master but got reverted.
 
 These features require a [custom parser](#using-ruby-next-parser).
 
@@ -300,8 +320,6 @@ Currently, the only such feature is the [_method reference_ operator](https://bu
 - Add `--enable-method-reference` option to `nextify` command when using CLI.
 - OR add it programmatically when using a runtime mode (see [example](https://github.com/ruby-next/ruby-next/blob/master/default.mspec)).
 - OR set `RUBY_NEXT_ENABLE_METHOD_REFERENCE=1` environment variable (works with CLI as well).
-
-## Using Ruby Next parser
 
 ### Prerequisites
 
