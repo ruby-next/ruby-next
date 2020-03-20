@@ -2,6 +2,11 @@
 
 ## master
 
+- Add `rewrite` transpiler mode. ([@palkan][])
+
+Add support for rewriting the source code instead of rebuilding it from scratch to
+preserve the original layout and improve the debugging experience.
+
 ## 0.4.0 (2020-03-09)
 
 - Optimize pattern matching transpiled code. ([@palkan][])

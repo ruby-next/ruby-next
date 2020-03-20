@@ -103,6 +103,24 @@ gem install ruby-next
 
 [**The list of supported syntax features.**][features_syntax]
 
+### Transpiler modes
+
+Ruby Next currently provides two different modes of generating transpiled code: _AST_ and _rewrite_.
+
+In the AST mode, we parse the source code into AST, modifies this AST and **generate a new code from AST** (using [unparser][unparser]). Thus, the transpiled code being identical in terms of functionality has a different formatting.
+
+In the rewrite mode, we apply changes to the source code itself, thus, keeping the original formatting of the unaffected code (in a similar way to RuboCop's autocorrect feature).
+
+By default, we use the AST mode. That could likely change in the future when we collect enough feedback on the rewrite mode and fix potential bugs.
+
+The main benefit of the rewrite mode is that it preserves the original code line numbers and layout, which is especially useful in debugging.
+
+You can change the transpiler mode:
+
+- From code by setting `RubyNext::Language.mode = :ast` or `RubyNext::Language.mode = :rewrite`.
+- Via environmental variable `RUBY_NEXT_TRANSPILE_MODE=rewrite`.
+- Via CLI option ([see below](#cli)).
+
 ### Integrating into a gem development
 
 We recommend _pre-transpiling_ source code to work with older versions before releasing it.
@@ -155,6 +173,7 @@ Usage: ruby-next nextify DIRECTORY_OR_FILE [options]
         --min-version=VERSION        Specify the minimum Ruby version to support
         --single-version             Only create one version of a file (for the earliest Ruby version)
         --enable-method-reference    Enable reverted method reference syntax (requires custom parser)
+        --transpile-mode=MODE        Transpiler mode (ast or rewrite). Default: ast
         --[no-]refine                Do not inject `using RubyNext`
     -h, --help                       Print help
     -V                               Turn on verbose mode
