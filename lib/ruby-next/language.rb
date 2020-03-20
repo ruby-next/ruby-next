@@ -91,13 +91,13 @@ module RubyNext
       end
 
       def regenerate(source, rewriters: self.rewriters, using: RubyNext::Core.refine?, context: TransformContext.new)
-        parse(source).then do |ast|
+        parse_with_comments(source).then do |(ast, comments)|
           rewriters.inject(ast) do |tree, rewriter|
             rewriter.new(context).process(tree)
           end.then do |new_ast|
             next source unless context.dirty?
 
-            Unparser.unparse(new_ast)
+            Unparser.unparse(new_ast, comments)
           end.then do |source|
             next source unless RubyNext::Core.refine?
             next source unless using && context.use_ruby_next?
