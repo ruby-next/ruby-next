@@ -49,3 +49,4 @@ else
 end
 
 $stdout.puts "Ruby Next core strategy: #{RubyNext::Core.strategy}"
+$stdout.puts "Ruby Next transpile mode: #{RubyNext::Language.mode}"

@@ -12,14 +12,20 @@ module RubyNext
         def on_numblock(node)
           context.track! self
 
-          proc_or_lambda, num, *rest = *node.children
+          proc_or_lambda, num, body = *node.children
+
+          if proc_or_lambda.type == :lambda
+            insert_before(node.loc.begin, "(#{unparse(proc_args(num))})")
+          else
+            insert_after(node.loc.begin, " |#{unparse(proc_args(num))}|")
+          end
 
           node.updated(
             :block,
             [
               proc_or_lambda,
               proc_args(num),
-              *rest
+              body
             ]
           )
         end

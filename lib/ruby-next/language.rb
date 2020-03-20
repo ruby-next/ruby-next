@@ -63,7 +63,34 @@ module RubyNext
       attr_accessor :rewriters
       attr_reader :watch_dirs
 
-      def transform(source, rewriters: self.rewriters, using: RubyNext::Core.refine?, context: TransformContext.new)
+      attr_accessor :strategy
+
+      MODES = %i[rewrite ast].freeze
+
+      attr_reader :mode
+
+      def mode=(val)
+        raise ArgumentError, "Unknown mode: #{val}. Available: #{MODES.join(",")}" unless MODES.include?(val)
+        @mode = val
+      end
+
+      def rewrite?
+        mode == :rewrite?
+      end
+
+      def ast?
+        mode == :ast
+      end
+
+      def transform(*args, **kwargs)
+        if mode == :rewrite
+          rewrite(*args, **kwargs)
+        else
+          regenerate(*args, **kwargs)
+        end
+      end
+
+      def regenerate(source, rewriters: self.rewriters, using: RubyNext::Core.refine?, context: TransformContext.new)
         parse(source).then do |ast|
           rewriters.inject(ast) do |tree, rewriter|
             rewriter.new(context).process(tree)
@@ -77,6 +104,23 @@ module RubyNext
 
             Core.inject! source.dup
           end
+        end
+      end
+
+      def rewrite(source, rewriters: self.rewriters, using: RubyNext::Core.refine?, context: TransformContext.new)
+        rewriters.inject(source) do |src, rewriter|
+          buffer = Parser::Source::Buffer.new("<dynamic>")
+          buffer.source = src
+
+          rewriter.new(context).rewrite(buffer, parse(src))
+        end.then do |new_source|
+          next source unless context.dirty?
+          new_source
+        end.then do |source|
+          next source unless RubyNext::Core.refine?
+          next source unless using && context.use_ruby_next?
+
+          Core.inject! source.dup
         end
       end
 
@@ -96,20 +140,23 @@ module RubyNext
 
     self.rewriters = []
     self.watch_dirs = %w[app lib spec test].map { |path| File.join(Dir.pwd, path) }
+    self.mode = ENV.fetch("RUBY_NEXT_TRANSPILE_MODE", "ast").to_sym
 
     require "ruby-next/language/rewriters/base"
-
-    require "ruby-next/language/rewriters/endless_range"
-    rewriters << Rewriters::EndlessRange
-
-    require "ruby-next/language/rewriters/pattern_matching"
-    rewriters << Rewriters::PatternMatching
 
     require "ruby-next/language/rewriters/args_forward"
     rewriters << Rewriters::ArgsForward
 
     require "ruby-next/language/rewriters/numbered_params"
     rewriters << Rewriters::NumberedParams
+
+    require "ruby-next/language/rewriters/pattern_matching"
+    rewriters << Rewriters::PatternMatching
+
+    # Put endless range in the end, 'cause Parser fails to parse it in
+    # pattern matching
+    require "ruby-next/language/rewriters/endless_range"
+    rewriters << Rewriters::EndlessRange
 
     if ENV["RUBY_NEXT_ENABLE_METHOD_REFERENCE"] == "1"
       require "ruby-next/language/rewriters/method_reference"

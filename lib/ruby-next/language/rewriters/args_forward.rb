@@ -13,6 +13,8 @@ module RubyNext
         def on_forward_args(node)
           context.track! self
 
+          replace(node.loc.expression, "(*#{REST}, &#{BLOCK})")
+
           node.updated(
             :args,
             [
@@ -25,6 +27,8 @@ module RubyNext
         def on_send(node)
           return unless node.children[2]&.type == :forwarded_args
 
+          replace(node.children[2].loc.expression, "*#{REST}, &#{BLOCK}")
+
           node.updated(
             nil,
             [
@@ -36,6 +40,8 @@ module RubyNext
 
         def on_super(node)
           return unless node.children[0]&.type == :forwarded_args
+
+          replace(node.children[0].loc.expression, "*#{REST}, &#{BLOCK}")
 
           node.updated(
             nil,
