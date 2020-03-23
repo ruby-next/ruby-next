@@ -34,4 +34,5 @@ module RubyNext
   end
 
   require_relative "ruby-next/core"
+  require_relative "ruby-next/logging"
 end

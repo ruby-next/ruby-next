@@ -50,7 +50,7 @@ module TestUnitToMspec
         source,
         using: bind&.receiver == TOPLEVEL_BINDING.receiver || bind&.receiver&.is_a?(Module)
       )
-      $stdout.puts ::RubyNext::Utils.source_with_lines(new_source, "(#{caller_locations(1, 1).first})") if ENV["RUBY_NEXT_DEBUG"] == "1"
+      RubyNext.debug_source(new_source, "(#{caller_locations(1, 1).first})")
       super new_source, bind, *other
     end
   end

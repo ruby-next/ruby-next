@@ -24,7 +24,7 @@ module RubyNext
           contents = File.read(path)
           new_contents = transform contents
 
-          $stdout.puts source_with_lines(new_contents, path) if ENV["RUBY_NEXT_DEBUG"] == "1"
+          RubyNext.debug_source new_contents, path
 
           evaluate(new_contents, path)
           true
@@ -83,7 +83,7 @@ module Kernel
     true
   rescue => e
     $LOADED_FEATURES.delete realpath
-    warn "RubyNext failed to require '#{path}': #{e.message}"
+    RubyNext.warn "RubyNext failed to require '#{path}': #{e.message}"
     require_without_ruby_next(path)
   end
 
@@ -98,7 +98,7 @@ module Kernel
     )
     require(realpath)
   rescue => e
-    warn "RubyNext failed to require relative '#{path}' from #{from}: #{e.message}"
+    RubyNext.warn "RubyNext failed to require relative '#{path}' from #{from}: #{e.message}"
     require_relative_without_ruby_next(path)
   end
 
@@ -110,7 +110,7 @@ module Kernel
 
     RubyNext::Language::Runtime.load(realpath, wrap: wrap)
   rescue => e
-    warn "RubyNext failed to load '#{path}': #{e.message}"
+    RubyNext.warn "RubyNext failed to load '#{path}': #{e.message}"
     load_without_ruby_next(path)
   end
 end
