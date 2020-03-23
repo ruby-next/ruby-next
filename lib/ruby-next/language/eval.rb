@@ -9,7 +9,7 @@ module RubyNext
             source,
             using: bind&.receiver == TOPLEVEL_BINDING.receiver || bind&.receiver&.is_a?(Module)
           )
-          $stdout.puts ::RubyNext::Utils.source_with_lines(new_source, "(#{caller_locations(1, 1).first})") if ENV["RUBY_NEXT_DEBUG"] == "1"
+          RubyNext.debug_source(new_source, "(#{caller_locations(1, 1).first})")
           super new_source, bind, *args
         end
       end
@@ -22,7 +22,7 @@ module RubyNext
 
           source = args.shift
           new_source = ::RubyNext::Language::Runtime.transform(source, using: false)
-          $stdout.puts ::RubyNext::Utils.source_with_lines(new_source, "(#{caller_locations(1, 1).first})") if ENV["RUBY_NEXT_DEBUG"] == "1"
+          RubyNext.debug_source(new_source, "(#{caller_locations(1, 1).first})")
           super new_source, *args
         end
       end
@@ -35,7 +35,7 @@ module RubyNext
 
           source = args.shift
           new_source = ::RubyNext::Language::Runtime.transform(source, using: false)
-          $stdout.puts ::RubyNext::Utils.source_with_lines(new_source, "(#{caller_locations(1, 1).first})") if ENV["RUBY_NEXT_DEBUG"] == "1"
+          RubyNext.debug_source(new_source, "(#{caller_locations(1, 1).first})")
           super new_source, *args
         end
 
@@ -44,7 +44,7 @@ module RubyNext
 
           source = args.shift
           new_source = ::RubyNext::Language::Runtime.transform(source, using: false)
-          $stdout.puts ::RubyNext::Utils.source_with_lines(new_source, "(#{caller_locations(1, 1).first})") if ENV["RUBY_NEXT_DEBUG"] == "1"
+          RubyNext.debug_source(new_source, "(#{caller_locations(1, 1).first})")
           super new_source, *args
         end
       end

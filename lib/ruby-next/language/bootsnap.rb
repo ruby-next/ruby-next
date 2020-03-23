@@ -17,7 +17,7 @@ if load_iseq.source_location[0].include?("/bootsnap/")
         return super unless RubyNext::Language.transformable?(path)
         source = RubyNext::Language.transform(source, rewriters: RubyNext::Language.current_rewriters)
 
-        $stdout.puts ::RubyNext::Utils.source_with_lines(source, path) if ENV["RUBY_NEXT_DEBUG"] == "1"
+        RubyNext.debug_source(source, path)
 
         RubyVM::InstructionSequence.compile(source, path, path).to_binary
       rescue SyntaxError

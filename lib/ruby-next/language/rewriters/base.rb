@@ -80,7 +80,7 @@ module RubyNext
           end
 
           def warn_custom_parser_required_for(feature)
-            warn(CUSTOM_PARSER_REQUIRED % feature)
+            RubyNext.warn(CUSTOM_PARSER_REQUIRED % feature)
           end
         end
 

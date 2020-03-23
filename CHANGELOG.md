@@ -2,6 +2,12 @@
 
 ## master
 
+- Enhance logging. ([@palkan][])
+
+Use `RUBY_NEXT_WARN=false` to disable warnings.
+Use `RUBY_NEXT_DEBUG=path.rb` to display the transpiler output only for matching files
+in the runtime mode.
+
 ## 0.5.1 (2020-03-20)
 
 - Add RuboCop integration. ([@palkan][])

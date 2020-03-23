@@ -35,6 +35,7 @@ That's why Ruby Next implements the `master` features as fast as possible.
   - [Runtime usage](#runtime-usage)
   - [Bootsnap integration](#using-with-bootsnap)
   - [`ruby -ruby-next`](#uby-next)
+  - [Logging & Debugging](#logging-and-debugging)
 - [RuboCop](#rubocop)
 - [Proposed & edge features](#proposed-and-edge-features)
 
@@ -306,6 +307,16 @@ RUBYOPT="-ruby-next" ruby my_ruby_script.rb
 # or
 ruby -ruby-next -e "puts [2, 4, 5].tally"
 ```
+
+## Logging and debugging
+
+Ruby Next prints some debugging information when fails to load a file in the runtime mode (and fallbacks to the built-in loading mechanism).
+
+You can disable these warnings either by providing the `RUBY_NEXT_WARN=false` env variable or by setting `RubyNext.silence_warnings = true` in your code.
+
+You can also enable transpiled source code debugging by setting the `RUBY_NEXT_DEBUG=true` env variable. When it's set, Ruby Next prints the transpiled code before loading it.
+
+You can use a file pattern as the value for the env var to limit the output: for example, `RUBY_NEXT_DEBUG=my_script.rb`.
 
 ## RuboCop
 
