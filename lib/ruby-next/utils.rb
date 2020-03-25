@@ -6,7 +6,9 @@ module RubyNext
 
     if $LOAD_PATH.respond_to?(:resolve_feature_path)
       def resolve_feature_path(feature)
-        $LOAD_PATH.resolve_feature_path(feature)&.last
+        catch(LoadError) do
+          $LOAD_PATH.resolve_feature_path(feature)&.last
+        end
       end
     else
       def resolve_feature_path(path)
