@@ -2,6 +2,8 @@
 
 ## master
 
+## 0.5.2 (2020-03-25)
+
 - Enhance logging. ([@palkan][])
 
 Use `RUBY_NEXT_WARN=false` to disable warnings.
