@@ -296,6 +296,8 @@ require "ruby-next/language/bootsnap"
 
 ## `uby-next`
 
+_This is [not a typo](https://github.com/ruby-next/ruby-next/pull/8), that’s the way `ruby -ruby-next` works: it’s equal to `ruby -r uby-next`, and [`uby-next.rb`](https://github.com/ruby-next/ruby-next/blob/master/lib/uby-next.rb) is a special file that activates the runtime mode._
+
 You can also enable runtime mode by requiring `uby-next` while running a Ruby executable:
 
 ```sh
