@@ -19,29 +19,30 @@ jobs:
             core_ext: "gem"
     env:
       CORE_EXT: ${{ matrix.core_ext }}
+      BUNDLE_JOBS: 4
+      BUNDLE_RETRY: 3
+      CI: true
     steps:
-    - uses: actions/checkout@v1
-    - name: Set up Ruby
-      uses: eregon/use-ruby-action@master
+    - uses: actions/checkout@v2
+    - uses: actions/cache@v1
+      with:
+        path: /home/runner/bundle
+        key: bundle-${{ matrix.ruby }}-${{ hashFiles('../Gemfile') }}-${{ hashFiles('**/*.gemspec') }}
+        restore-keys: |
+          bundle-${{ matrix.ruby }}-
+    - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
     - name: Download MSpec
       run: |
         git clone https://github.com/ruby/mspec.git mspec
-    - name: Install bundler
+    - name: Bundle install
       run: |
-        gem install bundler
-    - name: Run MSpec with stable features
-      env:
-        USE_RUBYGEMS_PARSER: "1"
+        bundle config path /home/runner/bundle
+        bundle install
+        bundle update
+    - name: Run MSpec
       run: |
-        bundle install --jobs 4 --retry 3
-        bundle exec mspec/bin/mspec :stable
-    - name: Run MSpec with all features
-      env:
-        BUNDLE_RUBYGEMS__PKG__GITHUB__COM: "palkan:${{ secrets.GITHUB_TOKEN }}"
-      run: |
-        rm Gemfile.lock
         bundle install --jobs 4 --retry 3
         bundle exec mspec/bin/mspec
     - name: Run language specs with source rewriting
