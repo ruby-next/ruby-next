@@ -18,7 +18,7 @@ AllCops:
     - 'mspec/**/*'
     - 'benchmarks/**/*'
   DisplayCopNames: true
-  TargetRubyVersion: 2.7
+  TargetRubyVersion: next
 
 Standard/SemanticBlocks:
   Enabled: false
