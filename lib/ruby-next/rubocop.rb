@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # This file contains patches to RuboCop to support
-# edge features and fix some bugs with 2.7 syntax
+# edge features and fix some bugs with 2.7+ syntax
 
 module RuboCop
   module AST
