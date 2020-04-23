@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "parser/ruby27"
+require "parser/rubynext"
 
 module RubyNext
   module Language
@@ -10,7 +10,7 @@ module RubyNext
 
     class << self
       def parser
-        ::Parser::Ruby27.new(Builder.new).tap do |prs|
+        ::Parser::RubyNext.new(Builder.new).tap do |prs|
           prs.diagnostics.tap do |diagnostics|
             diagnostics.all_errors_are_fatal = true
           end
