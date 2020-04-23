@@ -351,48 +351,30 @@ This includes:
 - Features proposed in [Ruby bug tracker](https://bugs.ruby-lang.org/) (_proposed_)
 - Features once merged to master but got reverted.
 
-These features require a [custom parser](#using-ruby-next-parser).
+These features are disabled by default, you must opt-in in one of the following ways:
 
-Currently, the only such feature is the [_method reference_ operator](https://bugs.ruby-lang.org/issues/13581):
-
-- Add `--enable-method-reference` option to `nextify` command when using CLI.
-- OR add it programmatically when using a runtime mode (see [example](https://github.com/ruby-next/ruby-next/blob/master/default.mspec)).
-- OR set `RUBY_NEXT_ENABLE_METHOD_REFERENCE=1` environment variable (works with CLI as well).
-
-### Prerequisites
-
-Our own version of [parser][next_parser] gem is hosted on Github Package Registry. That makes the installation process a bit more complicated than usual.
-
-You must obtain an access token to use it. See the [GPR docs](https://help.github.com/en/github/managing-packages-with-github-package-registry/configuring-rubygems-for-use-with-github-package-registry#authenticating-to-github-package-registry).
-
-### Installing with Bundler
-
-First, configure your bundler to access GPR:
-
-```sh
-bundle config --local https://rubygems.pkg.github.com/ruby-next USERNAME:ACCESS_TOKEN
-```
-
-Then, add to your Gemfile:
+- Add `--edge` or `--proposed` option to `nextify` command when using CLI.
+- Enable programmatically when using a runtime mode:
 
 ```ruby
-source "https://rubygems.pkg.github.com/ruby-next" do
-  gem "parser", "~> 2.7.0.100", "< 2.7.1"
-end
+require "ruby-next/edge"
+# or
+require "ruby-next/proposed"
 
-gem "ruby-next"
+# and then activate the runtime mode
+require "ruby-next/langauge/runtime"
+# or require "ruby-next/language/bootsnap"
 ```
 
-**NOTE:** we don't add `parser` and `unparser` to the gem's runtime deps, 'cause they're not necessary if you only need polyfills.
+- Set `RUBY_NEXT_EDGE=1` or `RUBY_NEXT_PROPOSED=1` environment variable.
 
-### Installing globally via `gem`
+### Supported edge features
 
-You can install `ruby-next` globally by running the following commands:
+Not yet.
 
-```sh
-gem install parser -v "~> 2.7.0.100" -v "< 2.7.1" --source "https://USERNAME:ACCESS_TOKEN@rubygems.pkg.github.com/ruby-next"
-gem install ruby-next
-```
+### Supported proposed features
+
+- _Method reference_ operator (`.:`) ([link](https://bugs.ruby-lang.org/issues/13581)).
 
 ## Contributing
 

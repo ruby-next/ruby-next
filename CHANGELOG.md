@@ -2,6 +2,13 @@
 
 ## master
 
+- Changed the way edge/proposed features are activated. ([@palkan][])
+
+Use `--edge` or `--proposed` flags for `ruby-next nextify` or
+`require "ruby-next/language/{edge,proposed}"` in your code.
+
+See more in the [Readme](./README.md#proposed-and-edge-features).
+
 - Updated RuboCop integration. ([@palkan][])
 
 Make sure you use `TargetRubyVersion: next` in your RuboCop configuration.
