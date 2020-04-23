@@ -27,6 +27,7 @@ That's why Ruby Next implements the `master` features as fast as possible.
 ## Table of contents
 
 - [Overview](#overview)
+- [Quick Start](#quick-start)
 - [Polyfills](#using-only-polyfills)
 - [Transpiling](#transpiling)
   - [Modes](#transpiler-modes)
@@ -50,6 +51,27 @@ programmatically or via CLI. It also could be done in runtime.
 
 Currently, Ruby Next supports Ruby versions 2.5+ (including JRuby 9.2.8+).
 Please, [open an issue](https://github.com/ruby-next/ruby-next/issues/new/choose) if you would like us to support older Ruby versions.
+
+## Quick start
+
+The quickest way to start experimenting with Ruby Next is to install the gem and run a sample script. For example:
+
+```sh
+# Install Ruby Next globally
+$ gem install ruby-next
+
+# Call ruby with -ruby-next flag
+$ ruby -ruby-next -e "
+ case {hello: 'martian'}
+ in hello: hello if hello =~ /human/
+   puts '🙂'
+ in hello: 'martian'
+   puts '👽'
+ end
+"
+
+=> 👽
+```
 
 ## Using only polyfills
 
@@ -79,7 +101,7 @@ using RubyNext
 
 Ruby Next only refines core classes if necessary; thus, this line wouldn't have any effect in the edge Ruby.
 
-**NOTE:** Even if the runtime already contains a monkey-patch with the backported functionality, we consider the method as _dirty_ and activate the refinement for it. Thus, you always have a predictable behaviour. That's why we recommend using refinements for gems development.
+**NOTE:** Even if the runtime already contains a monkey-patch with the backported functionality, we consider the method as _dirty_ and activate the refinement for it. Thus, you always have predictable behaviour. That's why we recommend using refinements for gems development.
 
 Alternatively, you can go with monkey-patches. Just add this line:
 
@@ -124,7 +146,7 @@ gem install ruby-next
 
 Ruby Next currently provides two different modes of generating transpiled code: _AST_ and _rewrite_.
 
-In the AST mode, we parse the source code into AST, modifies this AST and **generate a new code from AST** (using [unparser][unparser]). Thus, the transpiled code being identical in terms of functionality has a different formatting.
+In the AST mode, we parse the source code into AST, modifies this AST and **generate a new code from AST** (using [unparser][unparser]). Thus, the transpiled code being identical in terms of functionality has different formatting.
 
 In the rewrite mode, we apply changes to the source code itself, thus, keeping the original formatting of the unaffected code (in a similar way to RuboCop's autocorrect feature).
 
@@ -292,7 +314,7 @@ To enable this integration, add the following line after the `require "bootsnap/
 require "ruby-next/language/bootsnap"
 ```
 
-**NOTE:** there is no way to invalidate the cache when you upgrade Ruby Next (e.g., due to the bug fixes), so you should do this manually.
+**NOTE:** There is no way to invalidate the cache when you upgrade Ruby Next (e.g., due to the bug fixes), so you should do this manually.
 
 ## `uby-next`
 
@@ -357,12 +379,15 @@ These features are disabled by default, you must opt-in in one of the following 
 - Enable programmatically when using a runtime mode:
 
 ```ruby
-require "ruby-next/edge"
+# It's important to load language module first
+require "ruby-next/language"
+
+require "ruby-next/language/edge"
 # or
-require "ruby-next/proposed"
+require "ruby-next/language/proposed"
 
 # and then activate the runtime mode
-require "ruby-next/langauge/runtime"
+require "ruby-next/language/runtime"
 # or require "ruby-next/language/bootsnap"
 ```
 
