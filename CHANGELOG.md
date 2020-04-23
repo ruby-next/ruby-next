@@ -2,6 +2,8 @@
 
 ## master
 
+## 0.6.0 (2020-04-23)
+
 - Changed the way edge/proposed features are activated. ([@palkan][])
 
 Use `--edge` or `--proposed` flags for `ruby-next nextify` or
