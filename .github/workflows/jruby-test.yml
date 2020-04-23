@@ -15,21 +15,28 @@ jobs:
         core_ext: ["false", "gem", "generated"]
     env:
       CORE_EXT: ${{ matrix.core_ext }}
+      BUNDLE_JOBS: 4
+      BUNDLE_RETRY: 3
+      CI: true
     steps:
-    - uses: actions/checkout@v1
-    - name: Set up Ruby
-      uses: eregon/use-ruby-action@master
+    - uses: actions/checkout@v2
+    - uses: actions/cache@v1
+      with:
+        path: /home/runner/bundle
+        key: bundle-jruby-${{ hashFiles('../Gemfile') }}-${{ hashFiles('**/*.gemspec') }}
+        restore-keys: |
+          bundle-jruby-
+    - uses: ruby/setup-ruby@v1
       with:
         ruby-version: jruby
     - name: Download MSpec
       run: |
         git clone https://github.com/ruby/mspec.git mspec
-    - name: Install deps
-      env:
-        BUNDLE_RUBYGEMS__PKG__GITHUB__COM: "palkan:${{ secrets.GITHUB_TOKEN }}"
+    - name: Bundle install
       run: |
-        gem install bundler
-        bundle install --jobs 4 --retry 3
+        bundle config path /home/runner/bundle
+        bundle install
+        bundle update
     - name: Run MSpec
       run: |
         bundle exec mspec/bin/mspec

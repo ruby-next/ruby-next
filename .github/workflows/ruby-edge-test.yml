@@ -11,17 +11,26 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ruby:latest
+    env:
+      BUNDLE_JOBS: 4
+      BUNDLE_RETRY: 3
+      CI: true
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
+    - uses: actions/cache@v1
+      with:
+        path: /home/runner/bundle
+        key: bundle-ruby-head-${{ hashFiles('../Gemfile') }}-${{ hashFiles('**/*.gemspec') }}
+        restore-keys: |
+          bundle-ruby-head-
     - name: Download MSpec
       run: |
         git clone https://github.com/ruby/mspec.git mspec
-    - name: Install deps
-      env:
-        BUNDLE_RUBYGEMS__PKG__GITHUB__COM: "palkan:${{ secrets.GITHUB_TOKEN }}"
-      run: |
-        gem install bundler
-        bundle install --jobs 4 --retry 3
+    - name: Bundle install
+        run: |
+          bundle config path /home/runner/bundle
+          bundle install
+          bundle update
     - name: Run MSpec
       run: |
         bundle exec mspec/bin/mspec
