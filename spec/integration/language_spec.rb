@@ -35,4 +35,17 @@ describe "language features (via -ruby-next)" do
       output.should include("Bob age is 30")
     end
   end
+
+  it "proposed features" do
+    cmd = <<~CMD
+      ruby -rbundler/setup -I#{File.join(__dir__, "../../../lib")} -ruby-next -r #{File.join(__dir__, "fixtures", "method_reference.rb")} \
+      -e "p main({}.to_json); p main({status: :ok}.to_json)"
+    CMD
+
+    # Set env var to 0 to make sure we do not shadow it
+    run(cmd, env: {"RUBY_NEXT_PROPOSED" => "0"}) do |_status, output, _err|
+      output.should include("\"status: \"\n")
+      output.should include("\"status: ok\"\n")
+    end
+  end
 end

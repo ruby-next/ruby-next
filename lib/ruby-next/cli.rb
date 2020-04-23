@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "ruby-next"
-require "ruby-next/language"
 
 require "ruby-next/commands/base"
 require "ruby-next/commands/nextify"

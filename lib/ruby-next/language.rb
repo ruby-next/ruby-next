@@ -166,9 +166,12 @@ module RubyNext
     require "ruby-next/language/rewriters/endless_range"
     rewriters << Rewriters::EndlessRange
 
-    if ENV["RUBY_NEXT_ENABLE_METHOD_REFERENCE"] == "1"
-      require "ruby-next/language/rewriters/method_reference"
-      RubyNext::Language.rewriters << RubyNext::Language::Rewriters::MethodReference
+    if ENV["RUBY_NEXT_EDGE"] == "1"
+      require "ruby-next/language/edge"
+    end
+
+    if ENV["RUBY_NEXT_PROPOSED"] == "1"
+      require "ruby-next/language/proposed"
     end
   end
 end

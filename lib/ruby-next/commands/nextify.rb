@@ -3,6 +3,8 @@
 require "fileutils"
 require "pathname"
 
+require "ruby-next/language"
+
 module RubyNext
   module Commands
     class Nextify < Base
@@ -38,9 +40,12 @@ module RubyNext
             @single_version = true
           end
 
-          opts.on("--enable-method-reference", "Enable reverted method reference syntax (requires custom parser)") do
-            require "ruby-next/language/rewriters/method_reference"
-            Language.rewriters << Language::Rewriters::MethodReference
+          opts.on("--edge", "Enable edge (master) Ruby features") do |val|
+            require "ruby-next/language/edge"
+          end
+
+          opts.on("--proposed", "Enable proposed/experimental Ruby features") do |val|
+            require "ruby-next/language/proposed"
           end
 
           opts.on(

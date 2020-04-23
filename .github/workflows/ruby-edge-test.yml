@@ -37,4 +37,4 @@ jobs:
     - name: Run language specs with source rewriting
       env:
         RUBY_NEXT_TRANSPILE_MODE: "rewrite"
-      run: bundle exec mspec/bin/mspec :language :optional
+      run: bundle exec mspec/bin/mspec :language

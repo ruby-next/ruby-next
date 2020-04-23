@@ -116,4 +116,25 @@ describe "ruby-next nextify" do
       )
     end
   end
+
+  it "--proposed" do
+    run_ruby_next(
+      "nextify #{File.join(__dir__, "..", "integration", "fixtures", "method_reference.rb")} --proposed " \
+      "-o #{File.join(__dir__, "dummy", ".rbnext", "method_reference_old.rb")}",
+      env: {"RUBY_NEXT_PROPOSED" => "0"}
+    ) do |_status, _output, err|
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "method_reference_old.rb")).should equal true
+      File.read(File.join(__dir__, "dummy", ".rbnext", "method_reference_old.rb")).should include("JSON.method(:parse)")
+    end
+  end
+
+  it "--proposed is not set" do
+    run_ruby_next(
+      "nextify #{File.join(__dir__, "..", "integration", "fixtures", "method_reference.rb")} " \
+      "-o #{File.join(__dir__, "dummy", ".rbnext", "method_reference_old.rb")}",
+      env: {"RUBY_NEXT_PROPOSED" => "0"}
+    ) do |_status, _output, err|
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "method_reference_old.rb")).should equal false
+    end
+  end
 end

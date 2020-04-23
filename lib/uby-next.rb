@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+# Activate all features
+ENV["RUBY_NEXT_EDGE"] = "1"
+ENV["RUBY_NEXT_PROPOSED"] = "1"
+
 require "ruby-next/language/runtime"
 require "ruby-next/core/runtime"
 

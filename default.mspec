@@ -22,18 +22,12 @@ class MSpecScript
   # Command line specs
   set :cli, %w[spec/cli]
 
-  # Optional specs (require custom parser)
-  set :optional, %w[spec/optional]
-
   # Latest stable Ruby release specs
   set :stable, get(:cli) + get(:language) + get(:core) + get(:integration)
 end
 
-require "ruby-next/language"
-# It's important to enable optional rewriters before loading Runtime module,
-# 'cause it creates a copy of the original list
-require "ruby-next/language/rewriters/method_reference"
-RubyNext::Language.rewriters << RubyNext::Language::Rewriters::MethodReference
+ENV["RUBY_NEXT_EDGE"] = "1"
+ENV["RUBY_NEXT_PROPOSED"] = "1"
 
 require "ruby-next/language/runtime"
 
