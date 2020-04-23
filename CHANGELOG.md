@@ -2,6 +2,14 @@
 
 ## master
 
+- Updated RuboCop integration. ([@palkan][])
+
+Make sure you use `TargetRubyVersion: next` in your RuboCop configuration.
+
+- Upgraded to `ruby-next-parser` for edge features. ([@palkan][])
+
+It's no longer needed to use Parser gem from Ruby Next package registry.
+
 ## 0.5.3 (2020-03-25)
 
 - Enhance logging. ([@palkan][])

@@ -14,11 +14,10 @@ jobs:
   markdownlint:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - name: Set up Ruby 2.6
-      uses: actions/setup-ruby@v1
+    - uses: actions/checkout@v2
+    - uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 2.6.x
+        ruby-version: 2.6
     - name: Run Markdown linter
       run: |
         gem install mdl
@@ -26,11 +25,10 @@ jobs:
   rubocop:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - name: Set up Ruby 2.6
-      uses: actions/setup-ruby@v1
+    - uses: actions/checkout@v2
+    - uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 2.6.x
+        ruby-version: 2.6
     - name: Lint Markdown files with RuboCop
       run: |
         gem install bundler
@@ -39,14 +37,13 @@ jobs:
   forspell:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: Install Hunspell
       run: |
         sudo apt-get install hunspell
-    - name: Set up Ruby 2.6
-      uses: actions/setup-ruby@v1
+    - uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 2.6.x
+        ruby-version: 2.6
     - name: Run Forspell
       run: |
         gem install forspell
@@ -54,7 +51,7 @@ jobs:
   liche:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: Set up Go
       uses: actions/setup-go@v1
       with:
