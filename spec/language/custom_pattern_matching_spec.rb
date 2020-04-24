@@ -3,7 +3,7 @@ require_relative '../test_unit_to_mspec'
 using TestUnitToMspec
 
 # These tests are not copied from ruby/ruby
-describe "custom tests" do
+describe "custom tests for pattern mathing" do
   it "array pattern multiple clauses" do
     # multiple clauses with arrays
     assert_block do

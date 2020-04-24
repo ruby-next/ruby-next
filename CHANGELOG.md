@@ -2,6 +2,10 @@
 
 ## master
 
+- Add endless methods support. ([@palkan][])
+
+Now you can write `def foo() = :bar`.
+
 ## 0.7.0 (2020-04-29)
 
 - Try to auto-transpile the source code on load in `.setup_gem_load_path` if transpiled files are missing. ([@palkan][])

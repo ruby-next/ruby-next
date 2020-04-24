@@ -62,12 +62,15 @@ $ gem install ruby-next
 
 # Call ruby with -ruby-next flag
 $ ruby -ruby-next -e "
- case {hello: 'martian'}
- in hello: hello if hello =~ /human/
-   puts '🙂'
- in hello: 'martian'
-   puts '👽'
- end
+def greet(val) =
+  case val
+    in hello: hello if hello =~ /human/
+      puts '🙂'
+    in hello: 'martian'
+      puts '👽'
+    end
+
+greet(hello: 'martian')
 "
 
 => 👽
@@ -431,11 +434,11 @@ require "ruby-next/language/runtime"
 
 ### Supported edge features
 
-Not yet.
+- "Endless" method definition (`def foo() = 42`) ([#16746](https://bugs.ruby-lang.org/issues/16746)).
 
 ### Supported proposed features
 
-- _Method reference_ operator (`.:`) ([link](https://bugs.ruby-lang.org/issues/13581)).
+- _Method reference_ operator (`.:`) ([#13581](https://bugs.ruby-lang.org/issues/13581)).
 
 ## Contributing
 

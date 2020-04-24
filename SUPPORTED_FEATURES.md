@@ -61,3 +61,7 @@ You can still use this feature with Ruby Next by enabling it explicitly (see [Re
 - (_WONTFIX_) Startless ranges (`..1` or `...1`) ([ref](https://rubyreferences.github.io/rubychanges/2.7.html#beginless-range))
 
 The possible translation depends on the _end_ type which could hardly be inferred from the source code.
+
+### 2.8
+
+- "Endless" method definition (`def foo() = 42`) ([#16746](https://bugs.ruby-lang.org/issues/16746))
