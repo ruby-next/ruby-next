@@ -9,8 +9,6 @@ on:
 jobs:
   ruby-edge-test:
     runs-on: ubuntu-latest
-    container:
-      image: ruby:latest
     env:
       BUNDLE_JOBS: 4
       BUNDLE_RETRY: 3
@@ -20,17 +18,20 @@ jobs:
     - uses: actions/cache@v1
       with:
         path: /home/runner/bundle
-        key: bundle-ruby-head-${{ hashFiles('../Gemfile') }}-${{ hashFiles('**/*.gemspec') }}
+        key: bundle-head-${{ hashFiles('../Gemfile') }}-${{ hashFiles('**/*.gemspec') }}
         restore-keys: |
-          bundle-ruby-head-
+          bundle-head-
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: head
     - name: Download MSpec
       run: |
         git clone https://github.com/ruby/mspec.git mspec
     - name: Bundle install
-        run: |
-          bundle config path /home/runner/bundle
-          bundle install
-          bundle update
+      run: |
+        bundle config path /home/runner/bundle
+        bundle install
+        bundle update
     - name: Run MSpec
       run: |
         bundle exec mspec/bin/mspec
