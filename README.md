@@ -364,6 +364,8 @@ AllCops:
     - 'lib/.rbnext/**/*'
 ```
 
+**NOTE:** you need `ruby-next` gem available in the environment where you run RuboCop (having `ruby-next-core` is not enough).
+
 ## Proposed and edge features
 
 Ruby Next aims to bring edge and proposed features to Ruby community before they (hopefully) reach an official Ruby release.
