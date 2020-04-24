@@ -3,7 +3,6 @@
 # NOTE: the following changes to the original code should be made:
 # - Add `using RubyNext::Language::Eval`
 # - Remove expected messages from SyntaxError
-# - Replace SyntaxError with Parser::SyntaxError
 # - Add binding to all eval calls (e.g., `eval <<~CODE` => `eval(<<~CODE, binding)`), move locals to eval when necessary
 # - Skip warnings specs
 
@@ -78,7 +77,7 @@ ruby_version_is "2.7" do
             in []
           end
         RUBY
-      }.should raise_error(Parser::SyntaxError)
+      }.should raise_error(SyntaxError)
 
       -> {
         eval(<<~RUBY, binding)
@@ -87,7 +86,7 @@ ruby_version_is "2.7" do
             when 1 == 1
           end
         RUBY
-      }.should raise_error(Parser::SyntaxError)
+      }.should raise_error(SyntaxError)
     end
 
     it "checks patterns until the first matching" do
@@ -132,7 +131,7 @@ ruby_version_is "2.7" do
               true
           end
         RUBY
-      }.should raise_error(Parser::SyntaxError, /unexpected/)
+      }.should raise_error(SyntaxError, /unexpected/)
     end
 
     describe "guards" do
@@ -352,7 +351,7 @@ ruby_version_is "2.7" do
               in [a, a]
             end
           RUBY
-        }.should raise_error(Parser::SyntaxError)
+        }.should raise_error(SyntaxError)
       end
 
       it "supports existing variables in a pattern specified with ^ operator" do
@@ -394,7 +393,7 @@ ruby_version_is "2.7" do
               false
             end
           RUBY
-        }.should raise_error(Parser::SyntaxError)
+        }.should raise_error(SyntaxError)
       end
     end
 
@@ -759,7 +758,7 @@ ruby_version_is "2.7" do
               in {"a" => 1}
             end
           RUBY
-        }.should raise_error(Parser::SyntaxError, /unexpected/)
+        }.should raise_error(SyntaxError, /unexpected/)
       end
 
       it "does not support string interpolation in keys" do
@@ -771,7 +770,7 @@ ruby_version_is "2.7" do
               in {"#{x}": 1}
             end
           RUBY
-        }.should raise_error(Parser::SyntaxError, /symbol literal with interpolation is not allowed/)
+        }.should raise_error(SyntaxError, /symbol literal with interpolation is not allowed/)
       end
 
       it "raise SyntaxError when keys duplicate in pattern" do
@@ -781,7 +780,7 @@ ruby_version_is "2.7" do
               in {a: 1, b: 2, a: 3}
             end
           RUBY
-        }.should raise_error(Parser::SyntaxError)
+        }.should raise_error(SyntaxError)
       end
 
       it "matches an object with #deconstruct_keys method which returns a Hash with equal keys and each value in Hash matches value in pattern" do

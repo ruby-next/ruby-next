@@ -1,5 +1,3 @@
-# source: https://github.com/ruby/spec/blob/master/core/array/fixtures/classes.rb 
-
 class Object
   # This helper is defined here rather than in MSpec because
   # it is only used in #pack specs.

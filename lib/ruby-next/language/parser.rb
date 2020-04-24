@@ -23,6 +23,8 @@ module RubyNext
         end
 
         parser.parse(buffer)
+      rescue ::Parser::SyntaxError => e
+        raise ::SyntaxError, e.message
       end
 
       def parse_with_comments(source, file = "(string)")
@@ -31,6 +33,8 @@ module RubyNext
         end
 
         parser.parse_with_comments(buffer)
+      rescue ::Parser::SyntaxError => e
+        raise ::SyntaxError, e.message
       end
     end
   end

@@ -28,12 +28,6 @@ module RubyNext
             ]
           )
         end
-
-        begin
-          transform(SYNTAX_PROBE)
-        rescue ::Parser::SyntaxError
-          warn_custom_parser_required_for("method reference")
-        end
       end
     end
   end
