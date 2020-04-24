@@ -1,4 +1,4 @@
-# source: https://github.com/ruby/ruby/blob/master/test/ruby/test_syntax.rb#L1477
+# source: https://github.com/ruby/ruby/blob/b609bdeb5307e280137b4b2838af0fe4e4b46f1c/test/ruby/test_syntax.rb#L1474
 
 require_relative '../test_unit_to_mspec'
 
@@ -6,6 +6,29 @@ using RubyNext::Language::InstanceEval
 using TestUnitToMspec
 
 describe "args forwarding def(...)" do
+  it "syntax" do
+    assert_valid_syntax('def foo(...) bar(...) end')
+    assert_valid_syntax('def foo(...) end')
+    assert_syntax_error('iter do |...| end', /unexpected/)
+    assert_syntax_error('iter {|...|}', /unexpected/)
+    assert_syntax_error('->... {}', /unexpected/)
+    assert_syntax_error('->(...) {}', /unexpected/)
+    assert_syntax_error('def foo(x, y, z) bar(...); end', /unexpected/)
+    assert_syntax_error('def foo(x, y, z) super(...); end', /unexpected/)
+    assert_syntax_error('def foo(...) yield(...); end', /unexpected/)
+    assert_syntax_error('def foo(...) return(...); end', /unexpected/)
+    assert_syntax_error('def foo(...) a = (...); end', /unexpected/)
+    assert_syntax_error('def foo(...) [...]; end', /unexpected/)
+    assert_syntax_error('def foo(...) foo[...]; end', /unexpected/)
+    assert_syntax_error('def foo(...) foo[...] = x; end', /unexpected/)
+    assert_syntax_error('def foo(...) foo(...) { }; end', /both block arg and actual block given/)
+    assert_syntax_error('def foo(...) defined?(...); end', /unexpected/)
+  end
+
+  # FIXME: figure out how to deal with full kwargs separation
+  # https://github.com/ruby/ruby/pull/2794
+  next if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.7")
+
   obj1 = Object.new
   def obj1.bar(*args, **kws, &block)
     if block
@@ -63,8 +86,6 @@ describe "args forwarding def(...)" do
       }
       assert_equal(-1, obj.method(:foo).arity)
 
-      # FIXME: As is as this patch is released: https://github.com/ruby/ruby/commit/b609bdeb5307e280137b4b2838af0fe4e4b46f1c
-      next if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.7")
       parameters = obj.method(:foo).parameters
       assert_equal(:rest, parameters.dig(0, 0))
       assert_equal(:block, parameters.dig(1, 0))

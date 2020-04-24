@@ -1,21 +1,14 @@
+# source: https://github.com/ruby/spec/blob/249a36c2e9fcddbb208a0d618d05f6bd9a64fd17/language/delegation_spec.rb#L1
+
 require_relative '../spec_helper'
+require_relative 'fixtures/delegation'
 
 using RubyNext::Language::ClassEval
 
 ruby_version_is "2.7" do
-  describe "args forwarding def(...)" do
-    class F
-      def target(*args, **kwargs)
-        [args, kwargs]
-      end
-
-      def target_block(*args, **kwargs)
-        yield [kwargs, args]
-      end
-    end
-
+  describe "delegation with def(...)" do
     it "delegates rest and kwargs" do
-      a = Class.new(F)
+      a = Class.new(DelegationSpecs::Target)
       a.class_eval(<<-RUBY)
         def delegate(...)
           target(...)
@@ -26,7 +19,7 @@ ruby_version_is "2.7" do
     end
 
     it "delegates block" do
-      a = Class.new(F)
+      a = Class.new(DelegationSpecs::Target)
       a.class_eval(<<-RUBY)
         def delegate_block(...)
           target_block(...)

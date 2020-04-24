@@ -1,4 +1,4 @@
-# source: https://github.com/ruby/spec/ruby/language/numbered_parameters_spec.rb
+# source: https://github.com/ruby/spec/blob/249a36c2e9fcddbb208a0d618d05f6bd9a64fd17/language/numbered_parameters_spec.rb
 
 require_relative '../spec_helper'
 
@@ -31,10 +31,9 @@ ruby_version_is "2.7" do
     end
 
     it "can not be used in both outer and nested blocks at the same time" do
-      skip
       -> {
         eval("-> { _1; -> { _2 } }")
-      }.should raise_error(SyntaxError, /numbered parameter is already used in.+ outer block here/m)
+      }.should raise_error(SyntaxError, /numbered parameter is already used/m)
     end
 
     it "can be overwritten with local variable" do
@@ -45,7 +44,7 @@ ruby_version_is "2.7" do
         CODE
       end
     end
-\
+
     it "warns when numbered parameter is overriten with local variable" do
       skip
       -> {
@@ -54,7 +53,6 @@ ruby_version_is "2.7" do
     end
 
     it "raises SyntaxError when block parameters are specified explicitly" do
-      skip
       -> { eval("-> () { _1 }")         }.should raise_error(SyntaxError, /ordinary parameter is defined/)
       -> { eval("-> (x) { _1 }")        }.should raise_error(SyntaxError, /ordinary parameter is defined/)
 

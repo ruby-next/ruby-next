@@ -2,6 +2,13 @@
 
 ## master
 
+- Raise `SyntaxError` when parsing fails. ([@palkan][])
+
+Previously, we let Parser to raise its `Parser::SyntaxError` but some exceptions
+are not reported by Parser and should be handled by transpiler (and we raised `SyntaxError` in that case, as MRI does).
+
+This change unifies the exceptions raised during transpiling.
+
 ## 0.6.0 (2020-04-23)
 
 - Changed the way edge/proposed features are activated. ([@palkan][])

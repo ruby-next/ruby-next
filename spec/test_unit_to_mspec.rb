@@ -25,12 +25,13 @@ module TestUnitToMspec
       block.should_not raise_error
     end
 
-    # We do not check syntax, so make it no-op
-    def assert_syntax_error(*)
-      true.should == true
+    def assert_syntax_error(str, *)
+      -> { RubyNext::Language.transform(str) }.should raise_error(SyntaxError)
     end
 
-    alias assert_valid_syntax assert_syntax_error
+    def assert_valid_syntax(str)
+      -> { RubyNext::Language.transform(str) }.should_not raise_error
+    end
 
     # Let's skip for now
     def assert_warning(*)

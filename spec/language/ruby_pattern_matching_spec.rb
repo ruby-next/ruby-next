@@ -1,9 +1,10 @@
-# source: https://github.com/ruby/ruby/blob/master/test/ruby/test_pattern_matching.rb
+# source: https://github.com/ruby/ruby/blob/501f2c44e6ae79c02a5c4d0f872fc7fa77258fcf/test/ruby/test_pattern_matching.rb
 #
 # How to sync tests:
 #  - Copy `eval` contents from ruby tests and paste here
 #  - Include refinement into eval (for JRuby)
 #  - Drop experimental warning tests
+#  - Comment some syntax specs (see notes)
 #  - Extract refeniments modules from the test class and refinements test at the end of the file
 
 require_relative '../test_unit_to_mspec'
@@ -99,18 +100,6 @@ class TestPatternMatching < Test::Unit::TestCase
         in 1
         end
       end
-    end
-
-    assert_block do
-      verbose, $VERBOSE = $VERBOSE, nil # suppress "warning: Pattern matching is experimental, and the behavior may change in future versions of Ruby!"
-      eval(%q{
-        case true
-        in a
-          a
-        end
-      })
-    ensure
-      $VERBOSE = verbose
     end
 
     assert_block do
@@ -431,7 +420,7 @@ END
       end
     end
 
-     assert_block do
+    assert_block do
       [[], C.new([])].all? do |i|
         case i
         in 0,;
@@ -1039,15 +1028,44 @@ END
       end
     }, /duplicated key name/)
 
-    assert_syntax_error(%q{
-      case _
-      in a?:
-      end
-    }, /key must be valid as local variables/)
+    # FIX: parser
+    # assert_syntax_error(%q{
+    #   case _
+    #   in a?:
+    #   end
+    # }, /key must be valid as local variables/)
 
     assert_block do
       case {a?: true}
       in a?: true
+        true
+      end
+    end
+
+    assert_block do
+      case {a: 0, b: 1}
+      in {a: 1,}
+        false
+      in {a:,}
+        _a = a
+        true
+      end
+    end
+
+    assert_block do
+      case {a: 0}
+      in {a: 1
+      }
+        false
+      in {a:
+            2}
+        false
+      in a: {b:}, c:
+        _b = b
+        p c
+      in {a:
+      }
+        _a = a
         true
       end
     end
@@ -1071,11 +1089,12 @@ END
       end
     }, /symbol literal with interpolation is not allowed/)
 
-    assert_syntax_error(%q{
-      case _
-      in "#{a}":
-      end
-    }, /symbol literal with interpolation is not allowed/)
+    # FIX: parser
+    # assert_syntax_error(%q{
+    #   case _
+    #   in "#{a}":
+    #   end
+    # }, /symbol literal with interpolation is not allowed/)
   end
 
   def test_paren
@@ -1236,7 +1255,8 @@ END
     assert_raise(NoMatchingPatternError) do
       {a: 1} in {a: 0}
     end
-    assert_syntax_error("if {} in {a:}; end", /void value expression/)
+    # WONTFIX:
+    # assert_syntax_error("if {} in {a:}; end", /void value expression/)
     assert_syntax_error(%q{
       1 in a, b
     }, /unexpected/, '[ruby-core:95098]')
