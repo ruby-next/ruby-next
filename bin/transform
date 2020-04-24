@@ -5,11 +5,10 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 require "bundler/setup"
 
-require "ruby-next/language"
+ENV["RUBY_NEXT_EDGE"] = "1"
+ENV["RUBY_NEXT_PROPOSED"] = "1"
 
-# optional parsers
-require "ruby-next/language/rewriters/method_reference"
-RubyNext::Language.rewriters << RubyNext::Language::Rewriters::MethodReference
+require "ruby-next/language"
 
 contents =
   if File.exist?(ARGV[0])
