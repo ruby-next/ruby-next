@@ -25,21 +25,23 @@ module RubyNext
         end
 
         def on_send(node)
-          return unless node.children[2]&.type == :forwarded_args
+          return super(node) unless node.children[2]&.type == :forwarded_args
 
           replace(node.children[2].loc.expression, "*#{REST}, &#{BLOCK}")
 
-          node.updated(
-            nil,
-            [
-              *node.children[0..1],
-              *forwarded_args
-            ]
+          process(
+            node.updated(
+              nil,
+              [
+                *node.children[0..1],
+                *forwarded_args
+              ]
+            )
           )
         end
 
         def on_super(node)
-          return unless node.children[0]&.type == :forwarded_args
+          return super(node) unless node.children[0]&.type == :forwarded_args
 
           replace(node.children[0].loc.expression, "*#{REST}, &#{BLOCK}")
 
