@@ -2,6 +2,8 @@
 
 ## master
 
+- Add `--dry-run` option to CLI. ([@palkan][])
+
 - Raise `SyntaxError` when parsing fails. ([@palkan][])
 
 Previously, we let Parser to raise its `Parser::SyntaxError` but some exceptions

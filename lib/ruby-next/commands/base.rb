@@ -11,6 +11,9 @@ module RubyNext
         end
       end
 
+      attr_reader :dry_run
+      alias dry_run? dry_run
+
       def initialize(args)
         parse! args
       end
@@ -24,8 +27,13 @@ module RubyNext
       end
 
       def log(msg)
-        return unless CLI.verbose
-        $stdout.puts msg
+        return unless CLI.verbose?
+
+        if CLI.dry_run?
+          $stdout.puts "[DRY RUN] #{msg}"
+        else
+          $stdout.puts msg
+        end
       end
 
       def base_parser
@@ -33,6 +41,11 @@ module RubyNext
           yield opts
 
           opts.on("-V", "Turn on verbose mode") do
+            CLI.verbose = true
+          end
+
+          opts.on("--dry-run", "Print verbose output without generating files") do
+            CLI.dry_run = true
             CLI.verbose = true
           end
         end

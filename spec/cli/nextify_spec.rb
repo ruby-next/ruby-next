@@ -137,4 +137,13 @@ describe "ruby-next nextify" do
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "method_reference_old.rb")).should equal false
     end
   end
+
+  it "--dry-run" do
+    run_ruby_next "nextify #{File.join(__dir__, "dummy")} --dry-run" do |_status, output, err|
+      out_path = File.join(__dir__, "dummy", ".rbnext", "2.7", "transpile_me.rb")
+      output.should include("[DRY RUN] Generated: #{out_path}")
+      File.directory?(File.join(__dir__, "dummy", ".rbnext", "2.7")).should equal false
+      File.exist?(out_path).should equal false
+    end
+  end
 end

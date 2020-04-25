@@ -136,8 +136,10 @@ module RubyNext
 
         return $stdout.puts(contents) if out_path == "stdout"
 
-        FileUtils.mkdir_p File.dirname(out_path)
-        File.write(out_path, contents)
+        unless CLI.dry_run?
+          FileUtils.mkdir_p File.dirname(out_path)
+          File.write(out_path, contents)
+        end
 
         log "Generated: #{out_path}"
       end

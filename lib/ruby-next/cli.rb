@@ -10,10 +10,14 @@ module RubyNext
   # Command line interface for RubyNext
   class CLI
     class << self
-      attr_accessor :verbose
+      attr_accessor :verbose, :dry_run
+
+      alias verbose? verbose
+      alias dry_run? dry_run
     end
 
     self.verbose = false
+    self.dry_run = false
 
     COMMANDS = {
       "nextify" => Commands::Nextify,

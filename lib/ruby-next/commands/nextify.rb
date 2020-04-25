@@ -132,9 +132,11 @@ module RubyNext
             )
           end
 
-        FileUtils.mkdir_p File.dirname(next_path)
+        unless CLI.dry_run?
+          FileUtils.mkdir_p File.dirname(next_path)
 
-        File.write(next_path, contents)
+          File.write(next_path, contents)
+        end
 
         log "Generated: #{next_path}"
       end
