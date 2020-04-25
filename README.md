@@ -181,6 +181,7 @@ Usage: ruby-next nextify DIRECTORY_OR_FILE [options]
         --[no-]refine                Do not inject `using RubyNext`
     -h, --help                       Print help
     -V                               Turn on verbose mode
+        --dry-run                    Print verbose output without generating files
 ```
 
 The behaviour depends on whether you transpile a single file or a directory:
@@ -212,6 +213,7 @@ Usage: ruby-next core_ext [options]
     -n, --name=NAME                  Filter extensions by name
     -h, --help                       Print help
     -V                               Turn on verbose mode
+        --dry-run                    Print verbose output without generating files
 ```
 
 The most common use-case is to backport the APIs required by pattern matching. You can do this, for example,

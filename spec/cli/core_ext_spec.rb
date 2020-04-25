@@ -107,4 +107,11 @@ describe "ruby-next core_ext" do
       end
     end
   end
+
+  it "--dry-run" do
+    run_ruby_next("core_ext --min-version 2.6 -o #{@out_path} --dry-run") do |_status, output, err|
+      File.exist?(@out_path).should equal false
+      output.should include("[DRY RUN] Generated: #{@out_path}")
+    end
+  end
 end
