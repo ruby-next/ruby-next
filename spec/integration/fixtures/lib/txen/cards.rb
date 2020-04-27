@@ -9,9 +9,7 @@ module Txen
       in "jack" | "queen" | "king"
         10
       in "ace"
-        # NOTE: original source is changed to test runtime activation
-        # (in the transpiled code you can should see 11)
-        10
+        11
       end
     end
   end

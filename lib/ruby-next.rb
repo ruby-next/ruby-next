@@ -11,10 +11,10 @@ module RubyNext
 
   # Defines last minor version for every major version
   LAST_MINOR_VERSIONS = {
-    2 => 7
+    2 => 8
   }.freeze
 
-  LATEST_VERSION = [2, 7].freeze
+  LATEST_VERSION = [2, 8].freeze
 
   class << self
     def next_version(version = RUBY_VERSION)

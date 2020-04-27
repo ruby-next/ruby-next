@@ -84,6 +84,18 @@ module RuboCop
           send(:"on_#{child.type}", child)
         end
       end
+
+      unless method_defined?(:on_def_e)
+        def on_def_e(node)
+          _name, _args_node, body_node = *node
+          send(:"on_#{body_node.type}", body_node)
+        end
+
+        def on_defs_e(node)
+          _definee_node, _name, _args_node, body_node = *node
+          send(:"on_#{body_node.type}", body_node)
+        end
+      end
     end
   end
 end
