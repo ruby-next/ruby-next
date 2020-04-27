@@ -11,21 +11,18 @@ describe "ruby-next nextify" do
     File.delete(File.join(__dir__, "dummy", ".rbnextrc")) if File.exist?(File.join(__dir__, "dummy", ".rbnextrc"))
   end
 
-  it "generates .rbnxt/2.6 folder with the transpiled files required for 2.6" do
-    run_ruby_next "nextify #{File.join(__dir__, "dummy")}" do |_status, _output, err|
-      File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.7", "transpile_me.rb")).should equal true
-      File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.7", "namespaced", "pattern_matching.rb")).should equal true
-      File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.7", "namespaced", "version.rb")).should equal false
-      File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.7", "namespaced", "endless_nameless.rb")).should equal false
-    end
-  end
-
-  it "generates .rbnxt/2.5 folder with the transpiled files required for 2.5" do
-    run_ruby_next "nextify #{File.join(__dir__, "dummy")}" do |_status, _output, err|
+  it "generates .rbnxt/{2.6, 2.7, 2.8} folders with the transpiled files required for each version" do
+    run_ruby_next "nextify #{File.join(__dir__, "dummy")} --proposed --edge" do |_status, _output, err|
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.6", "transpile_me.rb")).should equal false
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.6", "namespaced", "pattern_matching.rb")).should equal false
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.6", "namespaced", "version.rb")).should equal false
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.6", "namespaced", "endless_nameless.rb")).should equal true
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.7", "transpile_me.rb")).should equal true
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.7", "namespaced", "pattern_matching.rb")).should equal true
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.7", "namespaced", "version.rb")).should equal false
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.7", "namespaced", "endless_nameless.rb")).should equal false
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.8", "namespaced", "pattern_matching.rb")).should equal true
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.8", "namespaced", "endless_nameless.rb")).should equal false
     end
   end
 
@@ -136,6 +133,29 @@ describe "ruby-next nextify" do
       env: {"RUBY_NEXT_PROPOSED" => "0"}
     ) do |_status, _output, err|
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "method_reference_old.rb")).should equal false
+    end
+  end
+
+  it "--edge" do
+    run_ruby_next(
+      "nextify #{File.join(__dir__, "..", "integration", "fixtures", "endless_def.rb")} --edge " \
+      "--transpile-mode=rewrite --min-version=2.7 " \
+      "-o #{File.join(__dir__, "dummy", ".rbnext", "endless_def_old.rb")}",
+      env: {"RUBY_NEXT_EDGE" => "0"}
+    ) do |_status, _output, err|
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "endless_def_old.rb")).should equal true
+      File.read(File.join(__dir__, "dummy", ".rbnext", "endless_def_old.rb")).should include("def greet(val) ;")
+    end
+  end
+
+  it "--edge is not set" do
+    run_ruby_next(
+      "nextify #{File.join(__dir__, "..", "integration", "fixtures", "endless_def.rb")} " \
+      "--transpile-mode=rewrite --min-version=2.7 " \
+      "-o #{File.join(__dir__, "dummy", ".rbnext", "endless_def_old.rb")}",
+      env: {"RUBY_NEXT_EDGE" => "0"}
+    ) do |_status, _output, err|
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "endless_def_old.rb")).should equal false
     end
   end
 
