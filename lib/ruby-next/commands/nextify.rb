@@ -97,7 +97,13 @@ module RubyNext
         rewriters = Language.rewriters.select { |rw| rw.unsupported_version?(version) }
 
         context = Language::TransformContext.new
-        new_contents = Language.transform contents, context: context, rewriters: rewriters
+
+        new_contents =
+          if Gem::Version.new(version) >= Gem::Version.new("2.7.0") && !defined?(Unparser::Emitter::CaseMatch)
+            Language.rewrite contents, context: context, rewriters: rewriters
+          else
+            Language.transform contents, context: context, rewriters: rewriters
+          end
 
         return unless context.dirty?
 
