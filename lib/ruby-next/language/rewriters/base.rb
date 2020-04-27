@@ -78,10 +78,6 @@ module RubyNext
           def transform(source)
             Language.transform(source, rewriters: [self], using: false)
           end
-
-          def warn_custom_parser_required_for(feature)
-            RubyNext.warn(CUSTOM_PARSER_REQUIRED % feature)
-          end
         end
 
         attr_reader :locals

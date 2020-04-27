@@ -163,6 +163,8 @@ You can change the transpiler mode:
 - Via environmental variable `RUBY_NEXT_TRANSPILE_MODE=rewrite`.
 - Via CLI option ([see below](#cli)).
 
+**NOTE:** For the time being, Unparser [doesn't support](https://github.com/mbj/unparser/pull/142) new Ruby 2.7 AST nodes, so we always use rewrite mode in Ruby 2.7+.
+
 ## CLI
 
 Ruby Next ships with the command-line interface (`ruby-next`) which provides the following functionality:

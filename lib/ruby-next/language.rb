@@ -83,6 +83,12 @@ module RubyNext
       end
 
       def runtime!
+        if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.7.0") && !defined?(Unparser::Emitter::CaseMatch)
+          RubyNext.warn "Ruby Next fallbacks to \"rewrite\" transpiling mode since Unparser doesn't support 2.7 AST yet.\n"
+            "See https://github.com/mbj/unparser/pull/142"
+          self.mode = :rewrite
+        end
+
         @runtime = true
       end
 
