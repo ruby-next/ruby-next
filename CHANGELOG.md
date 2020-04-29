@@ -2,6 +2,10 @@
 
 ## master
 
+- Add right-hand assignment support. ([@palkan][])
+
+It is real: `13.divmod(5) => a, b`.
+
 - Add endless methods support. ([@palkan][])
 
 Now you can write `def foo() = :bar`.
