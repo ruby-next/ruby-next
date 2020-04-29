@@ -2,6 +2,8 @@
 
 ## master
 
+## 0.7.0 (2020-04-29)
+
 - Try to auto-transpile the source code on load in `.setup_gem_load_path` if transpiled files are missing. ([@palkan][])
 
 This would make it possible to install gems from source if transpiled files do not exist in the repository.
