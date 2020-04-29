@@ -65,3 +65,5 @@ The possible translation depends on the _end_ type which could hardly be inferre
 ### 2.8
 
 - "Endless" method definition (`def foo() = 42`) ([#16746](https://bugs.ruby-lang.org/issues/16746))
+
+- Right-hand assignment (`13.divmod(5) => a,b`) ([#15921](https://bugs.ruby-lang.org/issues/15921))

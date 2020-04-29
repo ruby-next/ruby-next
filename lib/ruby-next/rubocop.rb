@@ -96,6 +96,20 @@ module RuboCop
           send(:"on_#{body_node.type}", body_node)
         end
       end
+
+      unless method_defined?(:on_rasgn)
+        def on_rasgn(node)
+          val_node, asgn_node = *node
+          send(:"on_#{asgn_node.type}", asgn_node)
+          send(:"on_#{val_node.type}", val_node)
+        end
+
+        def on_mrasgn(node)
+          lhs, rhs = *node
+          send(:"on_#{lhs.type}", lhs)
+          send(:"on_#{rhs.type}", rhs)
+        end
+      end
     end
   end
 end
