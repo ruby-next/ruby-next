@@ -14,6 +14,8 @@ module RubyNext
 
       def run
         log "RubyNext core strategy: #{RubyNext::Core.strategy}"
+        log "RubyNext transpile mode: #{RubyNext::Language.mode}"
+
         paths.each do |path|
           contents = File.read(path)
           transpile path, contents
