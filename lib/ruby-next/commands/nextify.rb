@@ -64,6 +64,8 @@ module RubyNext
           end
         end
 
+        optparser.parse!(args)
+
         @lib_path = args[0]
 
         if print_help
@@ -72,11 +74,10 @@ module RubyNext
         end
 
         unless lib_path&.then(&File.method(:exist?))
+          $stdout.puts "Path not found: #{lib_path}"
           $stdout.puts optparser.help
           exit 2
         end
-
-        optparser.parse!(args)
 
         @paths =
           if File.directory?(lib_path)

@@ -40,6 +40,8 @@ module RubyNext
 
       args.delete(command)
 
+      args.unshift(*load_args_from_rc(command))
+
       COMMANDS.fetch(command) do
         raise "Unknown command: #{command}. Available commands: #{COMMANDS.keys.join(",")}"
       end.run(args)
@@ -92,6 +94,16 @@ module RubyNext
           end
         end
       end
+    end
+
+    def load_args_from_rc(command)
+      return [] unless File.file?(".rbnextrc")
+
+      require "yaml"
+      command_args = YAML.load_file(".rbnextrc")[command]
+      return [] unless command_args
+
+      command_args.lines.flat_map { |line| line.chomp.split(/\s+/) }
     end
   end
 end

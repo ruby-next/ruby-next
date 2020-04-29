@@ -240,7 +240,21 @@ $ ruby-next core_ext -l --name=filter --name=deconstruct
   - StructDeconstruct
 ```
 
-### Integrating into a gem development
+### Configuration file
+
+You can define CLI options in the `.rbnextrc` file located in the root of your project to avoid adding them every time you run `ruby-next`.
+
+Configuration file is a YAML with commands as keys and options as multiline strings:
+
+```yml
+# ./.rbnextrc
+
+nextify: |
+  --transpiler-mode=rewrite
+  --edge
+```
+
+## Integrating into a gem development
 
 We recommend _pre-transpiling_ source code to work with older versions before releasing it.
 

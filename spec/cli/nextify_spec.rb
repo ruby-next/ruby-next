@@ -8,6 +8,7 @@ using CommandTesting
 describe "ruby-next nextify" do
   after do
     FileUtils.rm_rf(File.join(__dir__, "dummy", ".rbnext"))
+    File.delete(File.join(__dir__, "dummy", ".rbnextrc")) if File.exist?(File.join(__dir__, "dummy", ".rbnextrc"))
   end
 
   it "generates .rbnxt/2.6 folder with the transpiled files required for 2.6" do
@@ -144,6 +145,28 @@ describe "ruby-next nextify" do
       output.should include("[DRY RUN] Generated: #{out_path}")
       File.directory?(File.join(__dir__, "dummy", ".rbnext", "2.7")).should equal false
       File.exist?(out_path).should equal false
+    end
+  end
+
+  it "with .rbnextrc" do
+    Dir.chdir(File.join(__dir__, "dummy")) do
+      File.write(".rbnextrc",
+        <<~YML
+          nextify: |
+            --min-version=2.6
+            --transpile-mode=rewrite
+        YML
+      )
+
+      run_ruby_next("nextify #{File.join(__dir__, "dummy")}", chdir: Dir.pwd) do |_status, output, err|
+        File.directory?(File.join(__dir__, "dummy", ".rbnext", "2.6")).should equal false
+        File.directory?(File.join(__dir__, "dummy", ".rbnext", "2.7")).should equal true
+
+        File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.7", "endless_pattern.rb")).should equal true
+        File.read(File.join(__dir__, "dummy", ".rbnext", "2.7", "endless_pattern.rb")).lines.size.should equal(
+          File.read(File.join(__dir__, "dummy", "endless_pattern.rb")).lines.size
+        )
+      end
     end
   end
 end
