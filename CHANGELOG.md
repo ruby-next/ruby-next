@@ -2,6 +2,18 @@
 
 ## master
 
+- Use`./.rbnextrc` to define CLI args. ([@palkan][])
+
+You can define CLI options in the configuration file to re-use them between environments or
+simply avoid typing every time:
+
+```yml
+# .rbnextrc
+nextify: |
+  --transpiler-mode=rewrite
+  --edge
+```
+
 - Add `--dry-run` option to CLI. ([@palkan][])
 
 - Raise `SyntaxError` when parsing fails. ([@palkan][])

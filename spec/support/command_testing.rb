@@ -33,7 +33,7 @@ module CommandTesting
     end
 
     def run_ruby_next(command, **options, &block)
-      run("#{RUBY_RUNNER} bin/ruby-next #{command}", **options, &block)
+      run("#{RUBY_RUNNER} #{File.join(__dir__, "../../bin/ruby-next")} #{command}", **options, &block)
     end
   end
 end

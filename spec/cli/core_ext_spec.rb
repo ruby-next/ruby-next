@@ -11,6 +11,7 @@ describe "ruby-next core_ext" do
   end
 
   after do
+    File.delete(File.join(__dir__, "dummy", ".rbnextrc")) if File.exist?(File.join(__dir__, "dummy", ".rbnextrc"))
     File.delete(@out_path) if File.exist?(@out_path)
   end
 
@@ -112,6 +113,28 @@ describe "ruby-next core_ext" do
     run_ruby_next("core_ext --min-version 2.6 -o #{@out_path} --dry-run") do |_status, output, err|
       File.exist?(@out_path).should equal false
       output.should include("[DRY RUN] Generated: #{@out_path}")
+    end
+  end
+
+  it "with .rbnextrc" do
+    Dir.chdir(File.join(__dir__, "dummy")) do
+      File.write(".rbnextrc",
+        <<~YML
+          core_ext: >
+            -n ArrayDeconstruct
+            -n EnumerableFilterMap
+        YML
+      )
+
+      run_ruby_next("core_ext -o #{@out_path}", chdir: Dir.pwd) do |_status, _output, err|
+        File.exist?(@out_path).should equal true
+        File.read(@out_path).tap do |contents|
+          contents.should_not include("alias then yield_self")
+          contents.should include("def filter_map")
+          contents.should_not include("def deconstruct_keys")
+          contents.should include("def deconstruct")
+        end
+      end
     end
   end
 end
