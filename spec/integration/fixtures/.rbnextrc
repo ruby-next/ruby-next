@@ -1,0 +1,2 @@
+nextify: |
+  --transpile-mode=rewrite
