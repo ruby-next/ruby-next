@@ -64,13 +64,14 @@ $ gem install ruby-next
 $ ruby -ruby-next -e "
 def greet(val) =
   case val
-    in hello: hello if hello =~ /human/
-      puts '🙂'
+    in hello: hello if hello =~ /human/i
+      '🙂'
     in hello: 'martian'
-      puts '👽'
+      '👽'
     end
 
-greet(hello: 'martian')
+greet(hello: 'martian') => greeting
+puts greeting
 "
 
 => 👽
@@ -437,6 +438,8 @@ require "ruby-next/language/runtime"
 ### Supported edge features
 
 - "Endless" method definition (`def foo() = 42`) ([#16746](https://bugs.ruby-lang.org/issues/16746)).
+
+- Right-hand assignment (`13.divmod(5) => a,b`) ([#15921](https://bugs.ruby-lang.org/issues/15921))
 
 ### Supported proposed features
 
