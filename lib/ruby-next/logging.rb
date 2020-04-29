@@ -38,6 +38,6 @@ module RubyNext
     attr_reader :debug_filter
   end
 
-  self.silence_warnings = ENV["RUBY_NEXT_WARN"] != "false"
+  self.silence_warnings = ENV["RUBY_NEXT_WARN"] == "false"
   self.debug_enabled = ENV["RUBY_NEXT_DEBUG"]
 end
