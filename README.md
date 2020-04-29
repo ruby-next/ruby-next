@@ -240,7 +240,7 @@ $ ruby-next core_ext -l --name=filter --name=deconstruct
   - StructDeconstruct
 ```
 
-### Configuration file
+### CLI configuration file
 
 You can define CLI options in the `.rbnextrc` file located in the root of your project to avoid adding them every time you run `ruby-next`.
 
@@ -290,6 +290,24 @@ due to the way feature resolving works in Ruby (scanning the `$LOAD_PATH` and ha
 If you're using [runtime mode](#runtime-usage) a long with `setup_gem_load_path` (e.g., in tests), the transpiled files are ignored (i.e., we do not modify `$LOAD_PATH`).
 
 \* Ruby Next avoids storing duplicates; instead, only the code for the earlier version is created and is assumed to be used with other versions. For example, if the transpiled code is the same for Ruby 2.5 and Ruby 2.6, only the `.rbnext/2.7/path/to/file.rb` is kept. That's why multiple entries are added to the `$LOAD_PATH` (`.rbnext/2.6` and `.rbnext/2.7` in the specified order for Ruby 2.5 and only `.rbnext/2.7` for Ruby 2.6).
+
+### Transpiled files vs. VSC vs. installing from source
+
+It's a best practice to not keep generated files in repositories. In case of Ruby Next, it's a `lib/.rbnext` folder.
+
+We recommend adding this folder only to the gem package (i.e., it should be added to your `spec.files`) and ignore it in your VSC (e.g., `echo ".rbnext/" >> .gitignore`). That would make transpiled files available in releases without polluting your repository.
+
+What if someone decides to install your gem from the VSC source? They would likely face some syntax errors due to the missing transpiled files.
+
+To solve this problem, Ruby Next _tries_ to transpile the source code when you call `#setup_gem_load_path`. It does this by calling `bundle exec ruby-next nextify <lib_dir> -o <next_dir>`. We make the following assumptions:
+
+- We in the Bundler context (since that's the most common way of installing gems from source).
+- Our Gemfile contains `ruby-next` gem.
+- We use [`.rbnextrc`](#CLI-configuration-file) for transpiling options.
+
+If the command fails we warn the end user.
+
+This feature, _auto-transpiling_, is **disabled** by default (will likely be enabled in future versions). You can enable it by calling `RubyNext::Language.setup_gem_load_path(transpile: true)`.
 
 ## Runtime usage
 
