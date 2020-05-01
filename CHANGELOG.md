@@ -2,6 +2,8 @@
 
 ## master
 
+## 0.8.0 (2020-05-01) 🚩
+
 - Add right-hand assignment support. ([@palkan][])
 
 It is real: `13.divmod(5) => a, b`.
