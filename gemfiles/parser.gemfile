@@ -1,0 +1,5 @@
+if ENV["LOCAL_PARSER"]
+  gem "ruby-next-parser", path: ENV["LOCAL_PARSER"]
+else
+  gem "ruby-next-parser"
+end
