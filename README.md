@@ -22,9 +22,23 @@ Read more about the motivation behind the Ruby Next in this post: [Ruby Next: Ma
 <a href="https://evilmartians.com/?utm_source=ruby-next">
 <img src="https://evilmartians.com/badges/sponsored-by-evil-martians.svg" alt="Sponsored by Evil Martians" width="236" height="54"></a>
 
-## Links
+## Posts
 
-- [Ruby Next: Make old Rubies quack like a new one](https://noti.st/palkan/j3i2Dr/ruby-next-make-old-rubies-quack-like-a-new-one) (RubyConf 2019) (RubyConf, 2019)
+- [Ruby Next: Make all Rubies quack alike](https://evilmartians.com/chronicles/ruby-next-make-all-rubies-quack-alike)
+
+## Talks
+
+- [Ruby Next: Make old Rubies quack like a new one](https://noti.st/palkan/j3i2Dr/ruby-next-make-old-rubies-quack-like-a-new-one) (RubyConf 2019)
+
+## Examples
+
+- Ruby gems
+  - [anyway_config](https://github.com/palkan/anyway_config)
+  - [graphql-fragment_cache](https://github.com/DmitryTsepelev/graphql-ruby-fragment_cache)
+- mruby
+  - [ACLI](https://github.com/palkan/acli)
+
+_Please, submit a PR to add your project to the list!_
 
 ## Table of contents
 
