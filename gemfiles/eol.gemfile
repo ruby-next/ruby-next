@@ -1,0 +1,16 @@
+# Gemfile to run tests for EOL Rubies
+source "https://rubygems.org"
+
+gemspec path: "..", name: "ruby-next-core"
+
+eval_gemfile "rubocop.gemfile"
+
+gem "pry-byebug", platform: :mri
+
+# Backport APIs
+# See https://github.com/marcandre/backports/pull/148
+gem "backports", github: "ruby-next/backports"
+
+# For compatibility tests
+gem "zeitwerk", platform: :mri
+gem "bootsnap", platform: :mri
