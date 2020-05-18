@@ -1,0 +1,48 @@
+name: Build EOL
+
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+
+jobs:
+  ruby-test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: [2.4]
+        core_ext: ["gem", "generated"]
+    env:
+      CORE_EXT: ${{ matrix.core_ext }}
+      BUNDLE_JOBS: 4
+      BUNDLE_RETRY: 3
+      CI: true
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/cache@v1
+      with:
+        path: /home/runner/bundle
+        key: bundle-${{ matrix.ruby }}-${{ hashFiles('../Gemfile') }}-${{ hashFiles('**/*.gemspec') }}
+        restore-keys: |
+          bundle-${{ matrix.ruby }}-
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby }}
+    - name: Download MSpec
+      run: |
+        git clone --branch v1.7.0 https://github.com/ruby/mspec.git mspec
+    - name: Bundle install
+      run: |
+        bundle config path /home/runner/bundle
+        bundle install
+        bundle update
+    - name: Run MSpec
+      run: |
+        bundle install --jobs 4 --retry 3
+        bundle exec mspec/bin/mspec
+    - name: Run language specs with source rewriting
+      env:
+        RUBY_NEXT_TRANSPILE_MODE: "rewrite"
+      run: bundle exec mspec/bin/mspec :language
