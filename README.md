@@ -426,6 +426,8 @@ AllCops:
 
 ## Using with EOL Rubies
 
+**NOTE:** Use Ruby Next `0.9.0.pre` to use this feature.
+
 We currently provide experimental support for Ruby 2.4. Work on older Rubies (down to 2.2) is in progress.
 
 Ruby Next itself relies on 2.5 features and contains polyfills only for version 2.5+ (and that won't change).
