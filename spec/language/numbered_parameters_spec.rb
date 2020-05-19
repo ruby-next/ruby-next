@@ -46,7 +46,7 @@ ruby_version_is "2.7" do
     end
 
     it "warns when numbered parameter is overriten with local variable" do
-      skip
+      next skip
       -> {
         eval("_1 = 0")
       }.should complain(/warning: `_1' is reserved for numbered parameter; consider another name/)

@@ -30,7 +30,7 @@ describe "Enumerator.produce" do
 
   it "with initial keyword arguments" do
     # https://github.com/jruby/jruby/issues/6036
-    skip if defined?(JRUBY_VERSION)
+    next skip if defined?(JRUBY_VERSION)
     passed_args = []
     enum = Enumerator.produce(a: 1, b: 1) { |obj| passed_args << obj; obj.shift if obj.respond_to?(:shift)}
     assert_instance_of(Enumerator, enum)

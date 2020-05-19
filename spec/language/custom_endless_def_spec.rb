@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../test_unit_to_mspec'
-
-using TestUnitToMspec
+require_relative '../spec_helper'
 
 describe "custom tests for endless method" do
   class CustomEndlessDefSpec

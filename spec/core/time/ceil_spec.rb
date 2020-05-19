@@ -31,18 +31,18 @@ ruby_version_is "2.7" do
     end
 
     it "ceils to 4 decimal places with an explicit argument" do
-      skip if defined?(JRUBY_VERSION)
+      next skip if defined?(JRUBY_VERSION)
       @time.ceil(4).should == Time.utc(2010, 3, 30, 5, 43, "25.0124".to_r)
     end
 
     it "ceils to 7 decimal places with an explicit argument" do
-      skip if defined?(JRUBY_VERSION)
+      next skip if defined?(JRUBY_VERSION)
       @time.ceil(7).should == Time.utc(2010, 3, 30, 5, 43, "25.0123457".to_r)
     end
 
     it "returns an instance of Time, even if #ceil is called on a subclass" do
       # JRuby returns subclass; probably, related to https://github.com/jruby/jruby/issues/5125
-      skip if defined?(JRUBY_VERSION)
+      next skip if defined?(JRUBY_VERSION)
       subclass = Class.new(Time)
       instance = subclass.at(0)
       instance.class.should equal subclass
