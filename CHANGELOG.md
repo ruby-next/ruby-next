@@ -2,7 +2,7 @@
 
 ## master
 
-- Add Ruby 2.4 support. ([@palkan])
+- Add Ruby 2.4 support. ([@palkan][])
 
 APIs for <2.5 must be backported via [backports][] gem. Refinements are not supported.
 

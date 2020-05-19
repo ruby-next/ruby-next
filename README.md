@@ -54,6 +54,7 @@ _Please, submit a PR to add your project to the list!_
   - [`ruby -ruby-next`](#uby-next)
   - [Logging & Debugging](#logging-and-debugging)
 - [RuboCop](#rubocop)
+- [Using with EOL Rubies](#using-with-eol-rubies)
 - [Proposed & edge features](#proposed-and-edge-features)
 
 ## Overview
@@ -65,8 +66,9 @@ Core provides **polyfills** for Ruby core classes APIs via Refinements (default 
 Language is responsible for **transpiling** edge Ruby syntax into older versions. It could be done
 programmatically or via CLI. It also could be done in runtime.
 
-Currently, Ruby Next supports Ruby versions 2.5+ (including JRuby 9.2.8+).
-Please, [open an issue](https://github.com/ruby-next/ruby-next/issues/new/choose) if you would like us to support older Ruby versions.
+Currently, Ruby Next supports Ruby versions 2.4+ (including JRuby 9.2.8+). Support for EOL versions (<2.5) slightly differs though ([see below](#using-with-eol-rubies)).
+
+Please, [open an issue](https://github.com/ruby-next/ruby-next/issues/new/choose) or join the discussion in the existing ones if you would like us to support older Ruby versions.
 
 ## Quick start
 
@@ -422,6 +424,38 @@ AllCops:
 
 **NOTE:** you need `ruby-next` gem available in the environment where you run RuboCop (having `ruby-next-core` is not enough).
 
+## Using with EOL Rubies
+
+We currently provide experimental support for Ruby 2.4. Work on older Rubies (down to 2.2) is in progress.
+
+Ruby Next itself relies on 2.5 features and contains polyfills only for version 2.5+ (and that won't change).
+Thus, to make it work with <2.5 we need to backport some APIs ourselves.
+
+The recommended way of doing this is to use [backports][] gem. You need to load backports **before Ruby Next**.
+
+When using runtime features, you should do the following:
+
+```ruby
+# first, require backports upto 2.5
+require "backports/2.5"
+# then, load Ruby Next
+require "ruby-next"
+# if you need 2.6+ APIs, add Ruby Next core_ext
+require "ruby-next/core_ext"
+# then, load runtime transpiling
+require "ruby-next/language/runtime"
+# or
+require "ruby-next/language/bootsnap"
+```
+
+To load backports while using `ruby-next nextify` command, you must configure the environment variable:
+
+```sh
+RUBY_NEXT_CORE_STRATEGY=backports ruby-next nextify lib/
+```
+
+**NOTE:** Make sure you have `backports` gem installed globally or added to your bundle (if you're using `bundle exec ruby-next ...`).
+
 ## Proposed and edge features
 
 Ruby Next aims to bring edge and proposed features to Ruby community before they (hopefully) reach an official Ruby release.
@@ -486,3 +520,4 @@ The gem is available as open source under the terms of the [MIT License](https:/
 [next_parser]: https://github.com/ruby-next/parser
 [Bootsnap]: https://github.com/Shopify/bootsnap
 [rubocop]: https://github.com/rubocop-hq/rubocop
+[backports]: https://github.com/marcandre/backports
