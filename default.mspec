@@ -41,7 +41,7 @@ elsif ENV["CORE_EXT"] == "generated"
   RubyNext::Core.strategy = :core_ext
 elsif ENV["CORE_EXT"] == "backports"
   require "ruby-next/core_ext"
-  RubyNext::Core.strategy = :core_ext
+  RubyNext::Core.strategy = :backports
 else
   require "ruby-next/core/runtime"
 end

@@ -2,6 +2,10 @@
 
 ## master
 
+- Add Ruby 2.4 support. ([@palkan])
+
+APIs for <2.5 must be backported via [backports][] gem. Refinements are not supported.
+
 ## 0.8.0 (2020-05-01) 🚩
 
 - Add right-hand assignment support. ([@palkan][])
@@ -178,3 +182,4 @@ p a #=> 1
 - Add `Kernel#then`. ([@palkan][])
 
 [@palkan]: https://github.com/palkan
+[backports]: https://github.com/marcandre/backports

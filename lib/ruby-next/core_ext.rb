@@ -15,4 +15,4 @@ RubyNext::Core.patches.extensions.each do |mod, patches|
   end
 end
 
-RubyNext::Core.strategy = :core_ext
+RubyNext::Core.strategy = :core_ext unless RubyNext::Core.core_ext?

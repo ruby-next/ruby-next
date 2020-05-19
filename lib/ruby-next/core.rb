@@ -95,7 +95,7 @@ module RubyNext
     end
 
     class << self
-      STRATEGIES = %i[refine core_ext].freeze
+      STRATEGIES = %i[refine core_ext backports].freeze
 
       attr_reader :strategy
 
@@ -109,7 +109,11 @@ module RubyNext
       end
 
       def core_ext?
-        strategy == :core_ext
+        strategy == :core_ext || strategy == :backports
+      end
+
+      def backports?
+        strategy == :backports
       end
 
       def patch(*args, **kwargs, &block)
@@ -135,6 +139,8 @@ module RubyNext
     self.strategy = ENV.fetch("RUBY_NEXT_CORE_STRATEGY", "refine").to_sym
   end
 end
+
+require "backports/2.5" if RubyNext::Core.backports?
 
 require_relative "core/kernel/then"
 
