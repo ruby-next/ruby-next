@@ -2,8 +2,6 @@
 
 require_relative "../support/command_testing"
 
-using CommandTesting
-
 describe "rewrite mode" do
   it "preserves lines" do
     run_ruby_next(

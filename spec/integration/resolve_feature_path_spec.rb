@@ -2,8 +2,6 @@
 
 require_relative "../support/command_testing"
 
-using CommandTesting
-
 describe "$LOAD_PATH.resolve_feature_path" do
   it "catches unresolvable features" do
     run_ruby(

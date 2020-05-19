@@ -2,8 +2,6 @@
 
 require_relative "../support/command_testing"
 
-using CommandTesting
-
 describe "patch has source location meta" do
   it "works" do
     skip if RUBY_VERSION >= "2.7"

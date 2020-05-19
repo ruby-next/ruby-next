@@ -3,8 +3,6 @@
 require_relative "../support/command_testing"
 require "fileutils"
 
-using CommandTesting
-
 describe "ruby-next core_ext" do
   before do
     @out_path = File.join(__dir__, "dummy", "core_ext.rb")

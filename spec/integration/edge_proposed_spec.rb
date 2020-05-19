@@ -2,8 +2,6 @@
 
 require_relative "../support/command_testing"
 
-using CommandTesting
-
 describe "edge/proposed features via require" do
   it "proposed features" do
     cmd = <<~CMD
@@ -12,7 +10,7 @@ describe "edge/proposed features via require" do
     CMD
 
     # Set env var to 0 to make sure we do not shadow it
-    run(cmd, env: {"RUBY_NEXT_PROPOSED" => "0"}) do |_status, output, _err|
+    run_command(cmd, env: {"RUBY_NEXT_PROPOSED" => "0"}) do |_status, output, _err|
       output.should include("\"status: \"\n")
       output.should include("\"status: ok\"\n")
     end
@@ -25,7 +23,7 @@ describe "edge/proposed features via require" do
     CMD
 
     # Set env var to 0 to make sure we do not shadow it
-    run(cmd, env: {"RUBY_NEXT_EDGE" => "0"}) do |_status, output, _err|
+    run_command(cmd, env: {"RUBY_NEXT_EDGE" => "0"}) do |_status, output, _err|
       output.should include("human\n")
       output.should include("alien\n")
     end

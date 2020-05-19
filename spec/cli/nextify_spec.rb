@@ -3,8 +3,6 @@
 require_relative "../support/command_testing"
 require "fileutils"
 
-using CommandTesting
-
 describe "ruby-next nextify" do
   after do
     FileUtils.rm_rf(File.join(__dir__, "dummy", ".rbnext"))

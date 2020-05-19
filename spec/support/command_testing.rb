@@ -2,7 +2,7 @@
 
 require "open3"
 
-module CommandTesting
+module Kernel
   RUBY_RUNNER = if defined?(JRUBY_VERSION)
     # See https://github.com/jruby/jruby/wiki/Improving-startup-time#bundle-exec
     "jruby -G"
@@ -10,30 +10,28 @@ module CommandTesting
     "bundle exec ruby"
   end
 
-  refine MSpecEnv do
-    def run(command, chdir: nil, should_fail: false, env: {})
-      output, err, status =
-        Open3.capture3(
-          env,
-          command,
-          chdir: chdir || File.expand_path("../..", __dir__)
-        )
+  def run_command(command, chdir: nil, should_fail: false, env: {})
+    output, err, status =
+      Open3.capture3(
+        env,
+        command,
+        chdir: chdir || File.expand_path("../..", __dir__)
+      )
 
-      if ENV["COMMAND_DEBUG"]
-        puts "\n\nCOMMAND:\n#{command}\n\nOUTPUT:\n#{output}\nERROR:\n#{err}\n"
-      end
-
-      status.success?.should == true unless should_fail
-
-      yield status, output, err if block_given?
+    if ENV["COMMAND_DEBUG"]
+      puts "\n\nCOMMAND:\n#{command}\n\nOUTPUT:\n#{output}\nERROR:\n#{err}\n"
     end
 
-    def run_ruby(command, **options, &block)
-      run("#{RUBY_RUNNER} -rbundler/setup -I#{File.join(__dir__, "../../lib")} #{command}", **options, &block)
-    end
+    status.success?.should == true unless should_fail
 
-    def run_ruby_next(command, **options, &block)
-      run("#{RUBY_RUNNER} #{File.join(__dir__, "../../bin/ruby-next")} #{command}", **options, &block)
-    end
+    yield status, output, err if block_given?
+  end
+
+  def run_ruby(command, **options, &block)
+    run_command("#{RUBY_RUNNER} -rbundler/setup -I#{File.join(__dir__, "../../lib")} #{command}", **options, &block)
+  end
+
+  def run_ruby_next(command, **options, &block)
+    run_command("#{RUBY_RUNNER} #{File.join(__dir__, "../../bin/ruby-next")} #{command}", **options, &block)
   end
 end
