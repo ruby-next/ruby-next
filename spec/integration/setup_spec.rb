@@ -2,8 +2,6 @@
 
 require_relative "../support/command_testing"
 
-using CommandTesting
-
 describe "setup load path" do
   after do
     FileUtils.rm_rf(File.join(__dir__, "fixtures", "lib", ".rbnext_test")) if

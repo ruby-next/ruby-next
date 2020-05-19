@@ -2,8 +2,6 @@
 
 require_relative "../support/command_testing"
 
-using CommandTesting
-
 describe "language features (via -ruby-next)" do
   it "nested array pattern matching" do
     run_ruby(
@@ -28,7 +26,7 @@ describe "language features (via -ruby-next)" do
   end
 
   it "array in hash in pattern matching" do
-    run(
+    run_command(
       "ruby -rbundler/setup -rjson -I#{File.join(__dir__, "../../lib")} -ruby-next #{File.join(__dir__, "fixtures", "array_in_hash_pattern.rb")} " \
       "'{\"name\":\"Alice\",\"children\":[{\"name\":\"Bob\",\"age\":30}]}'"
     ) do |_status, output, _err|

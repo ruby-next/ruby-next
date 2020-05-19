@@ -2,8 +2,6 @@
 
 require_relative "../support/command_testing"
 
-using CommandTesting
-
 describe "bootsnap compatibility" do
   it "works" do
     skip if defined? JRUBY_VERSION

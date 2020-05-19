@@ -2,8 +2,6 @@
 
 require_relative "../support/command_testing"
 
-using CommandTesting
-
 describe "refinements ignore monkey-patching" do
   it "works" do
     run_ruby(

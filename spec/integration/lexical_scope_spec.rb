@@ -2,8 +2,6 @@
 
 require_relative "../support/command_testing"
 
-using CommandTesting
-
 describe "runtime preserves lexical scope" do
   it "works" do
     run_ruby(

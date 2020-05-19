@@ -2,8 +2,6 @@
 
 require_relative "../support/command_testing"
 
-using CommandTesting
-
 describe "zeitwerk compatibility" do
   it "works" do
     # Zeitwerk doesn't support JRuby
