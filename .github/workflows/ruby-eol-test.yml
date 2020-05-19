@@ -13,9 +13,9 @@ jobs:
       fail-fast: false
       matrix:
         ruby: [2.4]
-        core_ext: ["backports"]
     env:
-      CORE_EXT: ${{ matrix.core_ext }}
+      CORE_EXT: backports
+      RUBY_NEXT_CORE_STRATEGY: backports
       BUNDLE_JOBS: 4
       BUNDLE_RETRY: 3
       CI: true

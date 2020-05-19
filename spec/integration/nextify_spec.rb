@@ -16,7 +16,7 @@ describe "ruby-next nextify" do
     version_dir = RubyNext.next_version&.then { |v| v.segments[0..1].join(".") }
 
     if version_dir.nil? || !File.exist?(File.join(__dir__, "fixtures", ".rbnext", version_dir))
-      version_dir = Dir.children(File.join(__dir__, "fixtures", ".rbnext")).first
+      version_dir = Dir.children(File.join(__dir__, "fixtures", ".rbnext")).sort.first # rubocop:disable Style/RedundantSort
     end
 
     run_ruby(

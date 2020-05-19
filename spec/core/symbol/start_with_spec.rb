@@ -33,6 +33,8 @@ describe "Sybmol#start_with?" do
   end
 
   it "supports regexps" do
+    # TODO: backport is missing
+    skip if RubyNext::Core.backports?
     regexp = /[h1]/
     :hello.start_with?(regexp).should == true
   end
