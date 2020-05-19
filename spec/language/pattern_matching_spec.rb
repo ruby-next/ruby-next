@@ -50,7 +50,7 @@ ruby_version_is "2.7" do
     end
 
     it "warns about pattern matching is experimental feature" do
-      skip
+      next skip
       -> {
         eval(<<~RUBY, binding)
           case 0

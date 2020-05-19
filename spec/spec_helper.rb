@@ -7,3 +7,18 @@ $VERBOSE = nil
 def ruby_version_is(*)
   yield
 end
+
+# Backports for older mspec
+unless defined?(MSpecEnv)
+  def suppress_warning
+    yield
+  end
+
+  unless defined?(SkippedSpecError)
+    def skip(_ = nil)
+      1.should == 1
+    end
+  end
+
+  require_relative "test_unit_to_mspec"
+end

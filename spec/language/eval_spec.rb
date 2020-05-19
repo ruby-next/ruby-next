@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative '../spec_helper'
 using RubyNext::Language::Eval
 
 describe "transforming eval contents" do
@@ -19,8 +20,8 @@ describe "transforming eval contents" do
   end
 
   it "Kernel.eval without binding" do
-    skip unless RubyNext::Language::Rewriters::PatternMatching.unsupported_syntax?
-    skip if RubyNext::Core.core_ext?
+    next skip unless RubyNext::Language::Rewriters::PatternMatching.unsupported_syntax?
+    next skip if RubyNext::Core.core_ext?
 
     eval(%q{
       case {status: :ok}

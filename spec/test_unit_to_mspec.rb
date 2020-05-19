@@ -2,7 +2,7 @@
 
 # Convert test-unit assertions into mspec should matchers
 module TestUnitToMspec
-  refine MSpecEnv do
+  module MSpecEnvExt
     def assert_equal(a, b)
       a.should == b
     end
@@ -43,7 +43,15 @@ module TestUnitToMspec
     end
   end
 
-  refine Kernel do
+  if defined?(MSpecEnv)
+    refine MSpecEnv do
+      include MSpecEnvExt
+    end
+  else
+    Object.send(:include, TestUnitToMspec::MSpecEnvExt)
+  end
+
+  module KernelExt
     def eval(source, bind = nil, *other)
       source.gsub!(/def test_([\w_]+)/, 'it "\1" do')
       source.gsub!(/class Test(\w+).+$/, 'describe "\1" do')
@@ -54,5 +62,9 @@ module TestUnitToMspec
       RubyNext.debug_source(new_source, "(#{caller_locations(1, 1).first})")
       super new_source, bind, *other
     end
+  end
+
+  refine Kernel do
+    include KernelExt
   end
 end
