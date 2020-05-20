@@ -4,6 +4,8 @@ require_relative '../spec_helper'
 
 describe "refined patches" do
   it "activates only unsupported patches" do
+    next skip unless RubyNext::Utils.refine_modules?
+
     ruby_version = Gem::Version.new(RUBY_VERSION)
 
     activated_patches = RubyNext::Core.patches.refined.values.flatten.uniq

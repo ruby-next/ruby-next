@@ -46,5 +46,6 @@ else
   require "ruby-next/core/runtime"
 end
 
+$stdout.puts "Module refinements support: #{RubyNext::Utils.refine_modules?}"
 $stdout.puts "Ruby Next core strategy: #{RubyNext::Core.strategy}"
 $stdout.puts "Ruby Next transpile mode: #{RubyNext::Language.mode}"

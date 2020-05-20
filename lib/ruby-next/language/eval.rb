@@ -3,7 +3,7 @@
 module RubyNext
   module Language
     module KernelEval
-      unless defined?(::TruffleRuby)
+      if Utils.refine_modules?
         refine Kernel do
           def eval(source, bind = nil, *args)
             new_source = ::RubyNext::Language::Runtime.transform(
@@ -31,25 +31,23 @@ module RubyNext
     end
 
     module ClassEval
-      unless defined?(::TruffleRuby)
-        refine Module do
-          def module_eval(*args, &block)
-            return super(*args, &block) if block_given?
+      refine Module do
+        def module_eval(*args, &block)
+          return super(*args, &block) if block_given?
 
-            source = args.shift
-            new_source = ::RubyNext::Language::Runtime.transform(source, using: false)
-            RubyNext.debug_source(new_source, "(#{caller_locations(1, 1).first})")
-            super new_source, *args
-          end
+          source = args.shift
+          new_source = ::RubyNext::Language::Runtime.transform(source, using: false)
+          RubyNext.debug_source(new_source, "(#{caller_locations(1, 1).first})")
+          super new_source, *args
+        end
 
-          def class_eval(*args, &block)
-            return super(*args, &block) if block_given?
+        def class_eval(*args, &block)
+          return super(*args, &block) if block_given?
 
-            source = args.shift
-            new_source = ::RubyNext::Language::Runtime.transform(source, using: false)
-            RubyNext.debug_source(new_source, "(#{caller_locations(1, 1).first})")
-            super new_source, *args
-          end
+          source = args.shift
+          new_source = ::RubyNext::Language::Runtime.transform(source, using: false)
+          RubyNext.debug_source(new_source, "(#{caller_locations(1, 1).first})")
+          super new_source, *args
         end
       end
     end

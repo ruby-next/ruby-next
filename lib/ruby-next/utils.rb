@@ -33,5 +33,16 @@ module RubyNext
         lines.unshift "   0:  # source: #{path}"
       end
     end
+
+    # Returns true if modules refinement is supported in current version
+    def refine_modules?
+      @refine_modules ||=
+        begin
+          Module.new { refine Kernel do; end }
+          true
+        rescue TypeError
+          false
+        end
+    end
   end
 end
