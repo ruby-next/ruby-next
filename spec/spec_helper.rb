@@ -21,6 +21,6 @@ unless defined?(MSpecEnv)
   end
 end
 
-if !defined?(MSpecEnv) || defined?(TruffleRuby)
+if !defined?(MSpecEnv) || !RubyNext::Utils.refine_modules?
   require_relative "test_unit_to_mspec"
 end
