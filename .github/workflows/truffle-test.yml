@@ -14,25 +14,27 @@ jobs:
     env:
       CORE_EXT: gem
       RUBY_NEXT_CORE_STRATEGY: core_ext
+      BUNDLE_JOBS: 4
+      BUNDLE_RETRY: 3
+      BUNDLE_PATH: /home/runner/bundle
+      CI: true
     steps:
     - uses: actions/checkout@v2
     - uses: ruby/setup-ruby@v1
       with:
-        ruby-version: truffleruby
+        ruby-version: truffleruby-head
     - name: Download MSpec
       run: |
         git clone https://github.com/ruby/mspec.git mspec
     - uses: actions/cache@v1
       with:
-        path: vendor/bundle
-        key: bundle-use-truffleruby-${{ hashFiles('**/Gemfile') }}-${{ hashFiles('**/*.gemspec') }}
+        path: /home/runner/bundle
+        key: bundle-truffle-${{ hashFiles('../Gemfile') }}-${{ hashFiles('**/*.gemspec') }}
         restore-keys: |
-          bundle-use-truffleruby-
+          bundle-truffle-
     - name: Bundle install
       run: |
-        bundle config path /home/runner/bundle
         bundle install
-        bundle update
     - name: Run MSpec
       run: |
         bundle install

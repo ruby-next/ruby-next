@@ -42,7 +42,7 @@ module RubyNext
           path
         end
 
-        if defined?(JRUBY_VERSION)
+        if defined?(JRUBY_VERSION) || defined?(TruffleRuby)
           def evaluate(code, filepath)
             new_toplevel.eval(code, filepath)
           end

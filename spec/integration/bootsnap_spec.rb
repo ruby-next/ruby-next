@@ -4,7 +4,7 @@ require_relative "../support/command_testing"
 
 describe "bootsnap compatibility" do
   it "works" do
-    next skip if defined? JRUBY_VERSION
+    next skip if defined?(JRUBY_VERSION) || defined?(TruffleRuby)
 
     cache_path = File.join(__dir__, "fixtures", "bootsnap", "tmp")
     if File.directory?(cache_path)
