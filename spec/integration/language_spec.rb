@@ -16,7 +16,7 @@ describe "language features (via -ruby-next)" do
 
   it "nested hash pattern matching" do
     run_ruby(
-      "-ruby-next #{File.join(__dir__, "fixtures", "display_name.rb")} "
+      "-ruby-next -r #{File.join(__dir__, "fixtures", "display_name.rb")} -e ':ok'"
     ) do |_status, output, _err|
       output.should include("\"Tae Noppakun Wongsrinoppakun\"\n")
       output.should include("\"Guest\"\n")
@@ -27,8 +27,8 @@ describe "language features (via -ruby-next)" do
 
   it "array in hash in pattern matching" do
     run_command(
-      "ruby -rbundler/setup -rjson -I#{File.join(__dir__, "../../lib")} -ruby-next #{File.join(__dir__, "fixtures", "array_in_hash_pattern.rb")} " \
-      "'{\"name\":\"Alice\",\"children\":[{\"name\":\"Bob\",\"age\":30}]}'"
+      "ruby -rbundler/setup -rjson -I#{File.join(__dir__, "../../lib")} -ruby-next -r #{File.join(__dir__, "fixtures", "array_in_hash_pattern.rb")} " \
+      "-e 'main({\"name\":\"Alice\",\"children\":[{\"name\":\"Bob\",\"age\":30}]}.to_json)'"
     ) do |_status, output, _err|
       output.should include("Bob age is 30")
     end

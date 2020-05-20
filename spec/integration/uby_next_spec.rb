@@ -13,6 +13,8 @@ describe "ruby -ruby-next" do
   end
 
   it "catches compile error for scripts and re-run them" do
+    next skip if defined?(TruffleRuby)
+
     run_ruby(
       "-ruby-next #{File.join(__dir__, "fixtures", "beach.rb")} k 10000"
     ) do |_status, output, _err|

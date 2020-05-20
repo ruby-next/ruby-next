@@ -66,7 +66,7 @@ Core provides **polyfills** for Ruby core classes APIs via Refinements (default 
 Language is responsible for **transpiling** edge Ruby syntax into older versions. It could be done
 programmatically or via CLI. It also could be done in runtime.
 
-Currently, Ruby Next supports Ruby versions 2.4+ (including JRuby 9.2.8+). Support for EOL versions (<2.5) slightly differs though ([see below](#using-with-eol-rubies)).
+Currently, Ruby Next supports Ruby versions 2.4+, including JRuby 9.2.8+ and TruffleRuby 20.1+ (with some limitations). Support for EOL versions (<2.5) slightly differs though ([see below](#using-with-eol-rubies)).
 
 Please, [open an issue](https://github.com/ruby-next/ruby-next/issues/new/choose) or join the discussion in the existing ones if you would like us to support older Ruby versions.
 
@@ -136,6 +136,8 @@ The following _rule of thumb_ is recommended when choosing between refinements a
 - Use refinements for libraries development (to avoid conflicts with others code)
 - Using core extensions could be considered for application development (no need to think about `using RubyNext`); this approach could potentially lead to conflicts with dependencies (if these dependencies are not using refinements 🙂)
 - Use core extensions if refinements are not supported by your platform
+
+**NOTE:** TruffleRuby doesn't fully support refinements (refining modules is not supported as of v20.1.0).
 
 [**The list of supported APIs.**][features_core]
 
@@ -388,6 +390,12 @@ RUBYOPT="-ruby-next" ruby my_ruby_script.rb
 
 # or
 ruby -ruby-next -e "puts [2, 4, 5].tally"
+```
+
+**NOTE:** running Ruby scripts directly or executing code via `-e` option is not supported in TruffleRuby. You can still use `-ruby-next` to transpile required files, e.g.:
+
+```sh
+ruby -ruby-next -r my_ruby_script.rb -e "puts my_method"
 ```
 
 ## Logging and debugging

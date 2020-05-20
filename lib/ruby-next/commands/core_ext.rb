@@ -69,7 +69,7 @@ module RubyNext
         RubyNext::Core.patches.extensions
           .values
           .flatten
-          .filter do |patch|
+          .select do |patch|
           next if min_version && Gem::Version.new(patch.version) <= min_version
           next if filter && !filter.match?(patch.name)
           true

@@ -72,8 +72,8 @@ module TestUnitToMspec
     module ::Kernel
       alias_method :eval_without_transpile, :eval
 
-      def eval(source, bind = nil, *other)
-        source.gsub!(/def test_([\w_]+)/, 'it "\1" do')
+      def eval(src, bind = nil, *other)
+        source = src.gsub(/def test_([\w_]+)/, 'it "\1" do')
         source.gsub!(/class Test(\w+).+$/, 'describe "\1" do')
         new_source = ::RubyNext::Language::Runtime.transform(
           source,
