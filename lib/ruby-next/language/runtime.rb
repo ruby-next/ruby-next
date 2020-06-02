@@ -89,7 +89,8 @@ module Kernel
 
   alias_method :require_relative_without_ruby_next, :require_relative
   def require_relative(path)
-    from = caller_locations(1..1).first.absolute_path || File.join(Dir.pwd, "main")
+    loc = caller_locations(1..1).first
+    from = loc.absolute_path || loc.path || File.join(Dir.pwd, "main")
     realpath = File.absolute_path(
       File.join(
         File.dirname(File.absolute_path(from)),
