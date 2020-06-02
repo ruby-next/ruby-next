@@ -816,11 +816,12 @@ module RubyNext
         end
 
         def respond_to_missing?(mid, *)
-          return true if mid.match?(/_(clause|array_element)/)
+          return true if mid.to_s.match?(/_(clause|array_element)/)
           super
         end
 
         def method_missing(mid, *args, &block)
+          mid = mid.to_s
           return case_eq_clause(*args) if mid.match?(/_clause$/)
           return case_eq_array_element(*args) if mid.match?(/_array_element$/)
           return case_eq_hash_element(*args) if mid.match?(/_hash_element$/)
