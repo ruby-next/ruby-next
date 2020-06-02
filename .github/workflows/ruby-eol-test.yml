@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: [2.4]
+        ruby: [2.3, 2.4]
     env:
       CORE_EXT: backports
       RUBY_NEXT_CORE_STRATEGY: backports

@@ -25,11 +25,11 @@ Gem::Specification.new do |s|
   s.license = "MIT"
 
   s.files = %w[README.md LICENSE.txt CHANGELOG.md]
-  s.required_ruby_version = ">= 2.4.0"
+  s.required_ruby_version = ">= 2.3.0"
 
   s.require_paths = ["lib"]
 
   s.add_dependency "ruby-next-core", "0.9.0.pre"
-  s.add_dependency "ruby-next-parser", ">= 2.8.0.4"
+  s.add_dependency "ruby-next-parser", ">= 2.8.0.6"
   s.add_dependency "unparser", ">= 0.4.7"
 end

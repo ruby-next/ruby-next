@@ -5,8 +5,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 begin
   require "pry-byebug"
-rescue LoadError
-  nil
+rescue
 end
 
 class MSpecScript
