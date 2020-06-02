@@ -16,6 +16,8 @@ module RubyNext
         log "RubyNext core strategy: #{RubyNext::Core.strategy}"
         log "RubyNext transpile mode: #{RubyNext::Language.mode}"
 
+        remove_rbnext!
+
         paths.each do |path|
           contents = File.read(path)
           transpile path, contents
@@ -120,25 +122,17 @@ module RubyNext
       end
 
       def save(contents, path, version)
-        return $stdout.puts(contents) if out_path == "stdout"
+        return $stdout.puts(contents) if stdout?
 
         paths = [Pathname.new(path).relative_path_from(Pathname.new(lib_path))]
 
         paths.unshift(version.segments[0..1].join(".")) unless single_version?
 
         next_path =
-          if out_path
-            if out_path.end_with?(".rb")
-              out_path
-            else
-              File.join(out_path, *paths)
-            end
+          if next_dir_path.end_with?(".rb")
+            out_path
           else
-            File.join(
-              lib_path,
-              RUBY_NEXT_DIR,
-              *paths
-            )
+            File.join(next_dir_path, *paths)
           end
 
         unless CLI.dry_run?
@@ -148,6 +142,23 @@ module RubyNext
         end
 
         log "Generated: #{next_path}"
+      end
+
+      def remove_rbnext!
+        return if CLI.dry_run? || stdout?
+
+        return unless File.directory?(next_dir_path)
+
+        log "Remove old files: #{next_dir_path}"
+        FileUtils.rm_r(next_dir_path)
+      end
+
+      def next_dir_path
+        @next_dir_path ||= (out_path || File.join(lib_path, RUBY_NEXT_DIR))
+      end
+
+      def stdout?
+        out_path == "stdout"
       end
 
       alias single_version? single_version

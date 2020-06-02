@@ -24,6 +24,35 @@ describe "ruby-next nextify" do
     end
   end
 
+  it "generates .rbnxt/{2.7, 2.8} folders when --min-version is provided" do
+    run_ruby_next "nextify #{File.join(__dir__, "dummy")} --proposed --edge --min-version=2.6" do |_status, _output, err|
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.6", "transpile_me.rb")).should equal false
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.6", "namespaced", "pattern_matching.rb")).should equal false
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.6", "namespaced", "version.rb")).should equal false
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.6", "namespaced", "endless_nameless.rb")).should equal false
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.7", "transpile_me.rb")).should equal true
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.7", "namespaced", "pattern_matching.rb")).should equal true
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.7", "namespaced", "version.rb")).should equal false
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.7", "namespaced", "endless_nameless.rb")).should equal false
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.8", "namespaced", "pattern_matching.rb")).should equal true
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.8", "namespaced", "endless_nameless.rb")).should equal false
+    end
+  end
+
+  it "removes existing transpiled files if they're no longer need to be transpiled" do
+    FileUtils.mkdir_p(File.join(__dir__, "dummy", ".rbnext", "2.7", "namespaced"))
+    FileUtils.cp(File.join(__dir__, "dummy", "namespaced", "version.rb"), File.join(__dir__, "dummy", ".rbnext", "2.7", "namespaced", "version.rb"))
+
+    run_ruby_next "nextify #{File.join(__dir__, "dummy")} --proposed --edge --min-version=2.6 -V" do |_status, _output, err|
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.7", "transpile_me.rb")).should equal true
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.7", "namespaced", "pattern_matching.rb")).should equal true
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.7", "namespaced", "version.rb")).should equal false
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.7", "namespaced", "endless_nameless.rb")).should equal false
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.8", "namespaced", "pattern_matching.rb")).should equal true
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.8", "namespaced", "endless_nameless.rb")).should equal false
+    end
+  end
+
   it "generates one version if --single-version is provided" do
     run_ruby_next(
       "nextify #{File.join(__dir__, "dummy")} " \
@@ -44,7 +73,7 @@ describe "ruby-next nextify" do
     end
   end
 
-  it "gen_ruby_nexterates two version for mixed files (both 2.6 and 2.7 features)" do
+  it "generates two version for mixed files (both 2.6 and 2.7 features)" do
     run_ruby_next "nextify #{File.join(__dir__, "dummy")}" do |_status, _output, err|
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.7", "endless_pattern.rb")).should equal true
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.6", "endless_pattern.rb")).should equal true
