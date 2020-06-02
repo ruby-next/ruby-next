@@ -12,5 +12,7 @@ gem "pry-byebug", platform: :mri
 gem "backports", github: "ruby-next/backports"
 
 # For compatibility tests
-gem "zeitwerk", platform: :mri
+if RUBY_VERSION >= "2.4.0"
+  gem "zeitwerk", platform: :mri
+end
 gem "bootsnap", platform: :mri
