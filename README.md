@@ -1,5 +1,6 @@
 [![Gem Version](https://badge.fury.io/rb/ruby-next.svg)](https://rubygems.org/gems/ruby-next) [![Build](https://github.com/ruby-next/ruby-next/workflows/Build/badge.svg)](https://github.com/ruby-next/ruby-next/actions)
-[![JRuby Build](https://github.com/ruby-next/ruby-next/workflows/JRuby%20Build/badge.svg)](https://github.com/ruby-next/ruby-next/actions)
+[![JRuby Build](https://github.com/ruby-next/ruby-next/workflows/JRuby%20Build/badge.svg)](https://github.com/ruby-next/ruby-next/actions?query=workflow%3A%22TruffleRuby+Build%22)
+[![TruffleRuby Build](https://github.com/ruby-next/ruby-next/workflows/TruffleRuby%20Build/badge.svg)](https://github.com/ruby-next/ruby-next/actions?query=workflow%3A%22TruffleRuby+Build%22)
 
 # Ruby Next
 
