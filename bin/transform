@@ -17,4 +17,11 @@ contents =
     ARGV[0]
   end
 
-puts RubyNext::Language.transform(contents)
+opts =
+  if ARGV[1] && ARGV[1] == "--current"
+    {rewriters: RubyNext::Language.current_rewriters}
+  else
+    {}
+  end
+
+puts RubyNext::Language.transform(contents, **opts)
