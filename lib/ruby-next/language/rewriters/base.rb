@@ -59,7 +59,7 @@ module RubyNext
           def unsupported_syntax?
             save_verbose, $VERBOSE = $VERBOSE, nil
             eval_mid = Kernel.respond_to?(:eval_without_ruby_next) ? :eval_without_ruby_next : :eval
-            Kernel.send eval_mid, self::SYNTAX_PROBE
+            Kernel.send eval_mid, self::SYNTAX_PROBE, nil, __FILE__, __LINE__
             false
           rescue SyntaxError, NameError
             true

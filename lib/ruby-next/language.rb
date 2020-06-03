@@ -172,6 +172,9 @@ module RubyNext
     require "ruby-next/language/rewriters/endless_range"
     rewriters << Rewriters::EndlessRange
 
+    require "ruby-next/language/rewriters/dir"
+    rewriters << Rewriters::Dir
+
     if ENV["RUBY_NEXT_EDGE"] == "1"
       require "ruby-next/language/edge"
     end
