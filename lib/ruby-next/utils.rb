@@ -38,9 +38,28 @@ module RubyNext
     def refine_modules?
       @refine_modules ||=
         begin
-          Module.new { refine Kernel do; end }
+          # Make sure that including modules within refinements works
+          # See https://github.com/oracle/truffleruby/issues/2026
+          eval <<~RUBY, TOPLEVEL_BINDING, __FILE__, __LINE__ + 1
+            module RubyNext::Utils::A; end
+            class RubyNext::Utils::B
+              include RubyNext::Utils::A
+            end
+
+            using(Module.new do
+              refine RubyNext::Utils::A do
+                include(Module.new do
+                  def i_am_refinement
+                    "yes, you are!"
+                  end
+                end)
+              end
+            end)
+
+            RubyNext::Utils::B.new.i_am_refinement
+          RUBY
           true
-        rescue TypeError
+        rescue TypeError, NoMethodError
           false
         end
     end
