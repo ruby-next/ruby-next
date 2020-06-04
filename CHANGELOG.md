@@ -2,6 +2,8 @@
 
 ## master
 
+## 0.9.0 (2020-06-04)
+
 - Add Ruby 2.3 support. ([@palkan][])
 
 - Remove stale transpiled files when running `ruby-next nextify`. ([@palkan][])
