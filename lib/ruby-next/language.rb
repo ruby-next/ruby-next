@@ -83,6 +83,8 @@ module RubyNext
       end
 
       def runtime!
+        require "ruby-next/language/rewriters/runtime"
+
         if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.7.0") && !defined?(Unparser::Emitter::CaseMatch)
           RubyNext.warn "Ruby Next fallbacks to \"rewrite\" transpiling mode since Unparser doesn't support 2.7 AST yet.\n" \
             "See https://github.com/mbj/unparser/pull/142"
@@ -171,9 +173,6 @@ module RubyNext
     # pattern matching
     require "ruby-next/language/rewriters/endless_range"
     rewriters << Rewriters::EndlessRange
-
-    require "ruby-next/language/rewriters/dir"
-    rewriters << Rewriters::Dir
 
     if ENV["RUBY_NEXT_EDGE"] == "1"
       require "ruby-next/language/edge"

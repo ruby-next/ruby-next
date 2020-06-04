@@ -9,6 +9,7 @@ ENV["RUBY_NEXT_EDGE"] = "1"
 ENV["RUBY_NEXT_PROPOSED"] = "1"
 
 require "ruby-next/language"
+require "ruby-next/language/rewriters/runtime"
 
 contents =
   if File.exist?(ARGV[0])
