@@ -2,6 +2,8 @@
 
 ## master
 
+- Add Ruby 2.3 support. ([@palkan][])
+
 - Remove stale transpiled files when running `ruby-next nextify`. ([@palkan][])
 
 - Add Ruby 2.4 support. ([@palkan][])
