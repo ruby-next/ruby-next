@@ -29,7 +29,7 @@ Gem::Specification.new do |s|
 
   s.require_paths = ["lib"]
 
-  s.add_dependency "ruby-next-core", "0.9.0.pre"
+  s.add_dependency "ruby-next-core", RubyNext::VERSION
   s.add_dependency "ruby-next-parser", ">= 2.8.0.6"
   s.add_dependency "unparser", ">= 0.4.7"
 end

@@ -2,6 +2,12 @@
 
 ## master
 
+## 0.9.1 (2020-06-05)
+
+- Keep `ruby-next` version in sync with `ruby-next-core`. ([@palkan][])
+
+Require `ruby-next-core` of the same version as `ruby-next`.
+
 ## 0.9.0 (2020-06-04)
 
 - Add Ruby 2.3 support. ([@palkan][])
