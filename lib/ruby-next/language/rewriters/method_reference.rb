@@ -4,6 +4,7 @@ module RubyNext
   module Language
     module Rewriters
       class MethodReference < Base
+        NAME = "method-reference"
         SYNTAX_PROBE = "Language.:transform"
         MIN_SUPPORTED_VERSION = Gem::Version.new("2.7.0")
 

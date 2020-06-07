@@ -4,6 +4,7 @@ module RubyNext
   module Language
     module Rewriters
       class ArgsForward < Base
+        NAME = "args-forward"
         SYNTAX_PROBE = "obj = Object.new; def obj.foo(...) super(...); end"
         MIN_SUPPORTED_VERSION = Gem::Version.new("2.7.0")
 

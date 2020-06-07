@@ -6,6 +6,7 @@ module RubyNext
       class NumberedParams < Base
         using RubyNext
 
+        NAME = "numbered-params"
         SYNTAX_PROBE = "proc { _1 }.call(1)"
         MIN_SUPPORTED_VERSION = Gem::Version.new("2.7.0")
 

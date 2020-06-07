@@ -4,6 +4,7 @@ module RubyNext
   module Language
     module Rewriters
       class EndlessRange < Base
+        NAME = "endless-range"
         SYNTAX_PROBE = "[0, 1][1..]"
         MIN_SUPPORTED_VERSION = Gem::Version.new("2.6.0")
 

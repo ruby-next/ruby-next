@@ -4,6 +4,7 @@ module RubyNext
   module Language
     module Rewriters
       class RightHandAssignment < Base
+        NAME = "right-hand-assignment"
         SYNTAX_PROBE = "1 + 2 => a"
         MIN_SUPPORTED_VERSION = Gem::Version.new("2.8.0")
 
