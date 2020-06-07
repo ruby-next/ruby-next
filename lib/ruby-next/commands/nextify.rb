@@ -26,6 +26,7 @@ module RubyNext
 
       def parse!(args)
         print_help = false
+        print_rewriters = false
         @min_version = MIN_SUPPORTED_VERSION
         @single_version = false
 
@@ -63,6 +64,10 @@ module RubyNext
             Core.strategy = :core_ext unless val
           end
 
+          opts.on("--list-rewriters", "List available rewriters") do |val|
+            print_rewriters = true
+          end
+
           opts.on("-h", "--help", "Print help") do
             print_help = true
           end
@@ -74,6 +79,13 @@ module RubyNext
 
         if print_help
           $stdout.puts optparser.help
+          exit 0
+        end
+
+        if print_rewriters
+          Language.rewriters.each do |rewriter|
+            $stdout.puts "#{rewriter::NAME} (\"#{rewriter::SYNTAX_PROBE}\")"
+          end
           exit 0
         end
 

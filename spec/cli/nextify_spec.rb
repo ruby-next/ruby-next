@@ -216,4 +216,38 @@ describe "ruby-next nextify" do
       end
     end
   end
+
+  it "--list-rewriters" do
+    run_ruby_next(
+      "nextify --list-rewriters",
+      env: {"RUBY_NEXT_PROPOSED" => "0", "RUBY_NEXT_EDGE" => "0"}
+    ) do |_status, output, err|
+      output.should include('args-forward ("obj = Object.new; def obj.foo(...) super(...); end")')
+      output.should include('numbered-params ("proc { _1 }.call(1)")')
+      output.should include('pattern-matching ("case 0; in 0; true; else; 1; end")')
+      output.should include('endless-range ("[0, 1][1..]")')
+      output.should_not include('endless-method ("obj = Object.new; def obj.foo() = 42")')
+      output.should_not include('right-hand-assignment ("1 + 2 => a")')
+      output.should_not include('method-reference ("Language.:transform")')
+    end
+  end
+
+  it "--list-rewriters --edge" do
+    run_ruby_next(
+      "nextify --list-rewriters --edge",
+      env: {"RUBY_NEXT_PROPOSED" => "0", "RUBY_NEXT_EDGE" => "0"}
+    ) do |_status, output, err|
+      output.should include('endless-method ("obj = Object.new; def obj.foo() = 42")')
+      output.should include('right-hand-assignment ("1 + 2 => a")')
+    end
+  end
+
+  it "--list-rewriters --proposed" do
+    run_ruby_next(
+      "nextify --list-rewriters --proposed",
+      env: {"RUBY_NEXT_PROPOSED" => "0", "RUBY_NEXT_EDGE" => "0"}
+    ) do |_status, output, err|
+      output.should include('method-reference ("Language.:transform")')
+    end
+  end
 end
