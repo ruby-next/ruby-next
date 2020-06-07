@@ -216,6 +216,7 @@ module RubyNext
       end
 
       class PatternMatching < Base
+        NAME = "pattern-matching"
         SYNTAX_PROBE = "case 0; in 0; true; else; 1; end"
         MIN_SUPPORTED_VERSION = Gem::Version.new("2.7.0")
 
