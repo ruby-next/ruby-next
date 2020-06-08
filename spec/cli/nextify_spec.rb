@@ -120,6 +120,71 @@ describe "ruby-next nextify" do
     end
   end
 
+  it "generates one version if --rewrite is provided" do
+    run_ruby_next(
+      "nextify #{File.join(__dir__, "dummy")} " \
+      "--rewrite=endless-range --rewrite=pattern-matching"
+    ) do |_status, _output, err|
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "right_hand_assignment.rb")).should equal false
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "method_reference.rb")).should equal false
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "transpile_me.rb")).should equal true
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "endless_pattern.rb")).should equal true
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "namespaced", "endless_nameless.rb")).should equal true
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "namespaced", "pattern_matching.rb")).should equal true
+    end
+  end
+
+  it "returns error if --rewrite is provided with wrong rewriter" do
+    run_ruby_next(
+      "nextify #{File.join(__dir__, "dummy")} " \
+      "--rewrite=right-hand-assignment",
+      env: {"RUBY_NEXT_EDGE" => "0", "RUBY_NEXT_PROPOSED" => "0"},
+      should_fail: true
+    ) do |_status, output, err|
+      output.should include('Rewriter "right-hand-assignment" not found')
+    end
+  end
+
+  it "generates one version if --rewrite is provided with rewriter from edge along with --edge option" do
+    run_ruby_next(
+      "nextify #{File.join(__dir__, "dummy")} " \
+      "--rewrite=right-hand-assignment --edge",
+      env: {"RUBY_NEXT_EDGE" => "0", "RUBY_NEXT_PROPOSED" => "0"}
+    ) do |_status, _output, err|
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "right_hand_assignment.rb")).should equal true
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "method_reference.rb")).should equal false
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "transpile_me.rb")).should equal false
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "endless_pattern.rb")).should equal false
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "namespaced", "endless_nameless.rb")).should equal false
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "namespaced", "pattern_matching.rb")).should equal false
+    end
+  end
+
+  it "generates one version if --rewrite is provided with rewriter from proposed along with --proposed option" do
+    run_ruby_next(
+      "nextify #{File.join(__dir__, "dummy")} " \
+      "--rewrite=method-reference --proposed",
+      env: {"RUBY_NEXT_EDGE" => "0", "RUBY_NEXT_PROPOSED" => "0"}
+    ) do |_status, _output, err|
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "right_hand_assignment.rb")).should equal false
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "method_reference.rb")).should equal true
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "transpile_me.rb")).should equal false
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "endless_pattern.rb")).should equal false
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "namespaced", "endless_nameless.rb")).should equal false
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "namespaced", "pattern_matching.rb")).should equal false
+    end
+  end
+
+  it "returns error if --rewrite is provided along with --min-version" do
+    run_ruby_next(
+      "nextify #{File.join(__dir__, "dummy")} " \
+      "--rewrite=endless-range --min-version=2.5",
+      should_fail: true
+    ) do |_status, output, err|
+      output.should include("--rewrite cannot be used with --min-version simultaneously")
+    end
+  end
+
   it "supports --no-refine" do
     run_ruby_next(
       "nextify #{File.join(__dir__, "dummy", "transpile_me.rb")} " \
