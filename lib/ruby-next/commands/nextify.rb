@@ -29,7 +29,7 @@ module RubyNext
       def parse!(args)
         print_help = false
         print_rewriters = false
-        specified_rewriter_names = []
+        rewriter_names = []
         @single_version = false
 
         optparser = base_parser do |opts|
@@ -71,7 +71,7 @@ module RubyNext
           end
 
           opts.on("--rewrite=REWRITERS...", "Specify particular Ruby features to rewrite") do |val|
-            specified_rewriter_names << val
+            rewriter_names << val
           end
 
           opts.on("-h", "--help", "Print help") do
@@ -101,20 +101,21 @@ module RubyNext
           exit 2
         end
 
-        if specified_rewriter_names.any?
-          if min_version
-            $stdout.puts "--rewrite cannot be used with --min-version simultaneously"
-            exit 2
-          end
-
-          begin
-            @specified_rewriters = Language.select_rewriters(*specified_rewriter_names)
-          rescue Language::RewriterNotFoundError => error
-            $stdout.puts error.message
-            $stdout.puts "Try --list-rewriters to see list of available rewriters"
-            exit 2
-          end
+        if rewriter_names.any? && min_version
+          $stdout.puts "--rewrite cannot be used with --min-version simultaneously"
+          exit 2
         end
+
+        @specified_rewriters =
+          if rewriter_names.any?
+            begin
+              Language.select_rewriters(*rewriter_names)
+            rescue Language::RewriterNotFoundError => error
+              $stdout.puts error.message
+              $stdout.puts "Try --list-rewriters to see list of available rewriters"
+              exit 2
+            end
+          end
 
         @paths =
           if File.directory?(lib_path)
