@@ -71,12 +71,7 @@ module RubyNext
           end
 
           opts.on("--rewrite=REWRITERS...", "Specify particular Ruby features to rewrite") do |val|
-            # Put endless range in the end, 'cause Parser fails to parse it in pattern matching
-            if val == "endless-range"
-              specified_rewriter_names << val
-            else
-              specified_rewriter_names.unshift(val)
-            end
+            specified_rewriter_names << val
           end
 
           opts.on("-h", "--help", "Print help") do
@@ -112,16 +107,12 @@ module RubyNext
             exit 2
           end
 
-          @specified_rewriters = specified_rewriter_names.map do |rewriter_name|
-            rewriter = Language.rewriters.find { |rewriter| rewriter::NAME == rewriter_name }
-
-            unless rewriter
-              $stdout.puts "Rewriter \"#{rewriter_name}\" not found"
-              $stdout.puts "Try --list-rewriters to see list of available rewriters"
-              exit 2
-            end
-
-            rewriter
+          begin
+            @specified_rewriters = Language.select_rewriters(*specified_rewriter_names)
+          rescue Language::RewriterNotFoundError => error
+            $stdout.puts error.message
+            $stdout.puts "Try --list-rewriters to see list of available rewriters"
+            exit 2
           end
         end
 

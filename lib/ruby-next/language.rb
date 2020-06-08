@@ -23,6 +23,8 @@ module RubyNext
     require "ruby-next/language/parser"
     require "ruby-next/language/unparser"
 
+    RewriterNotFoundError = Class.new(StandardError)
+
     class TransformContext
       attr_reader :versions, :use_ruby_next
 
@@ -148,6 +150,16 @@ module RubyNext
       # Rewriters required for the current version
       def current_rewriters
         @current_rewriters ||= rewriters.select(&:unsupported_syntax?)
+      end
+
+      # This method guarantees that rewriters will be returned in order they defined in Language module
+      def select_rewriters(*names)
+        rewriters_delta = names - rewriters.map { |rewriter| rewriter::NAME }
+        if rewriters_delta.any?
+          raise RewriterNotFoundError, "Rewriters not found: #{rewriters_delta.join(",")}"
+        end
+
+        rewriters.select { |rewriter| names.include?(rewriter::NAME) }
       end
 
       private

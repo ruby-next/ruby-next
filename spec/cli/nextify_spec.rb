@@ -141,7 +141,7 @@ describe "ruby-next nextify" do
       env: {"RUBY_NEXT_EDGE" => "0", "RUBY_NEXT_PROPOSED" => "0"},
       should_fail: true
     ) do |_status, output, err|
-      output.should include('Rewriter "right-hand-assignment" not found')
+      output.should include("Rewriters not found: right-hand-assignment")
     end
   end
 
