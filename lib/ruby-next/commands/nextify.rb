@@ -10,13 +10,15 @@ module RubyNext
     class Nextify < Base
       using RubyNext
 
-      attr_reader :lib_path, :paths, :out_path, :min_version, :single_version
+      attr_reader :lib_path, :paths, :out_path, :min_version, :single_version, :specified_rewriters
 
       def run
         log "RubyNext core strategy: #{RubyNext::Core.strategy}"
         log "RubyNext transpile mode: #{RubyNext::Language.mode}"
 
         remove_rbnext!
+
+        @min_version ||= MIN_SUPPORTED_VERSION
 
         paths.each do |path|
           contents = File.read(path)
@@ -27,7 +29,7 @@ module RubyNext
       def parse!(args)
         print_help = false
         print_rewriters = false
-        @min_version = MIN_SUPPORTED_VERSION
+        specified_rewriter_names = []
         @single_version = false
 
         optparser = base_parser do |opts|
@@ -68,6 +70,15 @@ module RubyNext
             print_rewriters = true
           end
 
+          opts.on("--rewrite=REWRITERS...", "Specify particular Ruby features to rewrite") do |val|
+            # Put endless range in the end, 'cause Parser fails to parse it in pattern matching
+            if val == "endless-range"
+              specified_rewriter_names << val
+            else
+              specified_rewriter_names.unshift(val)
+            end
+          end
+
           opts.on("-h", "--help", "Print help") do
             print_help = true
           end
@@ -95,6 +106,25 @@ module RubyNext
           exit 2
         end
 
+        if specified_rewriter_names.any?
+          if min_version
+            $stdout.puts "--rewrite cannot be used with --min-version simultaneously"
+            exit 2
+          end
+
+          @specified_rewriters = specified_rewriter_names.map do |rewriter_name|
+            rewriter = Language.rewriters.find { |rewriter| rewriter::NAME == rewriter_name }
+
+            unless rewriter
+              $stdout.puts "Rewriter \"#{rewriter_name}\" not found"
+              $stdout.puts "Try --list-rewriters to see list of available rewriters"
+              exit 2
+            end
+
+            rewriter
+          end
+        end
+
         @paths =
           if File.directory?(lib_path)
             Dir[File.join(lib_path, "**/*.rb")]
@@ -108,7 +138,7 @@ module RubyNext
       private
 
       def transpile(path, contents, version: min_version)
-        rewriters = Language.rewriters.select { |rw| rw.unsupported_version?(version) }
+        rewriters = specified_rewriters || Language.rewriters.select { |rw| rw.unsupported_version?(version) }
 
         context = Language::TransformContext.new
 
@@ -168,7 +198,9 @@ module RubyNext
         out_path == "stdout"
       end
 
-      alias single_version? single_version
+      def single_version?
+        single_version || specified_rewriters
+      end
     end
   end
 end
