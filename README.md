@@ -200,12 +200,15 @@ It has the following interface:
 ```sh
 $ ruby-next nextify
 Usage: ruby-next nextify DIRECTORY_OR_FILE [options]
-    -o, --output=OUTPUT              Specify output directory or file or stdout (use -o stdout for that)
+    -o, --output=OUTPUT              Specify output directory or file or stdout
         --min-version=VERSION        Specify the minimum Ruby version to support
         --single-version             Only create one version of a file (for the earliest Ruby version)
-        --enable-method-reference    Enable reverted method reference syntax (requires custom parser)
+        --edge                       Enable edge (master) Ruby features
+        --proposed                   Enable proposed/experimental Ruby features
         --transpile-mode=MODE        Transpiler mode (ast or rewrite). Default: ast
         --[no-]refine                Do not inject `using RubyNext`
+        --list-rewriters             List available rewriters
+        --rewrite=REWRITERS...       Specify particular Ruby features to rewrite
     -h, --help                       Print help
     -V                               Turn on verbose mode
         --dry-run                    Print verbose output without generating files
