@@ -11,6 +11,10 @@ mruby
 polyfills
 pragma
 pre-transpiling
+Rewriter
+Rewriters
+rewriter
+rewriters
 Startless
 Transpile
 transpile
