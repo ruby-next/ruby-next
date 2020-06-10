@@ -85,12 +85,6 @@ module RubyNext
       def runtime!
         require "ruby-next/language/rewriters/runtime"
 
-        if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.7.0") && !defined?(Unparser::Emitter::CaseMatch)
-          RubyNext.warn "Ruby Next fallbacks to \"rewrite\" transpiling mode since Unparser doesn't support 2.7 AST yet.\n" \
-            "See https://github.com/mbj/unparser/pull/142"
-          self.mode = :rewrite
-        end
-
         @runtime = true
       end
 
@@ -104,6 +98,13 @@ module RubyNext
         else
           regenerate(*args, **kwargs)
         end
+      rescue Unparser::UnknownEmitterError
+        if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.7.0")
+          RubyNext.warn "Ruby Next fallbacks to \"rewrite\" transpiling mode since Unparser doesn't support 2.7+ AST yet.\n" \
+            "See https://github.com/mbj/unparser/pull/142"
+          self.mode = :rewrite
+        end
+        rewrite(*args, **kwargs)
       end
 
       def regenerate(source, rewriters: self.rewriters, using: RubyNext::Core.refine?, context: TransformContext.new)

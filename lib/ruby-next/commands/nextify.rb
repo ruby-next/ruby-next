@@ -100,12 +100,7 @@ module RubyNext
 
         context = Language::TransformContext.new
 
-        new_contents =
-          if Gem::Version.new(version) >= Gem::Version.new("2.7.0") && !defined?(Unparser::Emitter::CaseMatch)
-            Language.rewrite contents, context: context, rewriters: rewriters
-          else
-            Language.transform contents, context: context, rewriters: rewriters
-          end
+        new_contents = Language.transform contents, context: context, rewriters: rewriters
 
         return unless context.dirty?
 
