@@ -2,6 +2,11 @@
 
 ## master
 
+- Support passing rewriters to CLI. ([@sl4vr][])
+
+Use `nextify --list-rewriters` to view all available rewriters.
+Use `nextify` with `--rewrite=REWRITERS...` option to specify which particular rewriters to use.
+
 ## 0.9.1 (2020-06-05)
 
 - Keep `ruby-next` version in sync with `ruby-next-core`. ([@palkan][])
@@ -195,3 +200,4 @@ p a #=> 1
 
 [@palkan]: https://github.com/palkan
 [backports]: https://github.com/marcandre/backports
+[@sl4vr]: https://github.com/sl4vr
