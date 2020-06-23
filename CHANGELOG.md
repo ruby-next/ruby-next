@@ -2,6 +2,8 @@
 
 ## master
 
+## 0.9.2 (2020-06-24)
+
 - Support passing rewriters to CLI. ([@sl4vr][])
 
 Use `nextify --list-rewriters` to view all available rewriters.

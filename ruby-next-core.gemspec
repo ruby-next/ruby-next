@@ -34,6 +34,6 @@ Gem::Specification.new do |s|
 
   s.executables = ["ruby-next"]
 
-  s.add_development_dependency "ruby-next-parser", ">= 2.8.0.6"
+  s.add_development_dependency "ruby-next-parser", ">= 2.8.0.7"
   s.add_development_dependency "unparser", ">= 0.4.7"
 end
