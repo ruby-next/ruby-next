@@ -37,6 +37,8 @@ Read more about the motivation behind the Ruby Next in this post: [Ruby Next: Ma
 - Ruby gems
   - [anyway_config](https://github.com/palkan/anyway_config)
   - [graphql-fragment_cache](https://github.com/DmitryTsepelev/graphql-ruby-fragment_cache)
+- Rails applications
+  - [anycable_rails_demo](https://github.com/anycable/anycable_rails_demo)
 - mruby
   - [ACLI](https://github.com/palkan/acli)
 
