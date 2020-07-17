@@ -77,7 +77,7 @@ module RubyNext
       end
 
       def native_location?(location)
-        location.nil? || location.first.match?(%r{<internal:})
+        location.nil? || location.first.match?(/(<internal:|resource:\/truffleruby\/core)/)
       end
     end
 
