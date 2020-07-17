@@ -18,7 +18,7 @@ module Kernel
         chdir: chdir || File.expand_path("../..", __dir__)
       )
 
-    if ENV["COMMAND_DEBUG"]
+    if ENV["COMMAND_DEBUG"] || (!status.success? && !should_fail)
       puts "\n\nCOMMAND:\n#{command}\n\nOUTPUT:\n#{output}\nERROR:\n#{err}\n"
     end
 
