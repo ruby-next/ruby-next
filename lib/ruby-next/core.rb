@@ -25,7 +25,7 @@ module RubyNext
           @supported = supported.nil? ? mod.method_defined?(method_name) : supported
           # define whether running Ruby has a native implementation for this method
           # for that, we check the source_location (which is nil for C defined methods)
-          @native = native.nil? ? (supported? && mod.instance_method(method_name).source_location.nil?) : native
+          @native = native.nil? ? (supported? && native_location?(mod.instance_method(method_name).source_location)) : native
         end
         @singleton = singleton
         @refineables = Array(refineable)
@@ -74,6 +74,10 @@ module RubyNext
         trace_location = trace_locations[1]
 
         [trace_location.absolute_path, trace_location.lineno + 2]
+      end
+
+      def native_location?(location)
+        location.nil? || location.first.match?(%r{<internal:})
       end
     end
 
