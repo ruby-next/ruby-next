@@ -11,9 +11,6 @@ require_relative '../spec_helper'
 using RubyNext::Language::Eval
 
 ruby_version_is "2.7" do
-  # https://github.com/jruby/jruby/issues/6017
-  next if defined?(JRUBY_VERSION) && RubyNext::Core.refine?
-
   describe "Pattern matching" do
     # TODO: Remove excessive eval calls when support of previous version
     #       Ruby 2.6 will be dropped

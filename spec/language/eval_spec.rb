@@ -34,8 +34,6 @@ describe "transforming eval contents" do
   end
 
   it "Kernel.eval with binding" do
-    # https://github.com/jruby/jruby/issues/6017
-    skip if defined? JRUBY_VERSION
     klass = Class.new
     eval(%q{
       case {status: :ok}
