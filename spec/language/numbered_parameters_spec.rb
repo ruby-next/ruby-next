@@ -37,6 +37,9 @@ ruby_version_is "2.7" do
     end
 
     it "can be overwritten with local variable" do
+      # See https://github.com/whitequark/parser/issues/723
+      next skip if RUBY_VERSION >= "2.8"
+
       suppress_warning do
         eval <<~CODE
           _1 = 0
