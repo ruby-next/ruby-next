@@ -9,5 +9,5 @@ gem "pry-byebug", platform: :mri
 eval_gemfile "gemfiles/rubocop.gemfile"
 
 # For compatibility tests
-gem "zeitwerk", platform: :mri
+gem "zeitwerk", platform: [:mri, :truffleruby]
 gem "bootsnap", platform: :mri
