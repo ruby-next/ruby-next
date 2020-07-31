@@ -37,6 +37,8 @@ ruby_version_is "2.7" do
     end
 
     it "cannot be overwritten with local variable" do
+      # TODO: wait for the next parser release
+      next skip
       -> {
         eval <<~CODE
           _1 = 0
@@ -46,6 +48,8 @@ ruby_version_is "2.7" do
     end
 
     it "errors when numbered parameter is overwritten with local variable" do
+      # TODO: wait for the next parser release
+      next skip
       -> {
         eval("_1 = 0")
       }.should raise_error(SyntaxError, /_1 is reserved for numbered parameter/)
