@@ -54,10 +54,6 @@
 
 - Pattern matching (`case ... in ... end`) ([ref](https://rubyreferences.github.io/rubychanges/2.7.html#pattern-matching))
 
-- **REVERTED IN RUBY ([#16275](https://bugs.ruby-lang.org/issues/16275))** Method reference operator (`Module.:method`) ([#12125](https://bugs.ruby-lang.org/issues/12125), [#13581](https://bugs.ruby-lang.org/issues/13581))
-
-You can still use this feature with Ruby Next by enabling it explicitly (see [Readme](./README.md)).
-
 - Arguments forwarding (`def a(...) b(...); end` and `def a(...) b(1, ...); end`) ([#16253](https://bugs.ruby-lang.org/issues/16253), [#16378](https://bugs.ruby-lang.org/issues/16378))
 
 - Numbered parameters (`block { _1 }`) ([ref](https://rubyreferences.github.io/rubychanges/2.7.html#numbered-block-parameters))
@@ -73,3 +69,9 @@ The possible translation depends on the _end_ type which could hardly be inferre
 - Right-hand assignment (`13.divmod(5) => a,b`) ([#15921](https://bugs.ruby-lang.org/issues/15921))
 
 - Find pattern (`[0, 1, 2] in [*, 1 => a, *c]`) ([#16828](https://bugs.ruby-lang.org/issues/16828)).
+
+### Proposals
+
+- **REVERTED IN RUBY ([#16275](https://bugs.ruby-lang.org/issues/16275))** Method reference operator (`Module.:method`) ([#12125](https://bugs.ruby-lang.org/issues/12125), [#13581](https://bugs.ruby-lang.org/issues/13581))
+
+- Shorthand Hash notation (`data = {x, y}`) ([#15236](https://bugs.ruby-lang.org/issues/15236)).

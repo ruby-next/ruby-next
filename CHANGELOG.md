@@ -2,6 +2,10 @@
 
 ## master
 
+- Add proposed shorthand Hash syntax. ([@palkan][])
+
+You can try it: `x = 1; y = 2; data = {x, y}`.
+
 - Add leading argument support to args forwarding. ([@palkan][])
 
 `def a(...) b(1, ...); end`.

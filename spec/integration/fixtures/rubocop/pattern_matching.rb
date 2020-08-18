@@ -7,6 +7,8 @@ case []
     :tail
   in _, _, _
     :array
+  in [*, 1, *]
+    :find
   in a:, b:
     :hash
   in Object(1, 2)
