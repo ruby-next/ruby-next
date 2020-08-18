@@ -516,6 +516,8 @@ require "ruby-next/language/runtime"
 
 - _Method reference_ operator (`.:`) ([#13581](https://bugs.ruby-lang.org/issues/13581)).
 
+- Shorthand Hash notation (`data = {x, y}`) ([#15236](https://bugs.ruby-lang.org/issues/15236)).
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at [https://github.com/ruby-next/ruby-next](ttps://github.com/ruby-next/ruby-next).
