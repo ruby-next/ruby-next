@@ -28,7 +28,7 @@ Gem::Specification.new do |s|
   s.license = "MIT"
 
   s.files = Dir.glob("lib/**/*") + Dir.glob("bin/**/*") + %w[README.md LICENSE.txt CHANGELOG.md]
-  s.required_ruby_version = ">= 2.3.0"
+  s.required_ruby_version = ">= 2.2.0"
 
   s.require_paths = ["lib"]
 

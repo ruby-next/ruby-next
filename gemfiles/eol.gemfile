@@ -3,8 +3,6 @@ source "https://rubygems.org"
 
 gemspec path: "..", name: "ruby-next-core"
 
-eval_gemfile "rubocop.gemfile"
-
 platform :mri do
   gem "pry", "~> 0.12.0"
   gem "pry-byebug", "< 3.9"
