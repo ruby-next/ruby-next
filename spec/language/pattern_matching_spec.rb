@@ -3,7 +3,6 @@
 # NOTE: the following changes to the original code should be made:
 # - Add `using RubyNext::Language::Eval`
 # - Remove expected messages from SyntaxError
-# - Add binding to all eval calls (e.g., `eval <<~CODE` => `eval(<<~CODE, binding)`), move locals to eval when necessary
 # - Skip warnings specs
 
 require_relative '../spec_helper'
@@ -20,14 +19,14 @@ ruby_version_is "2.7" do
     end
 
     it "can be standalone in operator that deconstructs value" do
-      eval(<<-RUBY, binding).should == [0, 1]
+      eval(<<-RUBY).should == [0, 1]
         [0, 1] in [a, b]
         [a, b]
       RUBY
     end
 
     it "extends case expression with case/in construction" do
-      eval(<<~RUBY, binding).should == :bar
+      eval(<<~RUBY).should == :bar
         case [0, 1]
           in [0]
             :foo
@@ -38,7 +37,7 @@ ruby_version_is "2.7" do
     end
 
     it "allows using then operator" do
-      eval(<<~RUBY, binding).should == :bar
+      eval(<<~RUBY).should == :bar
         case [0, 1]
           in [0]    then :foo
           in [0, 1] then :bar
@@ -49,7 +48,7 @@ ruby_version_is "2.7" do
     it "warns about pattern matching is experimental feature" do
       next skip
       -> {
-        eval(<<~RUBY, binding)
+        eval <<~RUBY
           case 0
             in 0
           end
@@ -58,7 +57,7 @@ ruby_version_is "2.7" do
     end
 
     it "binds variables" do
-      eval(<<~RUBY, binding).should == 1
+      eval(<<~RUBY).should == 1
         case [0, 1]
           in [0, a]
             a
@@ -68,7 +67,7 @@ ruby_version_is "2.7" do
 
     it "cannot mix in and when operators" do
       -> {
-        eval(<<~RUBY, binding)
+        eval <<~RUBY
           case []
             when 1 == 1
             in []
@@ -77,7 +76,7 @@ ruby_version_is "2.7" do
       }.should raise_error(SyntaxError)
 
       -> {
-        eval(<<~RUBY, binding)
+        eval <<~RUBY
           case []
             in []
             when 1 == 1
@@ -87,7 +86,7 @@ ruby_version_is "2.7" do
     end
 
     it "checks patterns until the first matching" do
-      eval(<<~RUBY, binding).should == :bar
+      eval(<<~RUBY).should == :bar
         case [0, 1]
           in [0]
             :foo
@@ -100,7 +99,7 @@ ruby_version_is "2.7" do
     end
 
     it "executes else clause if no pattern matches" do
-      eval(<<~RUBY, binding).should == false
+      eval(<<~RUBY).should == false
         case [0, 1]
           in [0]
             true
@@ -112,7 +111,7 @@ ruby_version_is "2.7" do
 
     it "raises NoMatchingPatternError if no pattern matches and no else clause" do
       -> {
-        eval(<<~RUBY, binding)
+        eval <<~RUBY
           case [0, 1]
             in [0]
           end
@@ -122,7 +121,7 @@ ruby_version_is "2.7" do
 
     it "does not allow calculation or method calls in a pattern" do
       -> {
-        eval(<<~RUBY, binding)
+        eval <<~RUBY
           case 0
             in 1 + 1
               true
@@ -133,7 +132,7 @@ ruby_version_is "2.7" do
 
     describe "guards" do
       it "supports if guard" do
-        eval(<<~RUBY, binding).should == false
+        eval(<<~RUBY).should == false
           case 0
             in 0 if false
               true
@@ -142,7 +141,7 @@ ruby_version_is "2.7" do
           end
         RUBY
 
-        eval(<<~RUBY, binding).should == true
+        eval(<<~RUBY).should == true
           case 0
             in 0 if true
               true
@@ -153,7 +152,7 @@ ruby_version_is "2.7" do
       end
 
       it "supports unless guard" do
-        eval(<<~RUBY, binding).should == false
+        eval(<<~RUBY).should == false
           case 0
             in 0 unless true
               true
@@ -162,7 +161,7 @@ ruby_version_is "2.7" do
           end
         RUBY
 
-        eval(<<~RUBY, binding).should == true
+        eval(<<~RUBY).should == true
           case 0
             in 0 unless false
               true
@@ -173,7 +172,7 @@ ruby_version_is "2.7" do
       end
 
       it "makes bound variables visible in guard" do
-        eval(<<~RUBY, binding).should == true
+        eval(<<~RUBY).should == true
           case [0, 1]
             in [a, 1] if a >= 0
               true
@@ -182,7 +181,7 @@ ruby_version_is "2.7" do
       end
 
       it "does not evaluate guard if pattern does not match" do
-        eval(<<~RUBY, binding)
+        eval <<~RUBY
           case 0
             in 1 if (ScratchPad << :foo) || true
           else
@@ -193,7 +192,7 @@ ruby_version_is "2.7" do
       end
 
       it "takes guards into account when there are several matching patterns" do
-        eval(<<~RUBY, binding).should == :bar
+        eval(<<~RUBY).should == :bar
           case 0
             in 0 if false
               :foo
@@ -204,7 +203,7 @@ ruby_version_is "2.7" do
       end
 
       it "executes else clause if no guarded pattern matches" do
-        eval(<<~RUBY, binding).should == false
+        eval(<<~RUBY).should == false
           case 0
             in 0 if false
               true
@@ -216,7 +215,7 @@ ruby_version_is "2.7" do
 
       it "raises NoMatchingPatternError if no guarded pattern matches and no else clause" do
         -> {
-          eval(<<~RUBY, binding)
+          eval <<~RUBY
             case [0, 1]
               in [0, 1] if false
             end
@@ -227,35 +226,35 @@ ruby_version_is "2.7" do
 
     describe "value pattern" do
       it "matches an object such that pattern === object" do
-        eval(<<~RUBY, binding).should == true
+        eval(<<~RUBY).should == true
           case 0
             in 0
               true
           end
         RUBY
 
-        eval(<<~RUBY, binding).should == true
+        eval(<<~RUBY).should == true
           case 0
             in (-1..1)
               true
           end
         RUBY
 
-        eval(<<~RUBY, binding).should == true
+        eval(<<~RUBY).should == true
           case 0
             in Integer
               true
           end
         RUBY
 
-        eval(<<~RUBY, binding).should == true
+        eval(<<~RUBY).should == true
           case "0"
             in /0/
               true
           end
         RUBY
 
-        eval(<<~RUBY, binding).should == true
+        eval(<<~RUBY).should == true
           case "0"
             in ->(s) { s == "0" }
               true
@@ -266,7 +265,7 @@ ruby_version_is "2.7" do
       it "allows string literal with interpolation" do
         x = "x"
 
-        eval(<<~RUBY, binding).should == true
+        eval(<<~RUBY).should == true
           case "x"
             in "#{x + ""}"
               true
@@ -277,7 +276,7 @@ ruby_version_is "2.7" do
 
     describe "variable pattern" do
       it "matches a value and binds variable name to this value" do
-        eval(<<~RUBY, binding).should == 0
+        eval(<<~RUBY).should == 0
           case 0
             in a
               a
@@ -286,7 +285,7 @@ ruby_version_is "2.7" do
       end
 
       it "makes bounded variable visible outside a case statement scope" do
-        eval(<<~RUBY, binding).should == 0
+        eval(<<~RUBY).should == 0
           case 0
             in a
           end
@@ -296,7 +295,7 @@ ruby_version_is "2.7" do
       end
 
       it "create local variables even if a pattern doesn't match" do
-        eval(<<~RUBY, binding).should == [0, nil, nil]
+        eval(<<~RUBY).should == [0, nil, nil]
           case 0
             in a
             in b
@@ -308,7 +307,7 @@ ruby_version_is "2.7" do
       end
 
       it "allow using _ name to drop values" do
-        eval(<<~RUBY, binding).should == 0
+        eval(<<~RUBY).should == 0
           case [0, 1]
             in [a, _]
               a
@@ -317,7 +316,7 @@ ruby_version_is "2.7" do
       end
 
       it "supports using _ in a pattern several times" do
-        eval(<<~RUBY, binding).should == 2
+        eval(<<~RUBY).should == 2
           case [0, 1, 2]
             in [0, _, _]
               2
@@ -326,14 +325,14 @@ ruby_version_is "2.7" do
       end
 
       it "supports using any name with _ at the beginning in a pattern several times" do
-        eval(<<~RUBY, binding).should == 2
+        eval(<<~RUBY).should == 2
           case [0, 1, 2]
             in [0, _x, _x]
               _x
           end
         RUBY
 
-        eval(<<~RUBY, binding).should == 2
+        eval(<<~RUBY).should == 2
           case {a: 0, b: 1, c: 2}
             in {a: 0, b: _x, c: _x}
               _x
@@ -343,7 +342,7 @@ ruby_version_is "2.7" do
 
       it "does not support using variable name (except _) several times" do
         -> {
-          eval(<<~RUBY, binding)
+          eval <<~RUBY
             case [0]
               in [a, a]
             end
@@ -352,7 +351,7 @@ ruby_version_is "2.7" do
       end
 
       it "supports existing variables in a pattern specified with ^ operator" do
-        eval(<<~RUBY, binding).should == true
+        eval(<<~RUBY).should == true
           a = 0
 
           case 0
@@ -363,14 +362,14 @@ ruby_version_is "2.7" do
       end
 
       it "allows applying ^ operator to bound variables" do
-        eval(<<~RUBY, binding).should == 1
+        eval(<<~RUBY).should == 1
           case [1, 1]
             in [n, ^n]
               n
           end
         RUBY
 
-        eval(<<~RUBY, binding).should == false
+        eval(<<~RUBY).should == false
           case [1, 2]
             in [n, ^n]
               true
@@ -382,7 +381,7 @@ ruby_version_is "2.7" do
 
       it "requires bound variable to be specified in a pattern before ^ operator when it relies on a bound variable" do
         -> {
-          eval(<<~RUBY, binding)
+          eval <<~RUBY
             case [1, 2]
               in [^n, n]
                 true
@@ -396,7 +395,7 @@ ruby_version_is "2.7" do
 
     describe "alternative pattern" do
       it "matches if any of patterns matches" do
-        eval(<<~RUBY, binding).should == true
+        eval(<<~RUBY).should == true
           case 0
             in 0 | 1 | 2
               true
@@ -406,7 +405,7 @@ ruby_version_is "2.7" do
 
       it "does not support variable binding" do
         -> {
-          eval(<<~RUBY, binding)
+          eval <<~RUBY
             case [0, 1]
               in [0, 0] | [0, a]
             end
@@ -415,7 +414,7 @@ ruby_version_is "2.7" do
       end
 
       it "support undescore prefixed variables in alternation" do
-        eval(<<~RUBY, binding).should == true
+        eval(<<~RUBY).should == true
           case [0, 1]
             in [1, _]
               false
@@ -428,7 +427,7 @@ ruby_version_is "2.7" do
 
     describe "AS pattern" do
       it "binds a variable to a value if pattern matches" do
-        eval(<<~RUBY, binding).should == 0
+        eval(<<~RUBY).should == 0
           case 0
             in Integer => n
               n
@@ -437,7 +436,7 @@ ruby_version_is "2.7" do
       end
 
       it "can be used as a nested pattern" do
-        eval(<<~RUBY, binding).should == [2, 3]
+        eval(<<~RUBY).should == [2, 3]
           case [1, [2, 3]]
             in [1, Array => ary]
               ary
@@ -448,7 +447,7 @@ ruby_version_is "2.7" do
 
     describe "Array pattern" do
       it "supports form Constant(pat, pat, ...)" do
-        eval(<<~RUBY, binding).should == true
+        eval(<<~RUBY).should == true
           case [0, 1, 2]
             in Array(0, 1, 2)
               true
@@ -457,7 +456,7 @@ ruby_version_is "2.7" do
       end
 
       it "supports form Constant[pat, pat, ...]" do
-        eval(<<~RUBY, binding).should == true
+        eval(<<~RUBY).should == true
           case [0, 1, 2]
             in Array[0, 1, 2]
               true
@@ -466,7 +465,7 @@ ruby_version_is "2.7" do
       end
 
       it "supports form [pat, pat, ...]" do
-        eval(<<~RUBY, binding).should == true
+        eval(<<~RUBY).should == true
           case [0, 1, 2]
             in [0, 1, 2]
               true
@@ -475,21 +474,21 @@ ruby_version_is "2.7" do
       end
 
       it "supports form pat, pat, ..." do
-        eval(<<~RUBY, binding).should == true
+        eval(<<~RUBY).should == true
           case [0, 1, 2]
             in 0, 1, 2
               true
           end
         RUBY
 
-        eval(<<~RUBY, binding).should == 1
+        eval(<<~RUBY).should == 1
           case [0, 1, 2]
             in 0, a, 2
               a
           end
         RUBY
 
-        eval(<<~RUBY, binding).should == [1, 2]
+        eval(<<~RUBY).should == [1, 2]
           case [0, 1, 2]
             in 0, *rest
               rest
@@ -501,7 +500,7 @@ ruby_version_is "2.7" do
         obj = Object.new
         def obj.deconstruct; [0, 1] end
 
-        eval(<<~RUBY, binding).should == true
+        eval(<<~RUBY).should == true
           case obj
             in [Integer, Integer]
               true
@@ -510,7 +509,7 @@ ruby_version_is "2.7" do
       end
 
       it "does not match object if Constant === object returns false" do
-        eval(<<~RUBY, binding).should == false
+        eval(<<~RUBY).should == false
           case [0, 1, 2]
             in String[0, 1, 2]
               true
@@ -523,7 +522,7 @@ ruby_version_is "2.7" do
       it "does not match object without #deconstruct method" do
         obj = Object.new
 
-        eval(<<~RUBY, binding).should == false
+        eval(<<~RUBY).should == false
           case obj
             in Object[]
               true
@@ -538,7 +537,7 @@ ruby_version_is "2.7" do
         def obj.deconstruct; "" end
 
         -> {
-          eval(<<~RUBY, binding)
+          eval <<~RUBY
             case obj
               in Object[]
             else
@@ -551,7 +550,7 @@ ruby_version_is "2.7" do
         obj = Object.new
         def obj.deconstruct; [1] end
 
-        eval(<<~RUBY, binding).should == false
+        eval(<<~RUBY).should == false
           case obj
             in Object[0]
               true
@@ -562,7 +561,7 @@ ruby_version_is "2.7" do
       end
 
       it "binds variables" do
-        eval(<<~RUBY, binding).should == [0, 1, 2]
+        eval(<<~RUBY).should == [0, 1, 2]
           case [0, 1, 2]
             in [a, b, c]
               [a, b, c]
@@ -573,7 +572,7 @@ ruby_version_is "2.7" do
       it "binds variable even if patter matches only partially" do
         a = nil
 
-        eval(<<~RUBY, binding).should == 0
+        eval(<<~RUBY).should == 0
           case [0, 1, 2]
             in [a, 1, 3]
           else
@@ -584,7 +583,7 @@ ruby_version_is "2.7" do
       end
 
       it "supports splat operator *rest" do
-        eval(<<~RUBY, binding).should == [1, 2]
+        eval(<<~RUBY).should == [1, 2]
           case [0, 1, 2]
             in [0, *rest]
               rest
@@ -593,7 +592,7 @@ ruby_version_is "2.7" do
       end
 
       it "does not match partially by default" do
-        eval(<<~RUBY, binding).should == false
+        eval(<<~RUBY).should == false
           case [0, 1, 2, 3]
             in [1, 2]
               true
@@ -604,14 +603,14 @@ ruby_version_is "2.7" do
       end
 
       it "does match partially from the array beginning if list + , syntax used" do
-        eval(<<~RUBY, binding).should == true
+        eval(<<~RUBY).should == true
           case [0, 1, 2, 3]
             in [0, 1,]
               true
           end
         RUBY
 
-        eval(<<~RUBY, binding).should == true
+        eval(<<~RUBY).should == true
           case [0, 1, 2, 3]
             in 0, 1,;
               true
@@ -620,7 +619,7 @@ ruby_version_is "2.7" do
       end
 
       it "matches [] with []" do
-        eval(<<~RUBY, binding).should == true
+        eval(<<~RUBY).should == true
           case []
             in []
               true
@@ -629,7 +628,7 @@ ruby_version_is "2.7" do
       end
 
       it "matches anything with *" do
-        eval(<<~RUBY, binding).should == true
+        eval(<<~RUBY).should == true
           case [0, 1]
             in *;
               true
@@ -640,7 +639,7 @@ ruby_version_is "2.7" do
 
     describe "Hash pattern" do
       it "supports form Constant(id: pat, id: pat, ...)" do
-        eval(<<~RUBY, binding).should == true
+        eval(<<~RUBY).should == true
           case {a: 0, b: 1}
             in Hash(a: 0, b: 1)
               true
@@ -649,7 +648,7 @@ ruby_version_is "2.7" do
       end
 
       it "supports form Constant[id: pat, id: pat, ...]" do
-        eval(<<~RUBY, binding).should == true
+        eval(<<~RUBY).should == true
           case {a: 0, b: 1}
             in Hash[a: 0, b: 1]
               true
@@ -658,7 +657,7 @@ ruby_version_is "2.7" do
       end
 
       it "supports form {id: pat, id: pat, ...}" do
-        eval(<<~RUBY, binding).should == true
+        eval(<<~RUBY).should == true
           case {a: 0, b: 1}
             in {a: 0, b: 1}
               true
@@ -667,21 +666,21 @@ ruby_version_is "2.7" do
       end
 
       it "supports form id: pat, id: pat, ..." do
-        eval(<<~RUBY, binding).should == true
+        eval(<<~RUBY).should == true
           case {a: 0, b: 1}
             in a: 0, b: 1
               true
           end
         RUBY
 
-        eval(<<~RUBY, binding).should == [0, 1]
+        eval(<<~RUBY).should == [0, 1]
           case {a: 0, b: 1}
             in a: a, b: b
               [a, b]
           end
         RUBY
 
-        eval(<<~RUBY, binding).should == { b: 1, c: 2 }
+        eval(<<~RUBY).should == { b: 1, c: 2 }
           case {a: 0, b: 1, c: 2}
             in a: 0, **rest
               rest
@@ -690,7 +689,7 @@ ruby_version_is "2.7" do
       end
 
       it "supports a: which means a: a" do
-        eval(<<~RUBY, binding).should == [0, 1]
+        eval(<<~RUBY).should == [0, 1]
           case {a: 0, b: 1}
             in Hash(a:, b:)
               [a, b]
@@ -698,7 +697,7 @@ ruby_version_is "2.7" do
         RUBY
 
         a = b = nil
-        eval(<<~RUBY, binding).should == [0, 1]
+        eval(<<~RUBY).should == [0, 1]
           case {a: 0, b: 1}
             in Hash[a:, b:]
               [a, b]
@@ -706,7 +705,7 @@ ruby_version_is "2.7" do
         RUBY
 
         a = b = nil
-        eval(<<~RUBY, binding).should == [0, 1]
+        eval(<<~RUBY).should == [0, 1]
           case {a: 0, b: 1}
             in {a:, b:}
               [a, b]
@@ -714,7 +713,7 @@ ruby_version_is "2.7" do
         RUBY
 
         a = nil
-        eval(<<~RUBY, binding).should == [0, {b: 1, c: 2}]
+        eval(<<~RUBY).should == [0, {b: 1, c: 2}]
           case {a: 0, b: 1, c: 2}
             in {a:, **rest}
               [a, rest]
@@ -722,7 +721,7 @@ ruby_version_is "2.7" do
         RUBY
 
         a = b = nil
-        eval(<<~RUBY, binding).should == [0, 1]
+        eval(<<~RUBY).should == [0, 1]
           case {a: 0, b: 1}
             in a:, b:
               [a, b]
@@ -731,7 +730,7 @@ ruby_version_is "2.7" do
       end
 
       it "can mix key (a:) and key-value (a: b) declarations" do
-        eval(<<~RUBY, binding).should == [0, 1]
+        eval(<<~RUBY).should == [0, 1]
           case {a: 0, b: 1}
             in Hash(a:, b: x)
               [a, x]
@@ -740,7 +739,7 @@ ruby_version_is "2.7" do
       end
 
       it "supports 'string': key literal" do
-        eval(<<~RUBY, binding).should == true
+        eval(<<~RUBY).should == true
           case {a: 0}
             in {"a": 0}
               true
@@ -750,7 +749,7 @@ ruby_version_is "2.7" do
 
       it "does not support non-symbol keys" do
         -> {
-          eval(<<~RUBY, binding)
+          eval <<~RUBY
             case {a: 1}
               in {"a" => 1}
             end
@@ -772,7 +771,7 @@ ruby_version_is "2.7" do
 
       it "raise SyntaxError when keys duplicate in pattern" do
         -> {
-          eval(<<~RUBY, binding)
+          eval <<~RUBY
             case {a: 1}
               in {a: 1, b: 2, a: 3}
             end
@@ -784,7 +783,7 @@ ruby_version_is "2.7" do
         obj = Object.new
         def obj.deconstruct_keys(*); {a: 1} end
 
-        eval(<<~RUBY, binding).should == true
+        eval(<<~RUBY).should == true
           case obj
             in {a: 1}
               true
@@ -793,7 +792,7 @@ ruby_version_is "2.7" do
       end
 
       it "does not match object if Constant === object returns false" do
-        eval(<<~RUBY, binding).should == false
+        eval(<<~RUBY).should == false
           case {a: 1}
             in String[a: 1]
               true
@@ -806,7 +805,7 @@ ruby_version_is "2.7" do
       it "does not match object without #deconstruct_keys method" do
         obj = Object.new
 
-        eval(<<~RUBY, binding).should == false
+        eval(<<~RUBY).should == false
           case obj
             in Object[a: 1]
               true
@@ -821,7 +820,7 @@ ruby_version_is "2.7" do
         def obj.deconstruct_keys(*); "" end
 
         -> {
-          eval(<<~RUBY, binding)
+          eval <<~RUBY
             case obj
               in Object[a: 1]
             end
@@ -833,7 +832,7 @@ ruby_version_is "2.7" do
         obj = Object.new
         def obj.deconstruct_keys(*); {"a" => 1} end
 
-        eval(<<~RUBY, binding).should == false
+        eval(<<~RUBY).should == false
           case obj
             in Object[a: 1]
               true
@@ -847,7 +846,7 @@ ruby_version_is "2.7" do
         obj = Object.new
         def obj.deconstruct_keys(*); {a: 1} end
 
-        eval(<<~RUBY, binding).should == false
+        eval(<<~RUBY).should == false
           case obj
             in Object[a: 2]
               true
@@ -865,7 +864,7 @@ ruby_version_is "2.7" do
           {a: 1, b: 2, c: 3}
         end
 
-        eval(<<~RUBY, binding)
+        eval <<~RUBY
           case obj
             in Object[a: 1, b: 2, c: 3]
           end
@@ -882,7 +881,7 @@ ruby_version_is "2.7" do
           {a: 1, b: 2, c: 3}
         end
 
-        eval(<<~RUBY, binding)
+        eval <<~RUBY
           case obj
             in Object[a: 1, b: 2, **]
           end
@@ -899,7 +898,7 @@ ruby_version_is "2.7" do
           {a: 1, b: 2}
         end
 
-        eval(<<~RUBY, binding)
+        eval <<~RUBY
           case obj
             in Object[a: 1, **rest]
           end
@@ -909,7 +908,7 @@ ruby_version_is "2.7" do
       end
 
       it "binds variables" do
-        eval(<<~RUBY, binding).should == [0, 1, 2]
+        eval(<<~RUBY).should == [0, 1, 2]
           case {a: 0, b: 1, c: 2}
             in {a: x, b: y, c: z}
               [x, y, z]
@@ -920,7 +919,7 @@ ruby_version_is "2.7" do
       it "binds variable even if pattern matches only partially" do
         x = nil
 
-        eval(<<~RUBY, binding).should == 0
+        eval(<<~RUBY).should == 0
           case {a: 0, b: 1}
             in {a: x, b: 2}
           else
@@ -931,7 +930,7 @@ ruby_version_is "2.7" do
       end
 
       it "supports double splat operator **rest" do
-        eval(<<~RUBY, binding).should == {b: 1, c: 2}
+        eval(<<~RUBY).should == {b: 1, c: 2}
           case {a: 0, b: 1, c: 2}
             in {a: 0, **rest}
               rest
@@ -940,14 +939,14 @@ ruby_version_is "2.7" do
       end
 
       it "treats **nil like there should not be any other keys in a matched Hash" do
-        eval(<<~RUBY, binding).should == true
+        eval(<<~RUBY).should == true
           case {a: 1, b: 2}
             in {a: 1, b: 2, **nil}
               true
           end
         RUBY
 
-        eval(<<~RUBY, binding).should == false
+        eval(<<~RUBY).should == false
           case {a: 1, b: 2}
             in {a: 1, **nil}
               true
@@ -958,7 +957,7 @@ ruby_version_is "2.7" do
       end
 
       it "can match partially" do
-        eval(<<~RUBY, binding).should == true
+        eval(<<~RUBY).should == true
           case {a: 1, b: 2}
             in {a: 1}
               true
@@ -967,7 +966,7 @@ ruby_version_is "2.7" do
       end
 
       it "matches {} with {}" do
-        eval(<<~RUBY, binding).should == true
+        eval(<<~RUBY).should == true
           case {}
             in {}
               true
@@ -976,7 +975,7 @@ ruby_version_is "2.7" do
       end
 
       it "matches anything with **" do
-        eval(<<~RUBY, binding).should == true
+        eval(<<~RUBY).should == true
           case {a: 1}
             in **;
               true
@@ -1002,7 +1001,7 @@ ruby_version_is "2.7" do
         Module.new do
           using refinery
 
-          result = eval(<<~RUBY, binding)
+          result = eval <<~RUBY
             case []
               in [0]
                 true
@@ -1026,7 +1025,7 @@ ruby_version_is "2.7" do
         Module.new do
           using refinery
 
-          result = eval(<<~RUBY, binding)
+          result = eval <<~RUBY
             case {}
               in a: 0
                 true
@@ -1050,7 +1049,7 @@ ruby_version_is "2.7" do
         Module.new do
           using refinery
 
-          result = eval(<<~RUBY, binding)
+          result = eval <<~RUBY
             case {}
               in Array
                 true

@@ -29,6 +29,10 @@ ENV["RUBY_NEXT_EDGE"] = "1"
 ENV["RUBY_NEXT_PROPOSED"] = "1"
 
 require "backports/2.5" if ENV["CORE_EXT"] == "backports"
+
+require "ruby-next/language"
+require_relative "spec/support/eval_binding_rewriter"
+
 require "ruby-next/language/runtime"
 
 if ENV["CORE_EXT"] == "gem"

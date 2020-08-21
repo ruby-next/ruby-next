@@ -30,7 +30,7 @@ describe "transforming eval contents" do
       else
         :unknown
       end
-    }).should  == :unknown
+    }, nil).should  == :unknown
   end
 
   it "Kernel.eval with binding" do

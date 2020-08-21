@@ -9,7 +9,7 @@ ruby_version_is "2.8" do
 
     it "with expression" do
       a = 2
-      eval(<<-RUBY, binding)
+      eval <<-RUBY
         if a > 1
           1
         else
@@ -21,7 +21,7 @@ ruby_version_is "2.8" do
     end
 
     it "with right-hand method call" do
-      x = eval(<<-RUBY, binding)
+      x = eval <<-RUBY
         (5 + 3 => x).
           then(&:to_s)
       RUBY
