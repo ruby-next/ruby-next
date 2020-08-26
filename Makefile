@@ -8,7 +8,10 @@ test:
 lint:
 	bundle exec rubocop
 
-release: test lint
+transpile:
+	bundle exec bin/ruby-next nextify --transpile-mode=rewrite --min-version=2.2 lib/
+
+release: test lint transpile
 	gem release ruby-next-core
 	gem release ruby-next -t
 	git push

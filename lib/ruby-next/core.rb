@@ -2,7 +2,7 @@
 
 require "set"
 
-require_relative "utils"
+require "ruby-next/utils"
 
 module RubyNext
   module Core
@@ -148,29 +148,29 @@ end
 
 require "backports/2.5" if RubyNext::Core.backports?
 
-require_relative "core/kernel/then"
+require "ruby-next/core/kernel/then"
 
-require_relative "core/proc/compose"
+require "ruby-next/core/proc/compose"
 
-require_relative "core/enumerable/tally"
-require_relative "core/enumerable/filter"
-require_relative "core/enumerable/filter_map"
+require "ruby-next/core/enumerable/tally"
+require "ruby-next/core/enumerable/filter"
+require "ruby-next/core/enumerable/filter_map"
 
-require_relative "core/enumerator/produce"
+require "ruby-next/core/enumerator/produce"
 
-require_relative "core/array/difference_union_intersection"
+require "ruby-next/core/array/difference_union_intersection"
 
-require_relative "core/hash/merge"
+require "ruby-next/core/hash/merge"
 
-require_relative "core/string/split"
+require "ruby-next/core/string/split"
 
-require_relative "core/symbol/start_with"
-require_relative "core/symbol/end_with"
+require "ruby-next/core/symbol/start_with"
+require "ruby-next/core/symbol/end_with"
 
-require_relative "core/unboundmethod/bind_call"
+require "ruby-next/core/unboundmethod/bind_call"
 
-require_relative "core/time/floor"
-require_relative "core/time/ceil"
+require "ruby-next/core/time/floor"
+require "ruby-next/core/time/ceil"
 
 # Core extensions required for pattern matching
 # Required for pattern matching with refinements
@@ -179,11 +179,11 @@ unless defined?(NoMatchingPatternError)
   end
 end
 
-require_relative "core/constants/no_matching_pattern_error"
-require_relative "core/array/deconstruct"
-require_relative "core/hash/deconstruct_keys"
-require_relative "core/struct/deconstruct"
-require_relative "core/struct/deconstruct_keys"
+require "ruby-next/core/constants/no_matching_pattern_error"
+require "ruby-next/core/array/deconstruct"
+require "ruby-next/core/hash/deconstruct_keys"
+require "ruby-next/core/struct/deconstruct"
+require "ruby-next/core/struct/deconstruct_keys"
 
 # Generate refinements
 RubyNext.module_eval do

@@ -10,3 +10,4 @@ gemfiles/*.lock
 Gemfile.lock
 
 mspec/
+.rbnext/
