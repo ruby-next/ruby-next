@@ -23,12 +23,15 @@ ruby_version_is '2.7' do
     end
 
     it "binds and calls the method for any object kind_of? the Module the method is defined in" do
+      next skip unless RUBY_VERSION >= "2.3.0"
+
       @parent_um.bind_call(UnboundMethodSpecs::Child1.new).should == nil
       @child1_um.bind_call(UnboundMethodSpecs::Parent.new).should == nil
       @child2_um.bind_call(UnboundMethodSpecs::Child1.new).should == nil
     end
 
     it "binds and calls a Kernel method retrieved from Object on BasicObject" do
+      next skip unless RUBY_VERSION >= "2.3.0"
       Object.instance_method(:instance_of?).bind_call(BasicObject.new, BasicObject).should == true
     end
 

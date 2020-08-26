@@ -11,7 +11,7 @@ require_relative '../test_unit_to_mspec'
 
 using TestUnitToMspec
 
-eval "\n#{<<~'END_of_GUARD'}", binding, __FILE__, __LINE__
+eval "\n#{<<-'END_of_GUARD'}", binding, __FILE__, __LINE__
 using TestUnitToMspec
 
 class TestPatternMatching < Test::Unit::TestCase
