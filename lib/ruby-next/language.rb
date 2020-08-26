@@ -173,6 +173,9 @@ module RubyNext
 
     require "ruby-next/language/rewriters/base"
 
+    require "ruby-next/language/rewriters/squiggly_heredoc"
+    rewriters << Rewriters::SquigglyHeredoc
+
     require "ruby-next/language/rewriters/safe_navigation"
     rewriters << Rewriters::SafeNavigation
 
