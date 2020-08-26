@@ -173,6 +173,9 @@ module RubyNext
 
     require "ruby-next/language/rewriters/base"
 
+    require "ruby-next/language/rewriters/safe_navigation"
+    rewriters << Rewriters::SafeNavigation
+
     require "ruby-next/language/rewriters/args_forward"
     rewriters << Rewriters::ArgsForward
 
