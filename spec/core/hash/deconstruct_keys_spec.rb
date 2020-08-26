@@ -13,7 +13,7 @@ ruby_version_is "2.7" do
     it "requires one argument" do
       -> {
         {a: 1}.deconstruct_keys
-      }.should raise_error(ArgumentError, /wrong number of arguments \(given 0, expected 1\)/)
+      }.should raise_error(ArgumentError, /wrong number of arguments/)
     end
 
     it "ignores argument" do
