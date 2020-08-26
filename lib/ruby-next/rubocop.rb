@@ -46,23 +46,26 @@ module RuboCop
   end
 end
 
+# Let's make this file Ruby 2.2 compatible to avoid transpiling
+# rubocop:disable Layout/HeredocIndentation
 module RuboCop
   module AST
     module Traversal
       # Fixed in https://github.com/rubocop-hq/rubocop/pull/7786
       unless defined?(::RuboCop::AST::CaseMatchNode)
         %i[case_match in_pattern].each do |type|
-          module_eval(<<~RUBY, __FILE__, __LINE__ + 1)
-            def on_#{type}(node)
-              node.children.each { |child| send(:"on_\#{child.type}", child) if child }
-              nil
-            end
+          module_eval(<<-RUBY, __FILE__, __LINE__ + 1)
+def on_#{type}(node)
+  node.children.each { |child| send(:"on_\#{child.type}", child) if child }
+  nil
+end
           RUBY
         end
       end
     end
   end
 end
+# rubocop:enable Layout/HeredocIndentation
 
 module RuboCop
   module Cop

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "core"
+require "ruby-next/core"
 
 # Monkey-patch core classes using the same patches as for refinements
 RubyNext::Core.patches.extensions.each do |mod, patches|
