@@ -10,8 +10,8 @@ RubyNext::Core.patch Object,
   # we only use the contents in `ruby-next core_ext`.
   supported: true,
   location: [__FILE__, __LINE__ + 2] do
-  <<~RUBY
-    class NoMatchingPatternError < RuntimeError
-    end
+  <<-RUBY
+class NoMatchingPatternError < RuntimeError
+end
   RUBY
 end
