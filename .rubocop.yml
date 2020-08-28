@@ -47,3 +47,7 @@ Naming/FileName:
 Lint/BooleanSymbol:
   Exclude:
     - 'lib/ruby-next/language/rewriters/**/*.rb'
+
+Layout/HeredocIndentation:
+  Exclude:
+    - 'lib/ruby-next/core/**/*.rb'
