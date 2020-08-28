@@ -10,6 +10,16 @@ module RubyNext
           def to_ast_node
             self
           end
+
+          # Useful to generate simple operation nodes
+          # (e.g., 'a + b')
+          def -(val)
+            ::Parser::AST::Node.new(:send, [self, :-, val.to_ast_node])
+          end
+
+          def +(val)
+            ::Parser::AST::Node.new(:send, [self, :+, val.to_ast_node])
+          end
         end
 
         refine String do
@@ -430,6 +440,8 @@ module RubyNext
             right =
               if node.children.empty?
                 case_eq_clause(s(:array), s(:lvar, locals[:arr]))
+              elsif node.children.size > 1 && node.children.first.type == :match_rest && node.children.last.type == :match_rest
+                array_find(*node.children)
               else
                 array_element(0, *node.children)
               end
@@ -443,6 +455,7 @@ module RubyNext
         end
 
         alias array_pattern_with_tail_clause array_pattern_clause
+        alias find_pattern_clause array_pattern_clause
 
         def deconstruct_node(matchee)
           context.use_ruby_next!
@@ -478,9 +491,81 @@ module RubyNext
           end
         end
 
+        # [*a, 1, 2, *] -> arr.find.with_index { |_, i| (a = arr.take(i)) && arr[i] == 1 && arr[i + 1] == 2 }
+        def array_find(head, *nodes, tail)
+          index = s(:lvar, :i)
+
+          match_vars = []
+
+          head_match =
+            unless head.children.empty?
+              match_vars << s(:lvasgn, head.children[0].children[0])
+
+              arr_take = s(:send,
+                s(:lvar, locals[:arr]),
+                :take,
+                index
+              )
+
+              match_var_clause(head.children[0], arr_take)
+            end
+
+          tail_match =
+            unless tail.children.empty?
+              match_vars << s(:lvasgn, tail.children[0].children[0])
+
+              match_var_clause(tail.children[0], arr_slice(index + nodes.size, -1))
+            end
+
+          nodes.each do |node|
+            if node.type == :match_var
+              match_vars << s(:lvasgn, node.children[0])
+            elsif node.type == :match_as
+              match_vars << s(:lvasgn, node.children[1].children[0])
+            end
+          end
+
+          pattern = array_rest_element(*nodes, index).then do |needle|
+            next needle unless head_match
+            s(:and,
+              needle,
+              head_match)
+          end.then do |headed_needle|
+            next headed_needle unless tail_match
+
+            s(:and,
+              headed_needle,
+              tail_match)
+          end
+
+          s(:block,
+            s(:send,
+              s(:send,
+                s(:lvar, locals[:arr]),
+                :find),
+              :with_index),
+            s(:args,
+              s(:arg, :_),
+              s(:arg, :i)),
+            pattern).then do |block|
+            next block if match_vars.empty?
+
+            # We need to declare match vars outside of `find` block
+            locals_declare = s(:masgn,
+              s(:mlhs, *match_vars),
+              s(:nil))
+
+            s(:or,
+              locals_declare,
+              block)
+          end
+        end
+
         def array_match_rest(index, node, *tail)
+          size = tail.size + 1
           child = node.children[0]
-          rest = arr_rest_items(index, tail.size).then do |r|
+
+          rest = arr_slice(index, -size).then do |r|
             next r unless child
 
             match_var_clause(
@@ -493,16 +578,16 @@ module RubyNext
 
           s(:and,
             rest,
-            array_rest_element(*tail))
+            array_rest_element(*tail, -(size - 1)))
         end
 
-        def array_rest_element(head, *tail)
-          send("#{head.type}_array_element", head, -(tail.size + 1)).then do |node|
+        def array_rest_element(head, *tail, index)
+          send("#{head.type}_array_element", head, index).then do |node|
             next node if tail.empty?
 
             s(:and,
               node,
-              array_rest_element(*tail))
+              array_rest_element(*tail, index + 1))
           end
         end
 
@@ -549,12 +634,12 @@ module RubyNext
           s(:index, arr, index.to_ast_node)
         end
 
-        def arr_rest_items(index, size, arr = s(:lvar, locals[:arr]))
+        def arr_slice(lindex, rindex, arr = s(:lvar, locals[:arr]))
           s(:index,
             arr,
             s(:irange,
-              s(:int, index),
-              s(:int, -(size + 1))))
+              lindex.to_ast_node,
+              rindex.to_ast_node))
         end
 
         #=========== ARRAY PATTERN (END) ===============

@@ -506,7 +506,9 @@ require "ruby-next/language/runtime"
 
 - "Endless" method definition (`def foo() = 42`) ([#16746](https://bugs.ruby-lang.org/issues/16746)).
 
-- Right-hand assignment (`13.divmod(5) => a,b`) ([#15921](https://bugs.ruby-lang.org/issues/15921))
+- Right-hand assignment (`13.divmod(5) => a,b`) ([#15921](https://bugs.ruby-lang.org/issues/15921)).
+
+- Find pattern (`[0, 1, 2] in [*, 1 => a, *c]`) ([#16828](https://bugs.ruby-lang.org/issues/16828)).
 
 ### Supported proposed features
 

@@ -2,6 +2,10 @@
 
 ## master
 
+- Add find pattern support. ([@palkan][])
+
+Now you can do: `[0, 1, 2] in [*, 1 => a, *c]`.
+
 - Add Ruby 2.2 support. ([@palkan][])
 
 With support for safe navigation operator (`&.`) and squiggly heredocs (`<<~TXT`).
