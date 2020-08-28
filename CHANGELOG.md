@@ -2,6 +2,10 @@
 
 ## master
 
+- Add Ruby 2.2 support. ([@palkan][])
+
+With support for safe navigation operator (`&.`) and squiggly heredocs (`<<~TXT`).
+
 ## 0.9.2 (2020-06-24)
 
 - Support passing rewriters to CLI. ([@sl4vr][])
