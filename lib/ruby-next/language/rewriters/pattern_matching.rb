@@ -259,7 +259,7 @@ module RubyNext
           rewrite_case_in! node, matchee_ast, case_clause
 
           node.updated(
-            :begin,
+            :kwbegin,
             [
               matchee_ast, case_clause
             ]
