@@ -5,6 +5,7 @@ module Eternal
     case 4
     in (1..)
       true
+    in Array[*, 4, *]
     else
       false
     end => x
