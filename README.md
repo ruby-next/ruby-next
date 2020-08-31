@@ -141,7 +141,7 @@ The following _rule of thumb_ is recommended when choosing between refinements a
 - Using core extensions could be considered for application development (no need to think about `using RubyNext`); this approach could potentially lead to conflicts with dependencies (if these dependencies are not using refinements 🙂)
 - Use core extensions if refinements are not supported by your platform
 
-**NOTE:** TruffleRuby doesn't fully support refinements (refining modules is not supported as of v20.1.0).
+**NOTE:** _Edge_ APIs (i.e., from the Ruby's master branch) are included by default.
 
 [**The list of supported APIs.**][features_core]
 

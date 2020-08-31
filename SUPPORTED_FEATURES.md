@@ -38,6 +38,10 @@
 
 - `Symbol#start_with?`, `Symbol#end_with?` ([ref](https://rubyreferences.github.io/rubychanges/2.7.html#symbolstart_with-and-end_with))
 
+### 2.8
+
+- `Hash#except` ([#15822](https://bugs.ruby-lang.org/issues/15822))
+
 ## Syntax
 
 ### 2.6
