@@ -298,7 +298,7 @@ module RubyNext
               pattern
             ]
           ).tap do |new_node|
-            replace(node.loc.expression, new_node)
+            replace(node.loc.expression, inline_blocks(unparse(new_node)))
           end
         end
 
@@ -317,14 +317,14 @@ module RubyNext
                 body_indent = " " * clause.children[2].loc.column
                 replace(
                   clause.loc.expression,
-                  "when #{unparse(new_node.children[i].children[0])}" \
+                  "when #{inline_blocks(unparse(new_node.children[i].children[0]))}" \
                   "#{padding}" \
                   "#{body_indent}#{clause.children[2].loc.expression.source}"
                 )
               else
                 replace(
                   clause.loc.keyword.end.join(clause.children[0].loc.expression.end),
-                  new_node.children[i].children[0]
+                  inline_blocks(unparse(new_node.children[i].children[0]))
                 )
                 remove(clause.children[1].loc.expression) if clause.children[1]
                 replace(clause.loc.keyword, "when ")
@@ -493,7 +493,7 @@ module RubyNext
 
         # [*a, 1, 2, *] -> arr.find.with_index { |_, i| (a = arr.take(i)) && arr[i] == 1 && arr[i + 1] == 2 }
         def array_find(head, *nodes, tail)
-          index = s(:lvar, :i)
+          index = s(:lvar, :__i__)
 
           match_vars = []
 
@@ -504,8 +504,7 @@ module RubyNext
               arr_take = s(:send,
                 s(:lvar, locals[:arr]),
                 :take,
-                index
-              )
+                index)
 
               match_var_clause(head.children[0], arr_take)
             end
@@ -546,7 +545,7 @@ module RubyNext
               :with_index),
             s(:args,
               s(:arg, :_),
-              s(:arg, :i)),
+              s(:arg, :__i__)),
             pattern).then do |block|
             next block if match_vars.empty?
 
@@ -932,6 +931,12 @@ module RubyNext
           return deconstructed_keys[key] if deconstructed_keys.key?(key)
 
           deconstructed_keys[key] = :"k#{deconstructed_keys.size}"
+        end
+
+        # Unparser generates `do .. end`  blocks, we want to
+        # have single-line blocks with `{ ... }`.
+        def inline_blocks(source)
+          source.gsub(/do \|_, __i__\|\n\s*([^\n]+)\n\s*end/, '{ |_, __i__| \1 }')
         end
       end
     end
