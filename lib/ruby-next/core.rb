@@ -185,6 +185,8 @@ require "ruby-next/core/hash/deconstruct_keys"
 require "ruby-next/core/struct/deconstruct"
 require "ruby-next/core/struct/deconstruct_keys"
 
+require "ruby-next/core/hash/except"
+
 # Generate refinements
 RubyNext.module_eval do
   RubyNext::Core.patches.refined.each do |mod, patches|

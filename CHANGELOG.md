@@ -2,6 +2,10 @@
 
 ## master
 
+- Add `Hash#except`. ([@palkan][])
+
+`{a: 1, b: 2}.except(:a) == {b: 2}`
+
 - Add find pattern support. ([@palkan][])
 
 Now you can do: `[0, 1, 2] in [*, 1 => a, *c]`.
