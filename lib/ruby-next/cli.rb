@@ -61,7 +61,7 @@ module RubyNext
     def maybe_print_help
       return unless @print_help
 
-      STDOUT.puts optparser.help
+      $stdout.puts optparser.help
       exit 0
     end
 
@@ -85,7 +85,7 @@ module RubyNext
           opts.banner = "Usage: ruby-next COMMAND [options]"
 
           opts.on("-v", "--version", "Print version") do
-            STDOUT.puts RubyNext::VERSION
+            $stdout.puts RubyNext::VERSION
             exit 0
           end
 

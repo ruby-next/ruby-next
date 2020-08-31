@@ -34,7 +34,7 @@ module RubyNext
           end
 
           def key?(name)
-            !!fetch(name) { false }
+            !!fetch(name) { false } # rubocop:disable Style/RedundantFetchBlock
           end
 
           def fetch(name)
