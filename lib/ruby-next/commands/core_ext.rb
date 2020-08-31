@@ -160,7 +160,7 @@ module RubyNext
         # remove empty lines
         new_src.gsub!(/^\s+$/, "")
         # remove traling blank lines
-        new_src.gsub!(/\n\z/, "")
+        new_src.delete_suffix!("\n")
         new_src
       end
     end

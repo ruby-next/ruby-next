@@ -47,7 +47,7 @@ at_exit do
         next unless command
         command.tr! '\012', "\n"
         command.tr! "\\", "\n"
-        command.match(/\-e(.*)/m)
+        command.match(/-e(.*)/m)
       end.then do |matches|
         next unless matches
 

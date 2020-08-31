@@ -52,15 +52,14 @@ module RuboCop
   module AST
     module Traversal
       # Fixed in https://github.com/rubocop-hq/rubocop/pull/7786
-      unless defined?(::RuboCop::AST::CaseMatchNode)
-        %i[case_match in_pattern].each do |type|
-          module_eval(<<-RUBY, __FILE__, __LINE__ + 1)
+      %i[case_match in_pattern find_pattern].each do |type|
+        next if method_defined?(:"on_#{type}")
+        module_eval(<<-RUBY, __FILE__, __LINE__ + 1)
 def on_#{type}(node)
-  node.children.each { |child| send(:"on_\#{child.type}", child) if child }
-  nil
+node.children.each { |child| send(:"on_\#{child.type}", child) if child }
+nil
 end
-          RUBY
-        end
+        RUBY
       end
     end
   end

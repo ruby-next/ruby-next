@@ -429,6 +429,8 @@ You must set `TargetRubyVersion: next` to make RuboCop use a Ruby Next parser.
 
 Alternatively, you can load the patch from the command line by running: `rubocop -r ruby-next/rubocop ...`.
 
+We recommend using the latest RuboCop version, 'cause it has support for new nodes built-in.
+
 Also, when pre-transpiling source code with `ruby-next nextify`, we suggest ignoring the transpiled files:
 
 ```yml
