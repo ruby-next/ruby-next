@@ -188,6 +188,11 @@ module RubyNext
     require "ruby-next/language/rewriters/pattern_matching"
     rewriters << Rewriters::PatternMatching
 
+    # Must be added after general pattern matching rewriter to become
+    # no-op in Ruby <2.7
+    require "ruby-next/language/rewriters/find_pattern"
+    rewriters << Rewriters::FindPattern
+
     # Put endless range in the end, 'cause Parser fails to parse it in
     # pattern matching
     require "ruby-next/language/rewriters/endless_range"
