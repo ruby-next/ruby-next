@@ -49,7 +49,7 @@ at_exit do
         `ps axw`.split("\n").find { |ps| ps[/\A\s*#{$$}/] }
       end.then do |command|
         next unless command
-        command.gsub! /\\012/, "\n"
+        command.gsub!(/(\\012|\u0000)/, "\n")
         command.match(/-e(.*)/m)
       end.then do |matches|
         next unless matches
@@ -66,6 +66,7 @@ at_exit do
 
     if e_script
       new_e_script = RubyNext::Language::Runtime.transform(e_script)
+      RubyNext.debug_source new_e_script, $0
       TOPLEVEL_BINDING.eval(new_e_script, $0)
       exit!(0)
     end

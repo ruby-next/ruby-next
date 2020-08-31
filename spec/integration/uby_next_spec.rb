@@ -26,7 +26,7 @@ describe "ruby -ruby-next" do
         -ruby-next -e '
           p case [1, 2]
             in [*, 2]
-             :ok
+              :ok
           end
           '
     CMD
