@@ -43,10 +43,13 @@ at_exit do
     end
 
     if $0 == "-e" && e_script.nil?
-      `ps axw`.split("\n").find { |ps| ps[/\A\s*#{$$}/] }.then do |command|
+      if File.file?("/proc/self/cmdline")
+        File.read("/proc/self/cmdline")
+      else
+        `ps axw`.split("\n").find { |ps| ps[/\A\s*#{$$}/] }
+      end.then do |command|
         next unless command
-        command.tr! '\012', "\n"
-        command.tr! "\\", "\n"
+        command.gsub! /\\012/, "\n"
         command.match(/-e(.*)/m)
       end.then do |matches|
         next unless matches

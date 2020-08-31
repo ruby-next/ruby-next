@@ -20,6 +20,21 @@ describe "ruby -ruby-next" do
     end
   end
 
+  it "handles multiline code" do
+    run_ruby(
+      <<~CMD
+        -ruby-next -e '
+          p case [1, 2]
+            in [*, 2]
+             :ok
+          end
+          '
+    CMD
+    ) do |_status, output, _err|
+      output.should include("ok")
+    end
+  end
+
   it "proposed features" do
     cmd = <<~CMD
       ruby -rbundler/setup -I#{File.join(__dir__, "../../../lib")} -ruby-next -r #{File.join(__dir__, "fixtures", "method_reference.rb")} \
