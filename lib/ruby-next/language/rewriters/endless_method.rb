@@ -6,7 +6,7 @@ module RubyNext
       class EndlessMethod < Base
         NAME = "endless-method"
         SYNTAX_PROBE = "obj = Object.new; def obj.foo() = 42"
-        MIN_SUPPORTED_VERSION = Gem::Version.new("2.8.0")
+        MIN_SUPPORTED_VERSION = Gem::Version.new("3.0.0")
 
         unless Parser::Meta::NODE_TYPES.include?(:def_e)
           def on_def(node)

@@ -2,7 +2,7 @@ require_relative '../spec_helper'
 
 using RubyNext::Language::ClassEval
 
-ruby_version_is "2.8" do
+ruby_version_is "3.0" do
   describe "def x() = y" do
     class EndlessDefSpec
     end

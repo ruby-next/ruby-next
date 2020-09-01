@@ -1,6 +1,6 @@
 require_relative '../../spec_helper'
 
-ruby_version_is "2.8" do
+ruby_version_is "3.0" do
   describe "Hash#except" do
     before :each do
       @hash = { a: 1, b: 2, c: 3 }

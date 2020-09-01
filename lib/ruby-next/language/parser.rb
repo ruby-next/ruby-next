@@ -7,7 +7,7 @@ module RubyNext
     class Builder < ::Parser::Builders::Default
       modernize
 
-      # FIXME: add support for 2.8 forward args
+      # FIXME: add support for 3.0 forward args
       self.emit_forward_arg = false
     end
 

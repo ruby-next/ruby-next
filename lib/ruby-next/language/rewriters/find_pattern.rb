@@ -12,7 +12,7 @@ module RubyNext
       class FindPattern < PatternMatching
         NAME = "pattern-matching-find-pattern"
         SYNTAX_PROBE = "case 0; in [*,0,*]; true; else; 1; end"
-        MIN_SUPPORTED_VERSION = Gem::Version.new("2.8.0")
+        MIN_SUPPORTED_VERSION = Gem::Version.new("3.0.0")
 
         def on_case_match(node)
           @has_find_pattern = false

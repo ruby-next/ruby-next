@@ -38,7 +38,7 @@
 
 - `Symbol#start_with?`, `Symbol#end_with?` ([ref](https://rubyreferences.github.io/rubychanges/2.7.html#symbolstart_with-and-end_with))
 
-### 2.8
+### 3.0
 
 - `Hash#except` ([#15822](https://bugs.ruby-lang.org/issues/15822))
 
@@ -66,7 +66,7 @@ You can still use this feature with Ruby Next by enabling it explicitly (see [Re
 
 The possible translation depends on the _end_ type which could hardly be inferred from the source code.
 
-### 2.8
+### 3.0
 
 - "Endless" method definition (`def foo() = 42`) ([#16746](https://bugs.ruby-lang.org/issues/16746))
 

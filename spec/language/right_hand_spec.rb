@@ -2,7 +2,7 @@ require_relative '../spec_helper'
 
 using RubyNext::Language::Eval
 
-ruby_version_is "2.8" do
+ruby_version_is "3.0" do
   describe "1 => x" do
     class RightHandSpec
     end

@@ -6,7 +6,7 @@ module RubyNext
       class RightHandAssignment < Base
         NAME = "right-hand-assignment"
         SYNTAX_PROBE = "1 + 2 => a"
-        MIN_SUPPORTED_VERSION = Gem::Version.new("2.8.0")
+        MIN_SUPPORTED_VERSION = Gem::Version.new("3.0.0")
 
         def on_rasgn(node)
           context.track! self
