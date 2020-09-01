@@ -29,22 +29,5 @@ ruby_version_is "2.8" do
       r.should == {bar: 12}
       r.class.should == klass
     end
-
-    it "uses the regular Hash#[] method, even on subclasses that override it" do
-      ScratchPad.record []
-      klass = Class.new(Hash) do
-        def [](value)
-          ScratchPad << :used_subclassed_operator
-          super
-        end
-      end
-
-      h = klass.new
-      h[:bar] = 12
-      h[:foo] = 42
-      h.except(:foo)
-
-      ScratchPad.recorded.should == []
-    end
   end
 end
