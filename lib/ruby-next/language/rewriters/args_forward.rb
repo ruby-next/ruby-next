@@ -5,16 +5,18 @@ module RubyNext
     module Rewriters
       class ArgsForward < Base
         NAME = "args-forward"
-        SYNTAX_PROBE = "obj = Object.new; def obj.foo(...) super(...); end"
-        MIN_SUPPORTED_VERSION = Gem::Version.new("2.7.0")
+        SYNTAX_PROBE = "obj = Object.new; def obj.foo(...) super(1, ...); end"
+        MIN_SUPPORTED_VERSION = Gem::Version.new("2.7.2")
 
         REST = :__rest__
         BLOCK = :__block__
 
-        def on_forward_args(node)
+        def on_forward_arg(node)
           context.track! self
 
-          replace(node.loc.expression, "(*#{REST}, &#{BLOCK})")
+          node = super(node)
+
+          replace(node.loc.expression, "*#{REST}, &#{BLOCK}")
 
           node.updated(
             :args,
@@ -26,33 +28,34 @@ module RubyNext
         end
 
         def on_send(node)
-          return super(node) unless node.children[2]&.type == :forwarded_args
+          fargs = node.children.find { |child| child.is_a?(::Parser::AST::Node) && child.type == :forwarded_args }
+          return super(node) unless fargs
 
-          replace(node.children[2].loc.expression, "*#{REST}, &#{BLOCK}")
+          process_fargs(node, fargs)
+        end
+
+        def on_super(node)
+          fargs = node.children.find { |child| child.is_a?(::Parser::AST::Node) && child.type == :forwarded_args }
+          return super(node) unless fargs
+
+          process_fargs(node, fargs)
+        end
+
+        private
+
+        def process_fargs(node, fargs)
+          replace(fargs.loc.expression, "*#{REST}, &#{BLOCK}")
 
           process(
             node.updated(
               nil,
               [
-                *node.children[0..1],
+                *node.children.take(node.children.index(fargs)),
                 *forwarded_args
               ]
             )
           )
         end
-
-        def on_super(node)
-          return super(node) unless node.children[0]&.type == :forwarded_args
-
-          replace(node.children[0].loc.expression, "*#{REST}, &#{BLOCK}")
-
-          node.updated(
-            nil,
-            forwarded_args
-          )
-        end
-
-        private
 
         def forwarded_args
           [
