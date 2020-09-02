@@ -2,6 +2,8 @@
 
 ## master
 
+## 0.10.0 (2020-09-02)
+
 - Add proposed shorthand Hash syntax. ([@palkan][])
 
 You can try it: `x = 1; y = 2; data = {x, y}`.
