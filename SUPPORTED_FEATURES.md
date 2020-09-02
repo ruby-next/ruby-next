@@ -58,7 +58,7 @@
 
 You can still use this feature with Ruby Next by enabling it explicitly (see [Readme](./README.md)).
 
-- Arguments forwarding (`def a(...) b(...) end`) ([#16253](https://bugs.ruby-lang.org/issues/16253))
+- Arguments forwarding (`def a(...) b(...); end` and `def a(...) b(1, ...); end`) ([#16253](https://bugs.ruby-lang.org/issues/16253), [#16378](https://bugs.ruby-lang.org/issues/16378))
 
 - Numbered parameters (`block { _1 }`) ([ref](https://rubyreferences.github.io/rubychanges/2.7.html#numbered-block-parameters))
 

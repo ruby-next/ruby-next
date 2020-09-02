@@ -2,6 +2,10 @@
 
 ## master
 
+- Add leading argument support to args forwarding. ([@palkan][])
+
+`def a(...) b(1, ...); end`.
+
 - Add `Hash#except`. ([@palkan][])
 
 `{a: 1, b: 2}.except(:a) == {b: 2}`
