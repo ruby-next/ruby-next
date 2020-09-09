@@ -2,6 +2,8 @@
 
 ## master
 
+## 0.10.1 (2020-09-09)
+
 - Fix regression when `nextify` produces incorrect files for 2.7. ([@palkan][])
 
 ## 0.10.0 (2020-09-02)
