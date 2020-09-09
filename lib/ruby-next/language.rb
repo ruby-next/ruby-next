@@ -39,7 +39,7 @@ module RubyNext
       # Called by rewriter when it performs transfomrations
       def track!(rewriter)
         @dirty = true
-        versions << rewriter.class.min_supported_minor_version
+        versions << rewriter.class::MIN_SUPPORTED_VERSION
       end
 
       def use_ruby_next!
