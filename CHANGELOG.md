@@ -2,6 +2,8 @@
 
 ## master
 
+- Fix regression when `nextify` produces incorrect files for 2.7. ([@palkan][])
+
 ## 0.10.0 (2020-09-02)
 
 - Add proposed shorthand Hash syntax. ([@palkan][])

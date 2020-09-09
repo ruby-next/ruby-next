@@ -73,6 +73,10 @@ module RubyNext
             self::MIN_SUPPORTED_VERSION > version
           end
 
+          def min_supported_minor_version
+            Gem::Version.new(self::MIN_SUPPORTED_VERSION.segments[0..1].join(".") + ".0")
+          end
+
           private
 
           def transform(source)

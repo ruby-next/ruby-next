@@ -24,4 +24,21 @@ describe "ruby-next nextify" do
       output.should include("scientifically_favorable")
     end
   end
+
+  it "ignores patch versions" do
+    run_ruby_next "nextify #{File.join(__dir__, "fixtures", "patch.rb")}"
+
+    version_dir = RubyNext.next_version&.then { |v| v.segments[0..1].join(".") }
+
+    if version_dir.nil? || !File.exist?(File.join(__dir__, "fixtures", ".rbnext", version_dir))
+      version_dir = Dir.children(File.join(__dir__, "fixtures", ".rbnext")).sort.first # rubocop:disable Style/RedundantSort
+    end
+
+    run_ruby(
+      "-r ruby-next -r #{File.join(__dir__, "fixtures", ".rbnext", version_dir, "patch.rb")} " \
+      "-e 'puts foo(2)'"
+    ) do |_status, output, _err|
+      output.should include("4")
+    end
+  end
 end

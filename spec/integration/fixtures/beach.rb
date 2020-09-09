@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 # source: https://learnyousomeerlang.com/syntax-in-functions#in-case-of
-
 def beach(*temperature)
   case temperature
   in :celcius | :c, (20..45)
