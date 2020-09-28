@@ -148,6 +148,9 @@ module RubyNext
 
         # Then, generate the source code for the next version
         transpile path, contents, version: version
+      rescue SyntaxError, StandardError => e
+        warn "Failed to transpile #{path}: #{e.class} — #{e.message}"
+        exit 1
       end
 
       def save(contents, path, version)
