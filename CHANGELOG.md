@@ -2,6 +2,8 @@
 
 ## master
 
+## 0.10.3 (2020-09-28)
+
 - Update RuboCop integration to handle the latest Parser changes. ([@palkan][])
 
 Parser 2.7.1.5 unified endless and normal methods and rightward and leftward assignments, thus, making some cops report false negatives.
