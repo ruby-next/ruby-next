@@ -37,7 +37,7 @@ ruby_version_is "2.7" do
     end
 
     it "cannot be overwritten with local variable" do
-      # TODO: wait for the next parser release
+      # Next parser allows using _x as local variable
       next skip
       -> {
         eval <<~CODE
@@ -48,7 +48,7 @@ ruby_version_is "2.7" do
     end
 
     it "errors when numbered parameter is overwritten with local variable" do
-      # TODO: wait for the next parser release
+      # Next parser allows using _x as local variable
       next skip
       -> {
         eval("_1 = 0")

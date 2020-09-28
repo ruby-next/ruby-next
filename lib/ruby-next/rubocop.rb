@@ -117,5 +117,81 @@ module RuboCop
         end
       end
     end
+
+    module Layout
+      require "rubocop/cop/layout/assignment_indentation"
+      AssignmentIndentation.prepend(Module.new do
+        POTENTIAL_RIGHT_TYPES = %i[ivasgn lvasgn cvasgn gvasgn casgn masgn].freeze
+
+        def check_assignment(node, *)
+          return if rightward?(node)
+          super
+        end
+
+        private
+
+        def rightward?(node)
+          return unless POTENTIAL_RIGHT_TYPES.include?(node.type)
+
+          return unless node.loc.operator
+
+          assignee_loc =
+            if node.type == :masgn
+              node.children[0].loc.expression
+            else
+              node.loc.name
+            end
+
+          return false unless assignee_loc
+
+          assignee_loc.begin_pos > node.loc.operator.end_pos
+        end
+      end)
+
+      require "rubocop/cop/layout/empty_line_between_defs"
+      EmptyLineBetweenDefs.prepend(Module.new do
+        def def_end(node)
+          return super unless node.loc.end.nil?
+
+          node.loc.expression.line
+        end
+      end)
+    end
+
+    module Style
+      require "rubocop/cop/style/single_line_methods"
+      SingleLineMethods.prepend(Module.new do
+        def on_def(node)
+          return if node.loc.end.nil?
+          super
+        end
+
+        def on_defs(node)
+          return if node.loc.end.nil?
+          super
+        end
+      end)
+
+      require "rubocop/cop/style/def_with_parentheses"
+      DefWithParentheses.prepend(Module.new do
+        def on_def(node)
+          return if node.loc.end.nil?
+          super
+        end
+
+        def on_defs(node)
+          return if node.loc.end.nil?
+          super
+        end
+      end)
+
+      require "rubocop/cop/style/trailing_method_end_statement"
+      TrailingMethodEndStatement.prepend(Module.new do
+        def on_def(node)
+          return if node.loc.end.nil?
+          super
+        end
+      end)
+    end
   end
 end

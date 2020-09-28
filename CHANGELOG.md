@@ -2,6 +2,10 @@
 
 ## master
 
+- Update RuboCop integration to handle the latest Parser changes. ([@palkan][])
+
+Parser 2.7.1.5 unified endless and normal methods and rightward and leftward assignments, thus, making some cops report false negatives.
+
 ## 0.10.2 (2020-09-09)
 
 - Fix regression when `nextify` produces incorrect files for 2.7. ([@palkan][])
