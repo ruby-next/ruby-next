@@ -35,6 +35,7 @@ Read more about the motivation behind the Ruby Next in this post: [Ruby Next: Ma
 ## Examples
 
 - Ruby gems
+  - [action_policy](https://github.com/palkan/action_policy)
   - [anyway_config](https://github.com/palkan/anyway_config)
   - [graphql-fragment_cache](https://github.com/DmitryTsepelev/graphql-ruby-fragment_cache)
 - Rails applications
