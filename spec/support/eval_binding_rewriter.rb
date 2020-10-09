@@ -23,16 +23,12 @@ module RubyNext
           s(:send, nil, :binding)
         ]
       ).tap do |new_node|
-        replace(node.loc.expression, new_node)
-
         # Heredocs are evil 😼
-        next unless node.children.last.loc.respond_to?(:heredoc_body)
-
-        # Cleanup heredoc body
-        loc = node.children.last.loc.heredoc_body.join(node.children.last.loc.heredoc_end)
-        padding = "\n" * (loc.last_line - loc.first_line)
-
-        replace(loc, padding)
+        if node.children.last.loc.respond_to?(:heredoc_body)
+          replace(node.loc.expression, node.loc.expression.source.sub(/(\)?$)/, ', binding\1'))
+        else
+          replace(node.loc.expression, new_node)
+        end
       end
     end
   end
