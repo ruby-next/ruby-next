@@ -81,7 +81,17 @@ module RubyNext
           replace(lhs.loc.expression.end.join(rhs.loc.expression), ")")
           insert_before(lhs.loc.expression, "#{rhs.loc.expression.source} = (")
 
-          super(node)
+          node = super(node)
+
+          lhs, rhs = *node
+
+          node.updated(
+            nil,
+            [
+              lhs,
+              s(:begin, rhs)
+            ]
+          )
         end
 
         private
