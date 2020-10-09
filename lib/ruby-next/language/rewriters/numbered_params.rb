@@ -16,9 +16,9 @@ module RubyNext
           proc_or_lambda, num, body = *node.children
 
           if proc_or_lambda.type == :lambda
-            insert_before(node.loc.begin, "(#{unparse(proc_args(num))})")
+            insert_before(node.loc.begin, "(#{proc_args_str(num)})")
           else
-            insert_after(node.loc.begin, " |#{unparse(proc_args(num))}|")
+            insert_after(node.loc.begin, " |#{proc_args_str(num)}|")
           end
 
           node.updated(
@@ -32,6 +32,10 @@ module RubyNext
         end
 
         private
+
+        def proc_args_str(n)
+          (1..n).map { |numero| "_#{numero}" }.join(", ")
+        end
 
         def proc_args(n)
           return s(:args, s(:procarg0, s(:arg, :_1))) if n == 1
