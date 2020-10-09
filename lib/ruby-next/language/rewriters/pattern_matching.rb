@@ -244,7 +244,7 @@ module RubyNext
           @predicates = Predicates::CaseIn.new
 
           matchee_ast =
-            s(:lvasgn, MATCHEE, node.children[0])
+            s(:begin, s(:lvasgn, MATCHEE, node.children[0]))
 
           patterns = locals.with(
             matchee: MATCHEE,
@@ -273,7 +273,7 @@ module RubyNext
           @predicates = Predicates::Noop.new
 
           matchee =
-            s(:lvasgn, MATCHEE, node.children[0])
+            s(:begin, s(:lvasgn, MATCHEE, node.children[0]))
 
           pattern =
             locals.with(
@@ -285,9 +285,10 @@ module RubyNext
                 :"#{node.children[1].type}_clause",
                 node.children[1]
               ).then do |node|
-                s(:or,
-                  node,
-                  no_matching_pattern)
+                s(:begin,
+                  s(:or,
+                    node,
+                    no_matching_pattern))
               end
             end
 
@@ -378,9 +379,10 @@ module RubyNext
           predicates.const(case_eq_clause(const, right), const).then do |node|
             next node if pattern.nil?
 
-            s(:and,
-              node,
-              send(:"#{pattern.type}_clause", pattern))
+            s(:begin,
+              s(:and,
+                node,
+                send(:"#{pattern.type}_clause", pattern)))
           end
         end
 
@@ -391,13 +393,14 @@ module RubyNext
               send :"#{child.type}_clause", child
             end
           end
-          s(:or, *children)
+          s(:begin, s(:or, *children))
         end
 
         def match_as_clause(node, right = s(:lvar, locals[:matchee]))
-          s(:and,
-            send(:"#{node.children[0].type}_clause", node.children[0], right),
-            match_var_clause(node.children[1], right))
+          s(:begin,
+            s(:and,
+              send(:"#{node.children[0].type}_clause", node.children[0], right),
+              match_var_clause(node.children[1], right)))
         end
 
         def match_var_clause(node, left = s(:lvar, locals[:matchee]))
@@ -405,9 +408,10 @@ module RubyNext
 
           check_match_var_alternation! node.children[0]
 
-          s(:or,
-            s(:lvasgn, node.children[0], left),
-            s(:true))
+          s(:begin,
+            s(:or,
+              s(:begin, s(:lvasgn, node.children[0], left)),
+              s(:true)))
         end
 
         def pin_clause(node, right = s(:lvar, locals[:matchee]))
@@ -417,8 +421,8 @@ module RubyNext
 
         def case_eq_clause(node, right = s(:lvar, locals[:matchee]))
           predicates.terminate!
-          s(:send,
-            process(node), :===, right)
+          s(:begin, s(:send,
+            process(node), :===, right))
         end
 
         #=========== ARRAY PATTERN (START) ===============
@@ -429,10 +433,11 @@ module RubyNext
             # if there is no rest or tail, match the size first
             unless node.type == :array_pattern_with_tail || node.children.any? { |n| n.type == :match_rest }
               size_check = predicates.array_size(
-                s(:send,
-                  node.children.size.to_ast_node,
-                  :==,
-                  s(:send, s(:lvar, locals[:arr]), :size)),
+                s(:begin,
+                  s(:send,
+                    node.children.size.to_ast_node,
+                    :==,
+                    s(:send, s(:lvar, locals[:arr]), :size))),
                 node.children.size
               )
             end
@@ -448,9 +453,10 @@ module RubyNext
 
             right = s(:and, size_check, right) if size_check
 
-            s(:and,
-              dnode,
-              right)
+            s(:begin,
+              s(:and,
+                dnode,
+                right))
           end
         end
 
@@ -468,14 +474,17 @@ module RubyNext
           predicates.array_deconstructed(
             s(:and,
               respond_check,
-              s(:and,
-                s(:or,
-                  s(:lvasgn, locals[:arr], right),
-                  s(:true)),
-                s(:or,
-                  s(:send,
-                    s(:const, nil, :Array), :===, s(:lvar, locals[:arr])),
-                  raise_error(:TypeError, "#deconstruct must return Array"))))
+              s(:begin,
+                s(:and,
+                  s(:begin,
+                    s(:or,
+                      s(:begin, s(:lvasgn, locals[:arr], right)),
+                      s(:true))),
+                  s(:begin,
+                    s(:or,
+                      s(:send,
+                        s(:const, nil, :Array), :===, s(:lvar, locals[:arr])),
+                      raise_error(:TypeError, "#deconstruct must return Array"))))))
           )
         end
 
@@ -485,9 +494,10 @@ module RubyNext
           send("#{head.type}_array_element", head, index).then do |node|
             next node if tail.empty?
 
-            s(:and,
-              node,
-              array_element(index + 1, *tail))
+            s(:begin,
+              s(:and,
+                node,
+                array_element(index + 1, *tail)))
           end
         end
 
@@ -526,15 +536,17 @@ module RubyNext
 
           pattern = array_rest_element(*nodes, index).then do |needle|
             next needle unless head_match
-            s(:and,
-              needle,
-              head_match)
+            s(:begin,
+              s(:and,
+                needle,
+                head_match))
           end.then do |headed_needle|
             next headed_needle unless tail_match
 
-            s(:and,
-              headed_needle,
-              tail_match)
+            s(:begin,
+              s(:and,
+                headed_needle,
+                tail_match))
           end
 
           s(:block,
@@ -550,13 +562,14 @@ module RubyNext
             next block if match_vars.empty?
 
             # We need to declare match vars outside of `find` block
-            locals_declare = s(:masgn,
+            locals_declare = s(:begin, s(:masgn,
               s(:mlhs, *match_vars),
-              s(:nil))
+              s(:nil)))
 
-            s(:or,
-              locals_declare,
-              block)
+            s(:begin,
+              s(:or,
+                locals_declare,
+                block))
           end
         end
 
@@ -575,18 +588,20 @@ module RubyNext
 
           return rest if tail.empty?
 
-          s(:and,
-            rest,
-            array_rest_element(*tail, -(size - 1)))
+          s(:begin,
+            s(:and,
+              rest,
+              array_rest_element(*tail, -(size - 1))))
         end
 
         def array_rest_element(head, *tail, index)
           send("#{head.type}_array_element", head, index).then do |node|
             next node if tail.empty?
 
-            s(:and,
-              node,
-              array_rest_element(*tail, index + 1))
+            s(:begin,
+              s(:and,
+                node,
+                array_rest_element(*tail, index + 1)))
           end
         end
 
@@ -610,7 +625,7 @@ module RubyNext
           children = node.children.map do |child, i|
             send :"#{child.type}_array_element", child, index
           end
-          s(:or, *children)
+          s(:begin, s(:or, *children))
         end
 
         def match_var_array_element(node, index)
@@ -661,18 +676,20 @@ module RubyNext
               elsif specified_key_names.empty?
                 hash_element(*node.children)
               else
-                s(:and,
-                  having_hash_keys(specified_key_names),
-                  hash_element(*node.children))
+                s(:begin,
+                  s(:and,
+                    having_hash_keys(specified_key_names),
+                    hash_element(*node.children)))
               end
 
             predicates.pop
 
             next dnode if right.nil?
 
-            s(:and,
-              dnode,
-              right)
+            s(:begin,
+              s(:and,
+                dnode,
+                right))
           end
         end
 
@@ -715,7 +732,7 @@ module RubyNext
           # Duplicate the source hash when matching **rest, 'cause we mutate it
           hash_dup =
             if @hash_match_rest
-              s(:lvasgn, locals[:hash], s(:send, s(:lvar, locals[:hash, :src]), :dup))
+              s(:begin, s(:lvasgn, locals[:hash], s(:send, s(:lvar, locals[:hash, :src]), :dup)))
             else
               s(:true)
             end
@@ -728,29 +745,33 @@ module RubyNext
           key_names = keys.children.map { |node| node.children.last }
           predicates.push locals[:hash]
 
-          s(:lvasgn, deconstruct_name,
+          s(:begin, s(:lvasgn, deconstruct_name,
             s(:send,
-              matchee, :deconstruct_keys, keys)).then do |dnode|
+              matchee, :deconstruct_keys, keys))).then do |dnode|
             next dnode if respond_to_checked
 
             s(:and,
               respond_check,
-              s(:and,
-                s(:or,
-                  dnode,
-                  s(:true)),
-                s(:or,
-                  s(:send,
-                    s(:const, nil, :Hash), :===, s(:lvar, deconstruct_name)),
-                  raise_error(:TypeError, "#deconstruct_keys must return Hash"))))
+              s(:begin,
+                s(:and,
+                  s(:begin,
+                    s(:or,
+                      dnode,
+                      s(:true))),
+                  s(:begin,
+                    s(:or,
+                      s(:send,
+                        s(:const, nil, :Hash), :===, s(:lvar, deconstruct_name)),
+                      raise_error(:TypeError, "#deconstruct_keys must return Hash"))))))
           end.then do |dnode|
             predicates.hash_deconstructed(dnode, key_names)
           end.then do |dnode|
             next dnode unless @hash_match_rest
 
-            s(:and,
-              dnode,
-              hash_dup)
+            s(:begin,
+              s(:and,
+                dnode,
+                hash_dup))
           end
         end
 
@@ -780,9 +801,10 @@ module RubyNext
 
             next node if right.nil?
 
-            s(:and,
-              node,
-              right)
+            s(:begin,
+              s(:and,
+                node,
+                right))
           end
         end
 
@@ -792,7 +814,7 @@ module RubyNext
         end
 
         def match_alt_hash_element(node, key)
-          element_node = s(:lvasgn, locals[:hash, :el], hash_value_at(key))
+          element_node = s(:begin, s(:lvasgn, locals[:hash, :el], hash_value_at(key)))
 
           children = locals.with(hash_element: locals[:hash, :el]) do
             node.children.map do |child, i|
@@ -800,11 +822,14 @@ module RubyNext
             end
           end
 
-          s(:and,
-            s(:or,
-              element_node,
-              s(:true)),
-            s(:or, *children))
+          s(:begin,
+            s(:and,
+              s(:begin,
+                s(:or,
+                  element_node,
+                  s(:true))),
+              s(:begin,
+                s(:or, *children))))
         end
 
         def match_as_hash_element(node, key)
@@ -862,9 +887,10 @@ module RubyNext
           node = predicates.hash_key(hash_has_key(key, hash), key)
 
           keys.reduce(node) do |res, key|
-            s(:and,
-              res,
-              predicates.hash_key(hash_has_key(key, hash), key))
+            s(:begin,
+              s(:and,
+                res,
+                predicates.hash_key(hash_has_key(key, hash), key)))
           end
         end
 
@@ -873,9 +899,10 @@ module RubyNext
         def with_guard(node, guard)
           return node unless guard
 
-          s(:and,
-            node,
-            guard.children[0]).then do |expr|
+          s(:begin,
+            s(:and,
+              node,
+              guard.children[0])).then do |expr|
             next expr unless guard.type == :unless_guard
             s(:send, expr, :!)
           end
