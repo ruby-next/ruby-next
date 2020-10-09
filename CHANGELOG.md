@@ -2,6 +2,12 @@
 
 ## master
 
+## 0.10.4 (2020-10-09)
+
+- Restrict Unparser dependency. ([@palkan][])
+
+Unparser 0.5.0 is currently not supported.
+
 ## 0.10.3 (2020-09-28)
 
 - Update RuboCop integration to handle the latest Parser changes. ([@palkan][])
