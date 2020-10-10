@@ -476,6 +476,8 @@ RUBY_NEXT_CORE_STRATEGY=backports ruby-next nextify lib/
 
 **NOTE:** For Ruby 2.2, safe navigation operator (`&.`) and squiggly heredocs (`<<~TXT`) support is provided.
 
+**IMPORTANT:** Unparser `~> 0.4.8` is required to run the transpiler on Ruby <2.4.
+
 ## Proposed and edge features
 
 Ruby Next aims to bring edge and proposed features to Ruby community before they (hopefully) reach an official Ruby release.
