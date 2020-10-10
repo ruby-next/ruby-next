@@ -19,4 +19,10 @@ assignees: palkan
 
 **Ruby version**: 2.?
 
+<!-- Make sure you have verified the problem with the latest patch versions of the libraries below -->
+
 **Ruby Next version:**
+
+**Parser version:**
+
+**Unparser version:**
