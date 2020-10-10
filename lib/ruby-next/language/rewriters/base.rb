@@ -113,7 +113,7 @@ module RubyNext
         def unparse(ast)
           return ast if ast.is_a?(String)
 
-          Unparser.unparse(ast)
+          Unparser.unparse(ast).chomp
         end
 
         attr_reader :context

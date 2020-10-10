@@ -960,10 +960,10 @@ module RubyNext
           deconstructed_keys[key] = :"k#{deconstructed_keys.size}"
         end
 
-        # Unparser generates `do .. end`  blocks, we want to
+        # Unparser generates `do .. end` or `{ ... }` multiline blocks, we want to
         # have single-line blocks with `{ ... }`.
         def inline_blocks(source)
-          source.gsub(/do \|_, __i__\|\n\s*([^\n]+)\n\s*end/, '{ |_, __i__| \1 }')
+          source.gsub(/(?:do|{) \|_, __i__\|\n\s*([^\n]+)\n\s*(?:end|})/, '{ |_, __i__| \1 }')
         end
       end
     end
