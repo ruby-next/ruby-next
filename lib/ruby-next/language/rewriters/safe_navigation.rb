@@ -15,13 +15,14 @@ module RubyNext
 
           receiver, *args = *node
 
-          new_node = node.updated(
-            :and,
-            [
-              process(safe_navigation(receiver)),
-              s(:send, decsendize(receiver), *args)
-            ]
-          )
+          new_node = s(:begin,
+            node.updated(
+              :and,
+              [
+                process(safe_navigation(receiver)),
+                s(:send, decsendize(receiver), *args)
+              ]
+            ))
 
           replace(node.loc.expression, new_node)
 
@@ -33,13 +34,14 @@ module RubyNext
 
           context.track!(self)
 
-          new_node = super(node.updated(
-            :and,
-            [
-              process(safe_navigation(node.children[0].children[0])),
-              process(node.updated(nil, node.children.map(&method(:decsendize))))
-            ]
-          ))
+          new_node = s(:begin,
+            super(node.updated(
+              :and,
+              [
+                process(safe_navigation(node.children[0].children[0])),
+                process(node.updated(nil, node.children.map(&method(:decsendize))))
+              ]
+            )))
 
           replace(node.loc.expression, new_node)
 
@@ -51,13 +53,14 @@ module RubyNext
 
           context.track!(self)
 
-          new_node = super(node.updated(
-            :and,
-            [
-              process(safe_navigation(node.children[0].children[0])),
-              process(node.updated(nil, node.children.map(&method(:decsendize))))
-            ]
-          ))
+          new_node = s(:begin,
+            super(node.updated(
+              :and,
+              [
+                process(safe_navigation(node.children[0].children[0])),
+                process(node.updated(nil, node.children.map(&method(:decsendize))))
+              ]
+            )))
 
           replace(node.loc.expression, new_node)
 
@@ -75,11 +78,12 @@ module RubyNext
         # Transform: x&.y -> (!x.nil? && x.y) || nil
         # This allows us to handle `false&.to_s == "false"`
         def safe_navigation(node)
-          s(:or,
-            s(:send,
-              s(:send, node, :nil?),
-              :!),
-            s(:nil))
+          s(:begin,
+            s(:or,
+              s(:send,
+                s(:send, node, :nil?),
+                :!),
+              s(:nil)))
         end
       end
     end
