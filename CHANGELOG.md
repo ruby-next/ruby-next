@@ -2,6 +2,10 @@
 
 ## master
 
+## 0.10.5 (2020-10-13)
+
+- Fix Unparser 0.5.0 compatibility. ([@palkan][])
+
 ## 0.10.4 (2020-10-09)
 
 - Restrict Unparser dependency. ([@palkan][])
