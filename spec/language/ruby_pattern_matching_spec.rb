@@ -16,10 +16,10 @@ using TestUnitToMspec
 
 class TestPatternMatching < Test::Unit::TestCase
   def test_find_pattern
-    [0, 1, 2] in [*, 1 => a, *]
+    [0, 1, 2] => [*, 1 => a, *]
     assert_equal(1, a)
 
-    [0, 1, 2] in [*a, 1 => b, *c]
+    [0, 1, 2] => [*a, 1 => b, *c]
     assert_equal([0], a)
     assert_equal(1, b)
     assert_equal([2], c)
@@ -42,7 +42,7 @@ class TestPatternMatching < Test::Unit::TestCase
       end
     end
 
-    [0, 1, 2] in [*a, 1 => b, 2 => c, *d]
+    [0, 1, 2] => [*a, 1 => b, 2 => c, *d]
     assert_equal([0], a)
     assert_equal(1, b)
     assert_equal(2, c)
@@ -1306,19 +1306,19 @@ END
 
   ################################################################
 
-  def test_modifier_in
-    1 in a
+  def test_assoc
+    1 => a
     assert_equal 1, a
     assert_raise(NoMatchingPatternError) do
-      {a: 1} in {a: 0}
+      {a: 1} => {a: 0}
     end
     # WONTFIX:
-    # assert_syntax_error("if {} in {a:}; end", /void value expression/)
+    # assert_syntax_error("if {} => {a:}; end", /void value expression/)
     assert_syntax_error(%q{
-      1 in a, b
+      1 => a, b
     }, /unexpected/, '[ruby-core:95098]')
     assert_syntax_error(%q{
-      1 in a:
+      1 => a:
     }, /unexpected/, '[ruby-core:95098]')
   end
 end
