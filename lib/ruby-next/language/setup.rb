@@ -55,7 +55,7 @@ module RubyNext
 
         raise "Gem's lib is not in the $LOAD_PATH: #{dirname}" if current_index.nil?
 
-        version = RubyNext.next_version
+        version = RubyNext.next_ruby_version
 
         loop do
           break unless version
@@ -67,7 +67,7 @@ module RubyNext
             current_index += 1
           end
 
-          version = RubyNext.next_version(version)
+          version = RubyNext.next_ruby_version(version)
         end
       end
     end

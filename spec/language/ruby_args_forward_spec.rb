@@ -27,7 +27,7 @@ describe "args forwarding def(...)" do
 
   # FIXME: figure out how to deal with full kwargs separation
   # https://github.com/ruby/ruby/pull/2794
-  next if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.7")
+  next if Gem::Version.new(::RubyNext.current_ruby_version) >= Gem::Version.new("2.7")
 
   obj1 = Object.new
   def obj1.bar(*args, **kws, &block)

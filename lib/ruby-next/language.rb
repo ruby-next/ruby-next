@@ -101,9 +101,9 @@ module RubyNext
           regenerate(*args, **kwargs)
         end
       rescue Unparser::UnknownNodeError
-        if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.7.0")
-          RubyNext.warn "Ruby Next fallbacks to \"rewrite\" transpiling mode since Unparser doesn't support 2.7+ AST yet.\n" \
-            "See https://github.com/mbj/unparser/pull/142"
+        if Gem::Version.new(::RubyNext.current_ruby_version) >= Gem::Version.new("3.0.0")
+          RubyNext.warn "Ruby Next fallbacks to \"rewrite\" transpiling mode since Unparser doesn't support 3.0+ AST yet.\n" \
+            "See https://github.com/mbj/unparser/issues/168"
           self.mode = :rewrite
         end
         rewrite(*args, **kwargs)

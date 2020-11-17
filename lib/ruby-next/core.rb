@@ -2,6 +2,7 @@
 
 require "set"
 
+require "ruby-next/config"
 require "ruby-next/utils"
 
 module RubyNext

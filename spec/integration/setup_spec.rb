@@ -9,7 +9,7 @@ describe "setup load path" do
   end
 
   it "loads correct file versions" do
-    next skip if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("3.0")
+    next skip if Gem::Version.new(::RubyNext.current_ruby_version) >= Gem::Version.new("3.0")
     run_ruby(
       "-I#{File.join(__dir__, "fixtures", "lib")} " \
       "-r txen " \
