@@ -9,10 +9,13 @@ using TestUnitToMspec
 
 class TestRightHandAssignment < Test::Unit::TestCase
   def test_rightward_assign
-    assert_equal(1, eval("1 => a"))
-    assert_equal([2,3], eval("13.divmod(5) => a,b; [a, b]"))
-    assert_equal([2,3,2,3], eval("13.divmod(5) => a,b => c, d; [a, b, c, d]"))
-    assert_equal(3, eval("1+2 => a"))
+    a = b = nil
+    eval("1 => a")
+    assert_equal(1, a)
+    eval("13.divmod(5) => [a,b]")
+    assert_equal([2,3], [a, b])
+    eval("1+2 => a")
+    assert_equal(3, a)
   end
 end
 RUBY

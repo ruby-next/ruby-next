@@ -15,8 +15,6 @@ class TestSyntaxMethodDefEndless < Test::Unit::TestCase
     assert_syntax_error('private def obj.foo = 42', /unexpected '='/)
     assert_valid_syntax('private def obj.foo() = 42')
     assert_valid_syntax('private def obj.inc(x) = x + 1')
-    eval('def self.inc(x) = x + 1 => @x')
-    assert_equal(:inc, @x)
   end
 end
 RUBY

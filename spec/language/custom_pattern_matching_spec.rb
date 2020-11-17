@@ -56,13 +56,13 @@ describe "custom tests for pattern mathing" do
   it "in operator" do
     # in with hash
     assert_block do
-      {a: [0, 1, 2]} in {a:}
+      {a: [0, 1, 2]} => {a:}
       a == [0, 1, 2]
     end
 
     # in with hash and array rest
     assert_block do
-      {a: [0, 1, 2]} in {a: [0, *r]}
+      {a: [0, 1, 2]} => {a: [0, *r]}
       r == [1, 2]
     end
   end
