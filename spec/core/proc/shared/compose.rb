@@ -5,7 +5,7 @@ describe :proc_compose, shared: true do
   # See https://github.com/jruby/jruby/issues/5945
   next if RUBY_PLATFORM =~ /java/i
   # Ruby 2.6 had a slightly different behaviour https://bugs.ruby-lang.org/issues/15428
-  next if RUBY_VERSION =~ /\b2\.6/
+  next if ::RubyNext.current_ruby_version =~ /\b2\.6/
 
   ruby_version_is "2.7" do # https://bugs.ruby-lang.org/issues/15428
     it "raises TypeError if passed not callable object" do

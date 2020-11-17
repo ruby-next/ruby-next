@@ -11,7 +11,7 @@ describe "ruby-next nextify" do
   it "generates valid ruby code" do
     run_ruby_next "nextify #{File.join(__dir__, "fixtures", "beach.rb")}"
 
-    version_dir = RubyNext.next_version&.then { |v| v.segments[0..1].join(".") }
+    version_dir = RubyNext.next_ruby_version&.then { |v| v.segments[0..1].join(".") }
 
     if version_dir.nil? || !File.exist?(File.join(__dir__, "fixtures", ".rbnext", version_dir))
       version_dir = Dir.children(File.join(__dir__, "fixtures", ".rbnext")).sort.first # rubocop:disable Style/RedundantSort
@@ -28,7 +28,7 @@ describe "ruby-next nextify" do
   it "ignores patch versions" do
     run_ruby_next "nextify #{File.join(__dir__, "fixtures", "patch.rb")}"
 
-    version_dir = RubyNext.next_version&.then { |v| v.segments[0..1].join(".") }
+    version_dir = RubyNext.next_ruby_version&.then { |v| v.segments[0..1].join(".") }
 
     if version_dir.nil? || !File.exist?(File.join(__dir__, "fixtures", ".rbnext", version_dir))
       version_dir = Dir.children(File.join(__dir__, "fixtures", ".rbnext")).sort.first # rubocop:disable Style/RedundantSort

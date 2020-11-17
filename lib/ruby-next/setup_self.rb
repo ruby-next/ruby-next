@@ -3,7 +3,7 @@
 # This file setup LOAD_PATH to load Ruby Next own transpiled paths
 # (we cannot use language/setup here, 'cause it requires Core to be loaded)
 
-version = RubyNext.next_version
+version = RubyNext.next_ruby_version
 next_dirname = File.join(__dir__, "..", ".rbnext")
 lib_path = File.realpath(File.join(__dir__, ".."))
 current_index = $LOAD_PATH.index(lib_path)
@@ -18,5 +18,5 @@ loop do
     current_index += 1
   end
 
-  version = RubyNext.next_version(version)
+  version = RubyNext.next_ruby_version(version)
 end
