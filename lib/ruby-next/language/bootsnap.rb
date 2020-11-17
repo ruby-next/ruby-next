@@ -13,7 +13,7 @@ load_iseq = RubyVM::InstructionSequence.method(:load_iseq)
 if load_iseq.source_location[0].include?("/bootsnap/")
   Bootsnap::CompileCache::ISeq.singleton_class.prepend(
     Module.new do
-      def input_to_storage(source, path)
+      def input_to_storage(source, path, *)
         return super unless RubyNext::Language.transformable?(path)
         source = RubyNext::Language.transform(source, rewriters: RubyNext::Language.current_rewriters)
 
