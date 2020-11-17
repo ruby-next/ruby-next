@@ -2,6 +2,7 @@
 
 # Make sure Core is loaded
 require "ruby-next"
+require "pathname"
 
 module RubyNext
   module Language
@@ -48,7 +49,9 @@ module RubyNext
 
         GemTranspiler.maybe_transpile(File.dirname(dirname), lib_dir, next_dirname) if transpile
 
-        current_index = $LOAD_PATH.index(dirname)
+        current_index = $LOAD_PATH.find_index do |load_path|
+          Pathname.new(load_path).cleanpath.to_s == dirname
+        end
 
         raise "Gem's lib is not in the $LOAD_PATH: #{dirname}" if current_index.nil?
 
