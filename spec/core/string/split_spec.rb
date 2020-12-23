@@ -16,16 +16,30 @@ describe "String#split with String" do
     end
 
     describe "for a String subclass" do
-      it "yields instances of the same subclass" do
-        a = []
-        StringSpecs::MyString.new("a|b").split("|") { |str| a << str }
-        first, last = a
+      if RUBY_VERSION >= "3.0.0"
+        it "yields instances of String" do
+          a = []
+          StringSpecs::MyString.new("a|b").split("|") { |str| a << str }
+          first, last = a
 
-        first.should be_an_instance_of(StringSpecs::MyString)
-        first.should == "a"
+          first.should be_an_instance_of(String)
+          first.should == "a"
 
-        last.should be_an_instance_of(StringSpecs::MyString)
-        last.should == "b"
+          last.should be_an_instance_of(String)
+          last.should == "b"
+        end
+      else
+        it "yields instances of subclasses" do
+          a = []
+          StringSpecs::MyString.new("a|b").split("|") { |str| a << str }
+          first, last = a
+
+          first.should be_an_instance_of(StringSpecs::MyString)
+          first.should == "a"
+
+          last.should be_an_instance_of(StringSpecs::MyString)
+          last.should == "b"
+        end
       end
     end
   end

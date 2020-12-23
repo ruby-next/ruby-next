@@ -4,6 +4,7 @@
 # edge features and fix some bugs with 2.7+ syntax
 
 require "parser/ruby-next/version"
+require "ruby-next/language/parser"
 
 module RuboCop
   # Transform Ruby Next parser version to a float, e.g.: "2.8.0.1" => 2.801
@@ -37,7 +38,6 @@ module RuboCop
       def parser_class(version)
         return super unless version == RUBY_NEXT_VERSION
 
-        require "parser/rubynext"
         Parser::RubyNext
       end
     end
@@ -52,7 +52,7 @@ module RuboCop
   module AST
     module Traversal
       # Fixed in https://github.com/rubocop-hq/rubocop/pull/7786
-      %i[case_match in_pattern find_pattern].each do |type|
+      %i[case_match in_pattern find_pattern match_pattern match_pattern_p].each do |type|
         next if method_defined?(:"on_#{type}")
         module_eval(<<-RUBY, __FILE__, __LINE__ + 1)
 def on_#{type}(node)
@@ -61,6 +61,10 @@ nil
 end
         RUBY
       end
+    end
+
+    unless Builder.method_defined?(:match_pattern_p)
+      Builder.include RubyNext::Language::BuilderExt
     end
   end
 end
@@ -100,20 +104,6 @@ module RuboCop
         def on_defs_e(node)
           _definee_node, _name, _args_node, body_node = *node
           send(:"on_#{body_node.type}", body_node)
-        end
-      end
-
-      unless method_defined?(:on_rasgn)
-        def on_rasgn(node)
-          val_node, asgn_node = *node
-          send(:"on_#{asgn_node.type}", asgn_node)
-          send(:"on_#{val_node.type}", val_node)
-        end
-
-        def on_mrasgn(node)
-          lhs, rhs = *node
-          send(:"on_#{lhs.type}", lhs)
-          send(:"on_#{rhs.type}", rhs)
         end
       end
     end
