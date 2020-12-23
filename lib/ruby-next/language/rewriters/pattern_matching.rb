@@ -218,9 +218,10 @@ module RubyNext
             predicate_clause(:respond_to_deconstruct_keys, node)
           end
 
-          def hash_key(node, key)
-            key = key.children.first if key.is_a?(::Parser::AST::Node)
-            predicate_clause(:"hash_key_#{key}", node)
+          def hash_keys(node, keys)
+            keys = keys.map { |key| key.is_a?(::Parser::AST::Node) ? key.children.first : key }
+
+            predicate_clause(:"hash_keys_#{keys.join("_p_")}", node)
           end
         end
       end
@@ -885,14 +886,14 @@ module RubyNext
         end
 
         def having_hash_keys(keys, hash = s(:lvar, locals[:hash]))
-          key = keys.shift
-          node = predicates.hash_key(hash_has_key(key, hash), key)
+          keys.reduce(nil) do |acc, key|
+            pnode = hash_has_key(key, hash)
+            next pnode unless acc
 
-          keys.reduce(node) do |res, key|
             s(:begin,
-              s(:and,
-                res,
-                predicates.hash_key(hash_has_key(key, hash), key)))
+              s(:and, acc, pnode))
+          end.then do |node|
+            predicates.hash_keys(node, keys)
           end
         end
 

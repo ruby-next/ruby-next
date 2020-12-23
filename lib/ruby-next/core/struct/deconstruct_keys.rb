@@ -10,9 +10,9 @@ def deconstruct_keys(keys)
 
   keys.each_with_object({}) do |k, acc|
     # if k is Symbol and not a member of a Struct return {}
-    next if (Symbol === k || String === k) && !members.include?(k.to_sym)
+    return {} if (Symbol === k || String === k) && !members.include?(k.to_sym)
     # if k is Integer check that index is not ouf of bounds
-    next if Integer === k && k > size - 1
+    return {} if Integer === k && k > size - 1
     acc[k] = self[k]
   end
 end
