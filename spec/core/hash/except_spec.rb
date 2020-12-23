@@ -20,14 +20,26 @@ ruby_version_is "3.0" do
       @hash.except(:a, :chunky_bacon).should == { b: 2, c: 3 }
     end
 
-    it "returns an instance of a subclass" do
-      klass = Class.new(Hash)
-      h = klass.new
-      h[:bar] = 12
-      h[:foo] = 42
-      r = h.except(:foo)
-      r.should == {bar: 12}
-      r.class.should == klass
+    if RUBY_VERSION >= "3.0.0"
+      it "returns an instance of Hash" do
+        klass = Class.new(Hash)
+        h = klass.new
+        h[:bar] = 12
+        h[:foo] = 42
+        r = h.except(:foo)
+        r.should == {bar: 12}
+        r.class.should == Hash
+      end
+    else
+      it "returns an instance of Hash" do
+        klass = Class.new(Hash)
+        h = klass.new
+        h[:bar] = 12
+        h[:foo] = 42
+        r = h.except(:foo)
+        r.should == {bar: 12}
+        r.class.should == klass
+      end
     end
   end
 end
