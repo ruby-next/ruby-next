@@ -266,7 +266,7 @@ module RubyNext
           )
         end
 
-        def on_in_match(node)
+        def on_match_pattern(node)
           context.track! self
 
           @deconstructed_keys = {}
@@ -302,6 +302,8 @@ module RubyNext
             replace(node.loc.expression, inline_blocks(unparse(new_node)))
           end
         end
+
+        alias on_in_match on_match_pattern
 
         private
 

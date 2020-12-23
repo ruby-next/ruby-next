@@ -6,6 +6,9 @@ module RubyNext
   module Language
     class Builder < ::Parser::Builders::Default
       modernize
+
+      # Unparser doens't support kwargs node yet
+      self.emit_kwargs = false
     end
 
     class << self
