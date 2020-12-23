@@ -66,9 +66,9 @@ The possible translation depends on the _end_ type which could hardly be inferre
 
 - "Endless" method definition (`def foo() = 42`) ([#16746](https://bugs.ruby-lang.org/issues/16746))
 
-- Right-hand assignment (`13.divmod(5) => a,b`) ([#15921](https://bugs.ruby-lang.org/issues/15921))
-
 - Find pattern (`[0, 1, 2] in [*, 1 => a, *c]`) ([#16828](https://bugs.ruby-lang.org/issues/16828)).
+
+- Single-line pattern matching (`{a: 2} in {a:, b:}` or `{a: 2} => {a:, b:}`)
 
 ### Proposals
 

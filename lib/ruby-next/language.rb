@@ -193,6 +193,9 @@ module RubyNext
     require "ruby-next/language/rewriters/find_pattern"
     rewriters << Rewriters::FindPattern
 
+    require "ruby-next/language/rewriters/in_pattern"
+    rewriters << Rewriters::InPattern
+
     # Put endless range in the end, 'cause Parser fails to parse it in
     # pattern matching
     require "ruby-next/language/rewriters/endless_range"
