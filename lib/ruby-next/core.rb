@@ -176,7 +176,7 @@ require "ruby-next/core/time/ceil"
 # Core extensions required for pattern matching
 # Required for pattern matching with refinements
 unless defined?(NoMatchingPatternError)
-  class NoMatchingPatternError < RuntimeError
+  class NoMatchingPatternError < StandardError
   end
 end
 

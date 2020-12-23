@@ -11,7 +11,7 @@ RubyNext::Core.patch Object,
   supported: true,
   location: [__FILE__, __LINE__ + 2] do
   <<-RUBY
-class NoMatchingPatternError < RuntimeError
+class NoMatchingPatternError < StandardError
 end
   RUBY
 end
