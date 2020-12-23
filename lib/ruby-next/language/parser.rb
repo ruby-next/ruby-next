@@ -8,7 +8,19 @@ module RubyNext
       modernize
 
       # Unparser doens't support kwargs node yet
-      self.emit_kwargs = false
+      self.emit_kwargs = false if respond_to?(:emit_kwargs=)
+
+      unless method_defined?(:match_pattern)
+        def match_pattern(lhs, match_t, rhs)
+          n(:match_pattern, [lhs, rhs],
+            binary_op_map(lhs, match_t, rhs))
+        end
+
+        def match_pattern_p(lhs, match_t, rhs)
+          n(:match_pattern_p, [lhs, rhs],
+            binary_op_map(lhs, match_t, rhs))
+        end
+      end
     end
 
     class << self
