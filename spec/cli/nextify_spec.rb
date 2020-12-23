@@ -125,7 +125,7 @@ describe "ruby-next nextify" do
       "nextify #{File.join(__dir__, "dummy")} " \
       "--rewrite=endless-range --rewrite=pattern-matching"
     ) do |_status, _output, err|
-      File.exist?(File.join(__dir__, "dummy", ".rbnext", "right_hand_assignment.rb")).should equal false
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "match_pattern.rb")).should equal true
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "method_reference.rb")).should equal false
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "transpile_me.rb")).should equal true
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "endless_pattern.rb")).should equal true
@@ -137,26 +137,26 @@ describe "ruby-next nextify" do
   it "returns error if --rewrite is provided with wrong rewriter" do
     run_ruby_next(
       "nextify #{File.join(__dir__, "dummy")} " \
-      "--rewrite=right-hand-assignment",
+      "--rewrite=endless-method",
       env: {"RUBY_NEXT_EDGE" => "0", "RUBY_NEXT_PROPOSED" => "0"},
       should_fail: true
     ) do |_status, output, err|
-      output.should include("Rewriters not found: right-hand-assignment")
+      output.should include("Rewriters not found: endless-method")
     end
   end
 
   it "generates one version if --rewrite is provided with rewriter from edge along with --edge option" do
     run_ruby_next(
       "nextify #{File.join(__dir__, "dummy")} " \
-      "--rewrite=right-hand-assignment --edge",
+      "--rewrite=endless-method --edge",
       env: {"RUBY_NEXT_EDGE" => "0", "RUBY_NEXT_PROPOSED" => "0"}
     ) do |_status, _output, err|
-      File.exist?(File.join(__dir__, "dummy", ".rbnext", "right_hand_assignment.rb")).should equal true
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "namespaced", "pattern_matching.rb")).should equal true
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "match_pattern.rb")).should equal false
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "method_reference.rb")).should equal false
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "transpile_me.rb")).should equal false
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "endless_pattern.rb")).should equal false
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "namespaced", "endless_nameless.rb")).should equal false
-      File.exist?(File.join(__dir__, "dummy", ".rbnext", "namespaced", "pattern_matching.rb")).should equal false
     end
   end
 
@@ -166,7 +166,7 @@ describe "ruby-next nextify" do
       "--rewrite=method-reference --proposed",
       env: {"RUBY_NEXT_EDGE" => "0", "RUBY_NEXT_PROPOSED" => "0"}
     ) do |_status, _output, err|
-      File.exist?(File.join(__dir__, "dummy", ".rbnext", "right_hand_assignment.rb")).should equal false
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "match_pattern.rb")).should equal false
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "method_reference.rb")).should equal true
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "transpile_me.rb")).should equal false
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "endless_pattern.rb")).should equal false
@@ -292,7 +292,6 @@ describe "ruby-next nextify" do
       output.should include('pattern-matching ("case 0; in 0; true; else; 1; end")')
       output.should include('endless-range ("[0, 1][1..]")')
       output.should_not include('endless-method ("obj = Object.new; def obj.foo() = 42")')
-      output.should_not include('right-hand-assignment ("1 + 2 => a")')
       output.should_not include('method-reference ("Language.:transform")')
     end
   end
@@ -303,7 +302,6 @@ describe "ruby-next nextify" do
       env: {"RUBY_NEXT_PROPOSED" => "0", "RUBY_NEXT_EDGE" => "0"}
     ) do |_status, output, err|
       output.should include('endless-method ("obj = Object.new; def obj.foo() = 42")')
-      output.should include('right-hand-assignment ("1 + 2 => a")')
     end
   end
 

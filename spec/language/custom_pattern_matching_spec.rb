@@ -53,7 +53,7 @@ describe "custom tests for pattern mathing" do
     end
   end
 
-  it "in operator" do
+  it "=> operator" do
     # in with hash
     assert_block do
       {a: [0, 1, 2]} => {a:}
