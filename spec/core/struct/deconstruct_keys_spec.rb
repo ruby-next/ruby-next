@@ -1,4 +1,4 @@
-require_relative '../../spec_helper'
+require_relative "../../spec_helper"
 
 ruby_version_is "2.7" do
   describe "Struct#deconstruct_keys" do
@@ -15,7 +15,7 @@ ruby_version_is "2.7" do
 
       -> {
         obj.deconstruct_keys
-      }.should raise_error(ArgumentError, /wrong number of arguments/)
+      }.should raise_error(ArgumentError, /wrong number of arguments \(given 0, expected 1\)/)
     end
 
     it "returns only specified keys" do
@@ -48,6 +48,7 @@ ruby_version_is "2.7" do
       s = struct.new(1, 2)
 
       s.deconstruct_keys([:a, :b, :c]).should == {}
+      s.deconstruct_keys([:x, :y, :z]).should == {}
     end
 
     it "accepts nil argument and return all the attributes" do
