@@ -94,6 +94,24 @@ module RubyNext
 
         private
 
+        # BFS with predicate block
+        def find_child(node)
+          queue = [node]
+
+          loop do
+            break if queue.empty?
+
+            child = queue.shift
+            next unless child.is_a?(::Parser::AST::Node)
+
+            return child if yield child
+
+            queue.push(*child.children)
+          end
+
+          nil
+        end
+
         def replace(range, ast)
           @source_rewriter&.replace(range, unparse(ast))
         end

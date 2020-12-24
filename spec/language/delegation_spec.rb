@@ -28,5 +28,18 @@ ruby_version_is "2.7" do
 
       a.new.delegate_block(1, b: 2) { |x| x }.should == [{b: 2}, [1]]
     end
+
+    it "parses as open endless Range when brackets are omitted" do
+      a = Class.new(DelegationSpecs::Target)
+      suppress_warning do
+        a.class_eval(<<-RUBY)
+          def delegate(...)
+            target ...
+          end
+         RUBY
+       end
+
+       a.new.delegate(1, b: 2).should == Range.new([[], {}], nil, true)
+    end
   end
 end

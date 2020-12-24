@@ -182,6 +182,11 @@ module RubyNext
     require "ruby-next/language/rewriters/args_forward"
     rewriters << Rewriters::ArgsForward
 
+    # Must be added after general args forward rewriter to become
+    # no-op in Ruby <2.7
+    require "ruby-next/language/rewriters/args_forward_leading"
+    rewriters << Rewriters::ArgsForwardLeading
+
     require "ruby-next/language/rewriters/numbered_params"
     rewriters << Rewriters::NumberedParams
 
