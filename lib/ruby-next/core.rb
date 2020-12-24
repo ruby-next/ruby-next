@@ -18,7 +18,7 @@ module RubyNext
       # `core_ext` defines the strategy for core extensions:
       #    - :patch — extend class directly
       #    - :prepend — extend class by prepending a module (e.g., when needs `super`)
-      def initialize(mod = nil, method:, name: nil, version:, supported: nil, native: nil, location: nil, refineable: mod, core_ext: :patch, singleton: nil)
+      def initialize(mod = nil, method:, version:, name: nil, supported: nil, native: nil, location: nil, refineable: mod, core_ext: :patch, singleton: nil)
         @mod = mod
         @method_name = method
         @version = version
@@ -123,8 +123,8 @@ module RubyNext
         strategy == :backports
       end
 
-      def patch(*args, **kwargs, &block)
-        patches << Patch.new(*args, **kwargs, &block)
+      def patch(...)
+        patches << Patch.new(...)
       end
 
       # Inject `using RubyNext` at the top of the source code

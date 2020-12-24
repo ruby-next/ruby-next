@@ -7,14 +7,6 @@ AllCops:
   Include:
     - '**/*.md'
 
-Lint/Void:
-  Exclude:
-    - '**/*.md'
-
-Lint/DuplicateMethods:
-  Exclude:
-    - '**/*.md'
-
 # FIXME
 Layout/InitialIndentation:
   Exclude:

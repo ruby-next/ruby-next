@@ -13,12 +13,12 @@ module RubyNext
 
           # Useful to generate simple operation nodes
           # (e.g., 'a + b')
-          def -(val)
-            ::Parser::AST::Node.new(:send, [self, :-, val.to_ast_node])
+          def -(other)
+            ::Parser::AST::Node.new(:send, [self, :-, other.to_ast_node])
           end
 
-          def +(val)
-            ::Parser::AST::Node.new(:send, [self, :+, val.to_ast_node])
+          def +(other)
+            ::Parser::AST::Node.new(:send, [self, :+, other.to_ast_node])
           end
         end
 
