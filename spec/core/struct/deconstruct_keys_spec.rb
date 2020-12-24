@@ -15,7 +15,7 @@ ruby_version_is "2.7" do
 
       -> {
         obj.deconstruct_keys
-      }.should raise_error(ArgumentError, /wrong number of arguments \(given 0, expected 1\)/)
+      }.should raise_error(ArgumentError, /wrong number of arguments/)
     end
 
     it "returns only specified keys" do
