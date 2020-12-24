@@ -2,6 +2,8 @@
 
 ## master
 
+## 0.11.0 (2020-12-24) 🎄
+
 - Extended proposed shorthand Hash syntax to support kwargs as well. ([@palkan][])
 
 You can try it: `x = 1; y = 2; foo(x:, y:) # => foo(x: x, y: y)`.
