@@ -1161,8 +1161,13 @@ END
     end
   end
 
+  # Ruby 2.7 raise RuntimeError
+  unless RUBY_VERSION =~ /^2\.7\./
+
   def test_nomatchingpatternerror
     assert_equal(StandardError, NoMatchingPatternError.superclass)
+  end
+
   end
 
   def test_invalid_syntax
@@ -1338,6 +1343,9 @@ END
     end
   end
 
+  # Ruby 2.7 doesn't have cache
+  unless RUBY_VERSION =~ /^2\.7\./
+
   def test_deconstruct_cache
     assert_block do
       case CDeconstructCache.new([[0]])
@@ -1413,6 +1421,7 @@ END
         x == :a
       end
     end
+  end
   end
 end
 
