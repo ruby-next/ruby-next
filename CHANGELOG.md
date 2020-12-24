@@ -2,6 +2,10 @@
 
 ## master
 
+- Extended proposed shorthand Hash syntax to support kwargs as well. ([@palkan][])
+
+You can try it: `x = 1; y = 2; foo(x:, y:) # => foo(x: x, y: y)`.
+
 - **Rewrite mode is used by default in transpiler**. ([@palkan][])
 
 - Move 3.0 features to stable features. ([@palkan][])
