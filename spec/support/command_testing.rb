@@ -28,7 +28,7 @@ module Kernel
   end
 
   def run_ruby(command, **options, &block)
-    run_command("#{RUBY_RUNNER} -rbundler/setup -I#{File.join(__dir__, "../../lib")} #{command}", **options, &block)
+    run_command("#{RUBY_RUNNER} -rbundler/setup -I#{File.expand_path(File.join(__dir__, "../../lib"))} #{command}", **options, &block)
   end
 
   def run_ruby_next(command, **options, &block)
