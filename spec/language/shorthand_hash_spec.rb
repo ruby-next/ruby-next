@@ -2,7 +2,7 @@ require_relative '../spec_helper'
 
 using RubyNext::Language::Eval
 
-ruby_version_is "2.8" do
+ruby_version_is "3.1" do
   describe "{x}" do
     it "accepts short notation 'key' for 'key: value' syntax" do
       a, b, c = 1, 2, 3

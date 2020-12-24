@@ -514,7 +514,7 @@ No new features since 3.0 release.
 
 - _Method reference_ operator (`.:`) ([#13581](https://bugs.ruby-lang.org/issues/13581)).
 
-- Shorthand Hash notation (`data = {x, y}`) ([#15236](https://bugs.ruby-lang.org/issues/15236)).
+- Shorthand Hash/kwarg notation (`data = {x, y}` or `foo(x:, y:)`) ([#15236](https://bugs.ruby-lang.org/issues/15236)).
 
 ## Contributing
 
