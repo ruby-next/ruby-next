@@ -5,8 +5,8 @@ module RubyNext
     module Rewriters
       class ArgsForward < Base
         NAME = "args-forward"
-        SYNTAX_PROBE = "obj = Object.new; def obj.foo(...) super(1, ...); end"
-        MIN_SUPPORTED_VERSION = Gem::Version.new("3.0.0")
+        SYNTAX_PROBE = "obj = Object.new; def obj.foo(...) super(...); end"
+        MIN_SUPPORTED_VERSION = Gem::Version.new("2.7.0")
 
         REST = :__rest__
         BLOCK = :__block__
@@ -28,20 +28,24 @@ module RubyNext
         end
 
         def on_send(node)
-          fargs = node.children.find { |child| child.is_a?(::Parser::AST::Node) && child.type == :forwarded_args }
+          fargs = extract_fargs(node)
           return super(node) unless fargs
 
           process_fargs(node, fargs)
         end
 
         def on_super(node)
-          fargs = node.children.find { |child| child.is_a?(::Parser::AST::Node) && child.type == :forwarded_args }
+          fargs = extract_fargs(node)
           return super(node) unless fargs
 
           process_fargs(node, fargs)
         end
 
         private
+
+        def extract_fargs(node)
+          node.children.find { |child| child.is_a?(::Parser::AST::Node) && child.type == :forwarded_args }
+        end
 
         def process_fargs(node, fargs)
           replace(fargs.loc.expression, "*#{REST}, &#{BLOCK}")
