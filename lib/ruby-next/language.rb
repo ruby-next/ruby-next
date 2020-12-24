@@ -169,7 +169,7 @@ module RubyNext
 
     self.rewriters = []
     self.watch_dirs = %w[app lib spec test].map { |path| File.join(Dir.pwd, path) }
-    self.mode = ENV.fetch("RUBY_NEXT_TRANSPILE_MODE", "ast").to_sym
+    self.mode = ENV.fetch("RUBY_NEXT_TRANSPILE_MODE", "rewrite").to_sym
 
     require "ruby-next/language/rewriters/base"
 

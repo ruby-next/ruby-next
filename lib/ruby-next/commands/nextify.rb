@@ -57,7 +57,7 @@ module RubyNext
 
           opts.on(
             "--transpile-mode=MODE",
-            "Transpiler mode (ast or rewrite). Default: ast"
+            "Transpiler mode (ast or rewrite). Default: rewrite"
           ) do |val|
             Language.mode = val.to_sym
           end
