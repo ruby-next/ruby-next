@@ -1,9 +1,8 @@
 source "https://rubygems.org" do
-  gem "rubocop-md", "~> 1.0"
-  gem "standard", "~> 0.10.0"
-
-  # See https://github.com/jruby/jruby/issues/6414
-  gem "rubocop-ast", "< 0.7.0", platform: :jruby
+  platform :mri do
+    gem "rubocop-md", "~> 1.0"
+    gem "standard", "~> 0.10.0"
+  end
 
   eval_gemfile "parser.gemfile"
 end
