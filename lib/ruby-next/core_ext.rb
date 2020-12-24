@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "ruby-next/config"
+require "ruby-next/setup_self"
 require "ruby-next/core"
 
 # Monkey-patch core classes using the same patches as for refinements

@@ -7,7 +7,39 @@ on:
   pull_request:
 
 jobs:
+  transpile:
+    runs-on: ubuntu-latest
+    env:
+      BUNDLE_JOBS: 4
+      BUNDLE_RETRY: 3
+      CI: true
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/cache@v1
+      with:
+        path: /home/runner/bundle
+        key: bundle-${{ hashFiles('../Gemfile') }}-${{ hashFiles('**/*.gemspec') }}
+        restore-keys: |
+          bundle-
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 2.7
+    - name: Bundle install
+      run: |
+        bundle config path /home/runner/bundle
+        bundle install
+        bundle update
+    - name: Transpile Ruby Next
+      run: |
+        make transpile
+    - name: Store transpiled files
+      uses: actions/upload-artifact@v1
+      with:
+        name: ruby-next-transpiled
+        path: lib/.rbnext
+
   truffle-test:
+    needs: transpile
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -24,6 +56,11 @@ jobs:
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: truffleruby-head
+    - name: Restore transpiled files
+      uses: actions/download-artifact@v1
+      with:
+        name: ruby-next-transpiled
+        path: lib/.rbnext
     - name: Download MSpec
       run: |
         git clone https://github.com/ruby/mspec.git mspec
