@@ -27,7 +27,7 @@ describe "language features (via -ruby-next)" do
 
   it "array in hash in pattern matching" do
     run_command(
-      "ruby -rbundler/setup -rjson -I#{File.join(__dir__, "../../lib")} -ruby-next -r #{File.join(__dir__, "fixtures", "array_in_hash_pattern.rb")} " \
+      "ruby -rbundler/setup -rjson -I#{File.expand_path(File.join(__dir__, "../../lib"))} -ruby-next -r #{File.join(__dir__, "fixtures", "array_in_hash_pattern.rb")} " \
       "-e 'main({\"name\":\"Alice\",\"children\":[{\"name\":\"Bob\",\"age\":30}]}.to_json)'"
     ) do |_status, output, _err|
       output.should include("Bob age is 30")
