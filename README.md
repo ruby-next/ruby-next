@@ -93,8 +93,7 @@ def greet(val) =
       '👽'
     end
 
-greet(hello: 'martian') => greeting
-puts greeting
+puts greet(hello: 'martian')
 "
 
 => 👽
@@ -189,7 +188,7 @@ You can change the transpiler mode:
 - Via environmental variable `RUBY_NEXT_TRANSPILE_MODE=rewrite`.
 - Via CLI option ([see below](#cli)).
 
-**NOTE:** For the time being, Unparser [doesn't support](https://github.com/mbj/unparser/pull/142) new Ruby 2.7 AST nodes, so we always use rewrite mode in Ruby 2.7+.
+**NOTE:** For the time being, Unparser doesn't support Ruby 3.0 AST nodes, so we always use rewrite mode in Ruby 3.0+.
 
 ## CLI
 
@@ -220,7 +219,7 @@ Usage: ruby-next nextify DIRECTORY_OR_FILE [options]
 
 The behaviour depends on whether you transpile a single file or a directory:
 
-- When transpiling a directory, the `.rbnext` subfolder is created within the target folder with subfolders for each supported Ruby versions (e.g., `.rbnext/2.6`, `.rbnext/2.7`). If you want to create only a single version (the smallest), you can also pass `--single-version` flag. In that case, no version directory is created (i.e., transpiled files go into `.rbnext`).
+- When transpiling a directory, the `.rbnext` subfolder is created within the target folder with subfolders for each supported Ruby versions (e.g., `.rbnext/2.6`, `.rbnext/2.7`, `.rbnext/3.0`). If you want to create only a single version (the smallest), you can also pass `--single-version` flag. In that case, no version directory is created (i.e., transpiled files go into `.rbnext`).
 
 - When transpiling a file and providing the output path as a _file_ path, only a single version is created. For example:
 
@@ -323,7 +322,7 @@ due to the way feature resolving works in Ruby (scanning the `$LOAD_PATH` and ha
 
 If you're using [runtime mode](#runtime-usage) a long with `setup_gem_load_path` (e.g., in tests), the transpiled files are ignored (i.e., we do not modify `$LOAD_PATH`).
 
-\* Ruby Next avoids storing duplicates; instead, only the code for the earlier version is created and is assumed to be used with other versions. For example, if the transpiled code is the same for Ruby 2.5 and Ruby 2.6, only the `.rbnext/2.7/path/to/file.rb` is kept. That's why multiple entries are added to the `$LOAD_PATH` (`.rbnext/2.6` and `.rbnext/2.7` in the specified order for Ruby 2.5 and only `.rbnext/2.7` for Ruby 2.6).
+\* Ruby Next avoids storing duplicates; instead, only the code for the earlier version is created and is assumed to be used with other versions. For example, if the transpiled code is the same for Ruby 2.5 and Ruby 2.6, only the `.rbnext/2.7/path/to/file.rb` is kept. That's why multiple entries are added to the `$LOAD_PATH` (`.rbnext/2.6`, `.rbnext/2.7`, and `.rbnext/3.0` in the specified order for Ruby 2.5, and `.rbnext/2.7` and `.rbnext/3.0` for Ruby 2.6).
 
 ### Transpiled files vs. VCS vs. installing from source
 
@@ -509,11 +508,7 @@ require "ruby-next/language/runtime"
 
 ### Supported edge features
 
-- "Endless" method definition (`def foo() = 42`) ([#16746](https://bugs.ruby-lang.org/issues/16746)).
-
-- Right-hand assignment (`13.divmod(5) => a,b`) ([#15921](https://bugs.ruby-lang.org/issues/15921)).
-
-- Find pattern (`[0, 1, 2] in [*, 1 => a, *c]`) ([#16828](https://bugs.ruby-lang.org/issues/16828)).
+No new features since 3.0 release.
 
 ### Supported proposed features
 

@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative "../spec_helper"
 require_relative "../support/command_testing"
 require "fileutils"
 
@@ -134,17 +135,19 @@ describe "ruby-next nextify" do
     end
   end
 
+  # TODO: add edge features
   it "returns error if --rewrite is provided with wrong rewriter" do
     run_ruby_next(
       "nextify #{File.join(__dir__, "dummy")} " \
-      "--rewrite=endless-method",
+      "--rewrite=endless-method-new",
       env: {"RUBY_NEXT_EDGE" => "0", "RUBY_NEXT_PROPOSED" => "0"},
       should_fail: true
     ) do |_status, output, err|
-      output.should include("Rewriters not found: endless-method")
+      output.should include("Rewriters not found: endless-method-new")
     end
   end
 
+  # TODO: add edge features
   it "generates one version if --rewrite is provided with rewriter from edge along with --edge option" do
     run_ruby_next(
       "nextify #{File.join(__dir__, "dummy")} " \
@@ -241,6 +244,9 @@ describe "ruby-next nextify" do
   end
 
   it "--edge is not set" do
+    # TODO: add edge features
+    next skip
+
     run_ruby_next(
       "nextify #{File.join(__dir__, "..", "integration", "fixtures", "endless_def.rb")} " \
       "--transpile-mode=rewrite --min-version=2.7 " \
@@ -288,10 +294,12 @@ describe "ruby-next nextify" do
       env: {"RUBY_NEXT_PROPOSED" => "0", "RUBY_NEXT_EDGE" => "0"}
     ) do |_status, output, err|
       output.should include('args-forward ("obj = Object.new; def obj.foo(...) super(...); end")')
+      output.should include('args-forward-leading ("obj = Object.new; def obj.foo(...) super(1, ...); end")')
       output.should include('numbered-params ("proc { _1 }.call(1)")')
       output.should include('pattern-matching ("case 0; in 0; true; else; 1; end")')
+      output.should include('pattern-matching-find-pattern ("case 0; in [*,0,*]; true; else; 1; end")')
       output.should include('endless-range ("[0, 1][1..]")')
-      output.should_not include('endless-method ("obj = Object.new; def obj.foo() = 42")')
+      output.should include('endless-method ("obj = Object.new; def obj.foo() = 42")')
       output.should_not include('method-reference ("Language.:transform")')
     end
   end
