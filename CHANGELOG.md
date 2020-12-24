@@ -2,6 +2,10 @@
 
 ## master
 
+- Move 3.0 features to stable features. ([@palkan][])
+
+- Refactor `a => x` and `a in x` to comply with Ruby 3.0. ([@palkan][])
+
 ## 0.10.5 (2020-10-13)
 
 - Fix Unparser 0.5.0 compatibility. ([@palkan][])

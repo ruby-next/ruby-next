@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative "../spec_helper"
 require_relative "../support/command_testing"
 
 describe "edge/proposed features via require" do
@@ -17,6 +18,9 @@ describe "edge/proposed features via require" do
   end
 
   it "edge features" do
+    # TODO: add edge features
+    next skip
+
     cmd = <<~CMD
       ruby -rbundler/setup -I#{File.join(__dir__, "../../../lib")} -r #{File.join(__dir__, "fixtures", "edge.rb")} \
       -e "p greet(hello: 'Human'); p greet(hello: 'martian')"
