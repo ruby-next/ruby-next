@@ -11,11 +11,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/cache@v1
+      with:
+        path: /home/runner/bundle
+        key: bundle-rubocop-${{ hashFiles('../Gemfile') }}-${{ hashFiles('**/*.gemspec') }}
+        restore-keys: |
+          bundle-rubocop-
     - uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 2.6
-    - name: Lint Ruby code with RuboCop
+        ruby-version: 2.7
+    - name: Lint Markdown files with RuboCop
       run: |
-        gem install bundler
-        bundle install --gemfile gemfiles/rubocop.gemfile --jobs 4 --retry 3
-        bundle exec --gemfile gemfiles/rubocop.gemfile rubocop
+        bundle config path /home/runner/bundle
+        bundle install --jobs 4 --retry 3
+        bundle exec rubocop
