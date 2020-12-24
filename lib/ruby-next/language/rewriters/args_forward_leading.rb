@@ -12,15 +12,13 @@ module RubyNext
         alias leading_farg? leading_farg
 
         def on_def(node)
-          @leading_farg = find_child(node) { |child| child.type == :forward_arg } &&
-            find_child(node) { |child| send_with_leading_farg(child) }
+          @leading_farg = method_with_leading_arg(node)
 
           super
         end
 
         def on_defs(node)
-          @leading_farg = find_child(node) { |child| child.type == :forward_arg } &&
-            find_child(node) { |child| send_with_leading_farg(child) }
+          @leading_farg = method_with_leading_arg(node)
 
           super
         end
@@ -53,6 +51,23 @@ module RubyNext
           return false unless fargs
 
           node.children.index(fargs) > (node.type == :send ? 2 : 0)
+        end
+
+        def method_with_leading_arg(node)
+          find_child(node) { |child| child.type == :forward_arg } &&
+            (
+              def_with_leading_farg(node) ||
+              find_child(node) { |child| send_with_leading_farg(child) }
+            )
+        end
+
+        def def_with_leading_farg(node)
+          args = node.type == :defs ? node.children[2] : node.children[1]
+          args = args.children
+
+          farg = args.detect { |child| child.type == :forward_arg }
+
+          args.index(farg) > 0
         end
       end
     end

@@ -243,6 +243,7 @@ describe "ruby-next nextify" do
     end
   end
 
+  # rubocop:disable  Lint/UnreachableCode
   it "--edge is not set" do
     # TODO: add edge features
     next skip
@@ -256,6 +257,7 @@ describe "ruby-next nextify" do
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "endless_def_old.rb")).should equal false
     end
   end
+  # rubocop:enable  Lint/UnreachableCode
 
   it "--dry-run" do
     run_ruby_next "nextify #{File.join(__dir__, "dummy")} --dry-run" do |_status, output, err|

@@ -17,6 +17,7 @@ describe "edge/proposed features via require" do
     end
   end
 
+  # rubocop:disable  Lint/UnreachableCode
   it "edge features" do
     # TODO: add edge features
     next skip
@@ -32,4 +33,5 @@ describe "edge/proposed features via require" do
       output.should include("alien\n")
     end
   end
+  # rubocop:enable  Lint/UnreachableCode
 end
