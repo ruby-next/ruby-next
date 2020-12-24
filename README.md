@@ -178,14 +178,14 @@ In the AST mode, we parse the source code into AST, modifies this AST and **gene
 
 In the rewrite mode, we apply changes to the source code itself, thus, keeping the original formatting of the unaffected code (in a similar way to RuboCop's autocorrect feature).
 
-By default, we use the AST mode. That could likely change in the future when we collect enough feedback on the rewrite mode and fix potential bugs.
-
 The main benefit of the rewrite mode is that it preserves the original code line numbers and layout, which is especially useful in debugging.
+
+By default, we use the rewrite mode. If you found a bug with rewrite mode which is not reproducible in the AST mode, please, let us know.
 
 You can change the transpiler mode:
 
 - From code by setting `RubyNext::Language.mode = :ast` or `RubyNext::Language.mode = :rewrite`.
-- Via environmental variable `RUBY_NEXT_TRANSPILE_MODE=rewrite`.
+- Via environmental variable `RUBY_NEXT_TRANSPILE_MODE=ast`.
 - Via CLI option ([see below](#cli)).
 
 **NOTE:** For the time being, Unparser doesn't support Ruby 3.0 AST nodes, so we always use rewrite mode in Ruby 3.0+.

@@ -2,6 +2,8 @@
 
 ## master
 
+- **Rewrite mode is used by default in transpiler**. ([@palkan][])
+
 - Move 3.0 features to stable features. ([@palkan][])
 
 - Refactor `a => x` and `a in x` to comply with Ruby 3.0. ([@palkan][])

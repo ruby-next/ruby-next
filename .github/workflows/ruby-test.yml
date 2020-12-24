@@ -82,7 +82,7 @@ jobs:
       run: |
         bundle install --jobs 4 --retry 3
         bundle exec mspec/bin/mspec
-    - name: Run language specs with source rewriting
+    - name: Run language specs with AST mode
       env:
-        RUBY_NEXT_TRANSPILE_MODE: "rewrite"
+        RUBY_NEXT_TRANSPILE_MODE: "ast"
       run: bundle exec mspec/bin/mspec :language
