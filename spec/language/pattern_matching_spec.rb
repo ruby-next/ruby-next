@@ -9,7 +9,6 @@ require_relative '../spec_helper'
 
 using RubyNext::Language::Eval
 
-
 ruby_version_is "2.7" do
   describe "Pattern matching" do
     # TODO: Remove excessive eval calls when support of previous version
@@ -965,6 +964,9 @@ ruby_version_is "2.7" do
     end
 
     describe "refinements" do
+      # JRuby doesn't play well with these refinements
+      next if defined?(JRUBY_VERSION)
+
       it "are used for #deconstruct" do
         refinery = Module.new do
           refine Array do
