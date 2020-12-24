@@ -110,9 +110,10 @@ module RuboCop
 
     module Layout
       require "rubocop/cop/layout/assignment_indentation"
-      AssignmentIndentation.prepend(Module.new do
-        POTENTIAL_RIGHT_TYPES = %i[ivasgn lvasgn cvasgn gvasgn casgn masgn].freeze
 
+      POTENTIAL_RIGHT_TYPES = %i[ivasgn lvasgn cvasgn gvasgn casgn masgn].freeze
+
+      AssignmentIndentation.prepend(Module.new do
         def check_assignment(node, *)
           return if rightward?(node)
           super
