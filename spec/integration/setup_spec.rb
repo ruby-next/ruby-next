@@ -19,6 +19,16 @@ describe "setup load path" do
     end
   end
 
+  it "loads from next" do
+    run_ruby(
+      "-I#{File.join(__dir__, "fixtures", "lib")} " \
+      "-r txen " \
+      "-e 'puts Txen::VERSION'"
+    ) do |_status, output, _err|
+      output.should include("0.1.0")
+    end
+  end
+
   it "ignores transpiled files if runtime mode is enabled for lib" do
     run_ruby(
       "-I#{File.join(__dir__, "fixtures", "lib")} " \

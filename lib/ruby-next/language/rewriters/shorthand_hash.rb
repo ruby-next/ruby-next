@@ -6,7 +6,7 @@ module RubyNext
       class ShorthandHash < Base
         NAME = "shorthand-hash"
         SYNTAX_PROBE = "data = {x}"
-        MIN_SUPPORTED_VERSION = Gem::Version.new("3.0.0")
+        MIN_SUPPORTED_VERSION = Gem::Version.new(RubyNext::NEXT_VERSION)
 
         def on_ipair(node)
           context.track! self

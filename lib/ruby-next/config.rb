@@ -15,6 +15,9 @@ module RubyNext
 
   LATEST_VERSION = [3, 0].freeze
 
+  # A virtual version number used for proposed features
+  NEXT_VERSION = "1995.next.0"
+
   class << self
     # TruffleRuby claims it's 2.7.2 compatible but...
     if defined?(TruffleRuby) && ::RUBY_VERSION =~ /^2\.7/
@@ -28,9 +31,11 @@ module RubyNext
     end
 
     def next_ruby_version(version = current_ruby_version)
+      return if version == Gem::Version.new(NEXT_VERSION)
+
       major, minor = Gem::Version.new(version).segments.map(&:to_i)
 
-      return if major >= LATEST_VERSION.first && minor >= LATEST_VERSION.last
+      return Gem::Version.new(NEXT_VERSION) if major >= LATEST_VERSION.first && minor >= LATEST_VERSION.last
 
       nxt =
         if LAST_MINOR_VERSIONS[major] == minor

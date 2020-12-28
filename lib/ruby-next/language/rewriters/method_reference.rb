@@ -6,7 +6,7 @@ module RubyNext
       class MethodReference < Base
         NAME = "method-reference"
         SYNTAX_PROBE = "Language.:transform"
-        MIN_SUPPORTED_VERSION = Gem::Version.new("3.0.0")
+        MIN_SUPPORTED_VERSION = Gem::Version.new(RubyNext::NEXT_VERSION)
 
         def on_meth_ref(node)
           context.track! self

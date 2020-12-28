@@ -10,7 +10,7 @@ describe "ruby-next nextify" do
     File.delete(File.join(__dir__, "dummy", ".rbnextrc")) if File.exist?(File.join(__dir__, "dummy", ".rbnextrc"))
   end
 
-  it "generates .rbnxt/{2.6, 2.7, 3.0} folders with the transpiled files required for each version" do
+  it "generates .rbnxt/{2.6, 2.7, 3.0, next} folders with the transpiled files required for each version" do
     run_ruby_next "nextify #{File.join(__dir__, "dummy")} --proposed --edge" do |_status, _output, err|
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.6", "transpile_me.rb")).should equal false
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.6", "namespaced", "pattern_matching.rb")).should equal false
@@ -22,10 +22,11 @@ describe "ruby-next nextify" do
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.7", "namespaced", "endless_nameless.rb")).should equal false
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "3.0", "namespaced", "pattern_matching.rb")).should equal true
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "3.0", "namespaced", "endless_nameless.rb")).should equal false
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "1995.next", "method_reference.rb")).should equal true
     end
   end
 
-  it "generates .rbnxt/{2.7, 3.0} folders when --min-version is provided" do
+  it "generates .rbnxt/{2.7, 3.0, next} folders when --min-version is provided" do
     run_ruby_next "nextify #{File.join(__dir__, "dummy")} --proposed --edge --min-version=2.6" do |_status, _output, err|
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.6", "transpile_me.rb")).should equal false
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.6", "namespaced", "pattern_matching.rb")).should equal false
@@ -37,6 +38,7 @@ describe "ruby-next nextify" do
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.7", "namespaced", "endless_nameless.rb")).should equal false
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "3.0", "namespaced", "pattern_matching.rb")).should equal true
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "3.0", "namespaced", "endless_nameless.rb")).should equal false
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "1995.next", "method_reference.rb")).should equal true
     end
   end
 

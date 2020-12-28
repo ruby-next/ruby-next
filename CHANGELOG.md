@@ -2,6 +2,12 @@
 
 ## master
 
+- Use separate _namespace_ for proposed features to avoid conflicts with new Ruby version. ([@palkan][])
+
+Previously, we used the upcoming Ruby version number for proposed features (e.g., `3.0.0`), which broke
+the load path setup, since transpiled files were not loaded anymore.
+Now that's fixed by using a _virtual_ version number for proposals (`1995.next.0`).
+
 ## 0.11.0 (2020-12-24) 🎄
 
 - Extended proposed shorthand Hash syntax to support kwargs as well. ([@palkan][])
