@@ -55,11 +55,11 @@ describe "transforming eval contents" do
       end
 
       def self.bar(*args, **kwargs)
-        args + [kwargs]
+        [args] + [kwargs]
       end
     })
 
-    m.foo(1, a: 2).should == [1, {a: 2}]
+    m.foo(1, a: 2).should == [[1], {a: 2}]
   end
 
   it "Module.module_eval with binding locals" do
