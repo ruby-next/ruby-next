@@ -2,6 +2,8 @@
 
 ## master
 
+## 0.11.1 (2020-12-28)
+
 - Use separate _namespace_ for proposed features to avoid conflicts with new Ruby version. ([@palkan][])
 
 Previously, we used the upcoming Ruby version number for proposed features (e.g., `3.0.0`), which broke
