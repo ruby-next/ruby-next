@@ -19,9 +19,6 @@ module RubyNext
     class Builder < ::Parser::Builders::Default
       modernize
 
-      # Unparser doesn't support kwargs node yet
-      self.emit_kwargs = false if respond_to?(:emit_kwargs=)
-
       unless method_defined?(:match_pattern_p)
         include BuilderExt
       end
