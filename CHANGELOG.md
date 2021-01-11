@@ -2,6 +2,10 @@
 
 ## master
 
+- Fixed several safe navigation (`&.`) bugs. ([@palkan][])
+
+See [#68](https://github.com/ruby-next/ruby-next/issues/68) and [#69](https://github.com/ruby-next/ruby-next/issues/69).
+
 ## 0.11.1 (2020-12-28)
 
 - Use separate _namespace_ for proposed features to avoid conflicts with new Ruby version. ([@palkan][])
