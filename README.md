@@ -445,6 +445,8 @@ AllCops:
 
 We currently provide support for Ruby 2.2, 2.3 and 2.4.
 
+**NOTE:** By "support" here we mean using `ruby-next` CLI and runtime transpiling. Transpiled code may run on Ruby 2.0+.
+
 Ruby Next itself relies on 2.5 features and contains polyfills only for version 2.5+ (and that won't change).
 Thus, to make it work with <2.5 we need to backport some APIs ourselves.
 
