@@ -48,6 +48,12 @@ describe "Safe navigator" do
     eval("[1,2]&.map { |i| i * 2 }").should == [2, 4]
   end
 
+  if RUBY_VERSION >= "2.5"
+    it "takes a numblock" do
+      eval("[1,2]&.map { _1 * 2 }").should == [2, 4]
+    end
+  end
+
   it "allows assignment methods" do
     klass = Class.new do
       attr_reader :foo

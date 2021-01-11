@@ -34,18 +34,15 @@ module RubyNext
 
           context.track!(self)
 
-          new_node = s(:begin,
-            super(node.updated(
-              :and,
-              [
-                process(safe_navigation(node.children[0].children[0])),
-                process(node.updated(nil, node.children.map(&method(:decsendize))))
-              ]
-            )))
+          super(decsendize_block(node))
+        end
 
-          replace(node.loc.expression, new_node)
+        def on_numblock(node)
+          return super(node) unless node.children[0].type == :csend
 
-          new_node
+          context.track!(self)
+
+          super(decsendize_block(node))
         end
 
         def on_op_asgn(node)
@@ -73,6 +70,21 @@ module RubyNext
           return node unless node.is_a?(::Parser::AST::Node) && node.type == :csend
 
           node.updated(:send, node.children.map(&method(:decsendize)))
+        end
+
+        def decsendize_block(node)
+          new_node = s(:begin,
+            node.updated(
+              :and,
+              [
+                process(safe_navigation(node.children[0].children[0])),
+                process(node.updated(nil, node.children.map(&method(:decsendize))))
+              ]
+            ))
+
+          replace(node.loc.expression, new_node)
+
+          new_node
         end
 
         # Transform: x&.y -> (!x.nil? && x.y) || nil
