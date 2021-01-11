@@ -109,12 +109,12 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: language-specs-transpiled
-    - name: Display structure of transpiled files
-      run: ls -R
-      working-directory: spec/language/ruby20/
     - name: Download MSpec
       run: |
         git clone --branch v1.7.0 https://github.com/ruby/mspec.git mspec
+    - name: Install backports
+      run: |
+        gem install backports
     - name: Run language specs for Ruby 2.0
       run: |
         (cd spec/language/ruby20 && ../../../mspec/bin/mspec *.rb)
