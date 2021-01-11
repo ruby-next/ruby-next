@@ -2,6 +2,10 @@
 
 ## master
 
+- Added numeric literals rewriter. ([@palkan][])
+
+Now it's possible to generate Ruby 2.0 compatible code from `2i + 1/3r`.
+
 - Fixed several safe navigation (`&.`) bugs. ([@palkan][])
 
 See [#68](https://github.com/ruby-next/ruby-next/issues/68) and [#69](https://github.com/ruby-next/ruby-next/issues/69).
