@@ -10,7 +10,7 @@ RubyNext::Core.patches.extensions.each do |mod, patches|
     next if patch.supported?
 
     if patch.prepend?
-      mod.prepend(patch.to_module)
+      mod.send(:prepend, patch.to_module)
     else
       mod.module_eval(patch.body, *patch.location)
     end
