@@ -30,7 +30,7 @@ module RubyNext
 
       def setup_gem_load_path(lib_dir = "lib", rbnext_dir: RUBY_NEXT_DIR, transpile: false)
         called_from = caller_locations(1, 1).first.path
-        dirname = File.dirname(called_from)
+        dirname = File.realpath(File.dirname(called_from))
 
         loop do
           basename = File.basename(dirname)
