@@ -2,6 +2,10 @@
 
 ## master
 
+- Added required keyword arguments rewriter. ([@palkan][])
+
+Required kwargs were introduced in 2.1. Now we make them possible in 2.0.
+
 - Added numeric literals rewriter. ([@palkan][])
 
 Now it's possible to generate Ruby 2.0 compatible code from `2i + 1/3r`.

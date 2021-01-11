@@ -182,6 +182,9 @@ module RubyNext
     require "ruby-next/language/rewriters/numeric_literals"
     rewriters << Rewriters::NumericLiterals
 
+    require "ruby-next/language/rewriters/required_kwargs"
+    rewriters << Rewriters::RequiredKwargs
+
     require "ruby-next/language/rewriters/args_forward"
     rewriters << Rewriters::ArgsForward
 

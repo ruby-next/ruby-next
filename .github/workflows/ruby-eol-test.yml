@@ -117,4 +117,4 @@ jobs:
         git clone --branch v1.7.0 https://github.com/ruby/mspec.git mspec
     - name: Run language specs for Ruby 2.0
       run: |
-        (cd spec/language/ruby20 && ../../../mspec/bin/mspec numeric_literals_spec.rb)
+        (cd spec/language/ruby20 && ../../../mspec/bin/mspec *.rb)
