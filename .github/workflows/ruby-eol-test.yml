@@ -109,6 +109,7 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: language-specs-transpiled
+        path: spec/language/ruby20/.rbnext
     - name: Download MSpec
       run: |
         git clone --branch v1.7.0 https://github.com/ruby/mspec.git mspec
