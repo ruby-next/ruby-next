@@ -33,10 +33,19 @@ jobs:
       run: |
         make transpile
     - name: Store transpiled files
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v2
       with:
         name: ruby-next-transpiled
         path: lib/.rbnext
+    - name: Transpile language specs
+      run: |
+        make transpile-language-specs
+    - name: Transpile Ruby 2.0 fixtures
+      uses: actions/upload-artifact@v2
+      with:
+        name: language-specs-transpiled
+        path: spec/language/ruby20/.rbnext
+        if-no-files-found: ignore
 
   ruby-test:
     needs: transpile
@@ -63,7 +72,7 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby }}
     - name: Restore transpiled files
-      uses: actions/download-artifact@v1
+      uses: actions/download-artifact@v2
       with:
         name: ruby-next-transpiled
         path: lib/.rbnext
@@ -89,34 +98,18 @@ jobs:
     runs-on: ubuntu-latest
     container:
        image: ruby:2.0
-    env:
-      CORE_EXT: backports
-      RUBY_NEXT_CORE_STRATEGY: backports
-      BUNDLE_JOBS: 4
-      BUNDLE_RETRY: 3
-      CI: true
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/cache@v1
-      with:
-        path: /home/runner/bundle
-        key: bundle-20-${{ hashFiles('../gemfiles/eol.gemfile') }}-${{ hashFiles('**/*.gemspec') }}
-        restore-keys: |
-          bundle-20-
-    - name: Restore transpiled files
+    - name: Restore transpiled specs
       uses: actions/download-artifact@v2
       with:
-        name: ruby-next-transpiled
+        name: language-specs-transpiled
+    - name: Display structure of transpiled files
+      run: ls -R
+      working-directory: spec/language/ruby20/
     - name: Download MSpec
       run: |
         git clone --branch v1.7.0 https://github.com/ruby/mspec.git mspec
-    - name: Bundle install
+    - name: Run language specs for Ruby 2.0
       run: |
-        bundle config path /home/runner/bundle
-        bundle config --global gemfile gemfiles/eol.gemfile
-        bundle install
-        bundle update
-    - name: Run language specs
-      run: |
-        bundle install --jobs 4 --retry 3
-        bundle exec mspec/bin/mspec :language
+        (cd spec/language/ruby20 && ../../../mspec/bin/mspec numeric_literals_spec.rb)
