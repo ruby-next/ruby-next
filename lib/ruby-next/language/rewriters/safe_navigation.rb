@@ -8,6 +8,8 @@ module RubyNext
         SYNTAX_PROBE = "nil&.x&.nil?"
         MIN_SUPPORTED_VERSION = Gem::Version.new("2.3.0")
 
+        SAFE_LVAR = :__safe_lvar__
+
         def on_csend(node)
           node = super(node)
 
@@ -20,7 +22,7 @@ module RubyNext
               :and,
               [
                 process(safe_navigation(receiver)),
-                s(:send, decsendize(receiver), *args)
+                s(:send, safe_lvar, *args)
               ]
             ))
 
@@ -34,7 +36,7 @@ module RubyNext
 
           context.track!(self)
 
-          super(decsendize_block(node))
+          super(decsendize(node))
         end
 
         def on_numblock(node)
@@ -42,7 +44,7 @@ module RubyNext
 
           context.track!(self)
 
-          super(decsendize_block(node))
+          super(decsendize(node))
         end
 
         def on_op_asgn(node)
@@ -50,35 +52,24 @@ module RubyNext
 
           context.track!(self)
 
-          new_node = s(:begin,
-            super(node.updated(
-              :and,
-              [
-                process(safe_navigation(node.children[0].children[0])),
-                process(node.updated(nil, node.children.map(&method(:decsendize))))
-              ]
-            )))
-
-          replace(node.loc.expression, new_node)
-
-          new_node
+          super(decsendize(node))
         end
 
         private
 
         def decsendize(node)
-          return node unless node.is_a?(::Parser::AST::Node) && node.type == :csend
+          csend, *children = node.children
 
-          node.updated(:send, node.children.map(&method(:decsendize)))
-        end
+          receiver, *other = csend.children
 
-        def decsendize_block(node)
+          new_csend = csend.updated(:send, [safe_lvar, *other])
+
           new_node = s(:begin,
             node.updated(
               :and,
               [
-                process(safe_navigation(node.children[0].children[0])),
-                process(node.updated(nil, node.children.map(&method(:decsendize))))
+                process(safe_navigation(receiver)),
+                process(node.updated(nil, [new_csend, *children]))
               ]
             ))
 
@@ -87,15 +78,25 @@ module RubyNext
           new_node
         end
 
-        # Transform: x&.y -> (!x.nil? && x.y) || nil
+        # Transform: x&.y -> ((_tmp_ = x) || true) && (!_tmp_.nil? || nil) && _tmp_.y
         # This allows us to handle `false&.to_s == "false"`
         def safe_navigation(node)
           s(:begin,
-            s(:or,
-              s(:send,
-                s(:send, node, :nil?),
-                :!),
-              s(:nil)))
+            s(:and,
+              s(:begin,
+                s(:or,
+                  s(:begin, s(:lvasgn, SAFE_LVAR, node)),
+                  s(:true))),
+              s(:begin,
+                s(:or,
+                  s(:send,
+                    s(:send, safe_lvar, :nil?),
+                    :!),
+                  s(:nil)))))
+        end
+
+        def safe_lvar
+          s(:lvar, SAFE_LVAR)
         end
       end
     end
