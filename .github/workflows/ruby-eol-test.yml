@@ -84,3 +84,39 @@ jobs:
       env:
         RUBY_NEXT_TRANSPILE_MODE: "ast"
       run: bundle exec mspec/bin/mspec :language
+  ruby-20-test:
+    needs: transpile
+    runs-on: ubuntu-latest
+    container:
+       image: ruby:2.0
+    env:
+      CORE_EXT: backports
+      RUBY_NEXT_CORE_STRATEGY: backports
+      BUNDLE_JOBS: 4
+      BUNDLE_RETRY: 3
+      CI: true
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/cache@v1
+      with:
+        path: /home/runner/bundle
+        key: bundle-20-${{ hashFiles('../gemfiles/eol.gemfile') }}-${{ hashFiles('**/*.gemspec') }}
+        restore-keys: |
+          bundle-20-
+    - name: Restore transpiled files
+      uses: actions/download-artifact@v2
+      with:
+        name: ruby-next-transpiled
+    - name: Download MSpec
+      run: |
+        git clone --branch v1.7.0 https://github.com/ruby/mspec.git mspec
+    - name: Bundle install
+      run: |
+        bundle config path /home/runner/bundle
+        bundle config --global gemfile gemfiles/eol.gemfile
+        bundle install
+        bundle update
+    - name: Run language specs
+      run: |
+        bundle install --jobs 4 --retry 3
+        bundle exec mspec/bin/mspec :language
