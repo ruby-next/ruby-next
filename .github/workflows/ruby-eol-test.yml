@@ -100,6 +100,11 @@ jobs:
        image: ruby:2.0
     steps:
     - uses: actions/checkout@v2
+    - name: Restore transpiled files
+      uses: actions/download-artifact@v2
+      with:
+        name: ruby-next-transpiled
+        path: lib/.rbnext
     - name: Restore transpiled specs
       uses: actions/download-artifact@v2
       with:
