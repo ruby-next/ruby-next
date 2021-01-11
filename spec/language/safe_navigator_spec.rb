@@ -15,6 +15,7 @@ describe "Safe navigator" do
 
     it "can be chained" do
       eval("nil&.one&.two&.three").should == nil
+      eval("1&.to_s&.to_i").should == 1
     end
 
     it "doesn't evaluate arguments" do
@@ -103,5 +104,23 @@ describe "Safe navigator" do
     }.should raise_error(NoMethodError) { |e|
       e.name.should == :+
     }
+  end
+
+  it "does call lhs once" do
+    klass = Class.new do
+      class << self
+        attr_accessor :instances
+      end
+
+      self.instances = []
+
+      def initialize
+        self.class.instances << self
+      end
+    end
+
+    eval("klass.new&.inspect")
+
+    klass.instances.size.should == 1
   end
 end
