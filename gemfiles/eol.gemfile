@@ -3,10 +3,12 @@ source "https://rubygems.org"
 
 gemspec path: "..", name: "ruby-next-core"
 
-platform :mri do
-  gem "pry", "~> 0.12.0"
-  gem "byebug", "~> 10.0"
-  gem "pry-byebug", "< 3.9"
+if RUBY_VERSION >= "2.2.0"
+  platform :mri do
+    gem "pry", "~> 0.12.0"
+    gem "byebug", "~> 10.0"
+    gem "pry-byebug", "< 3.9"
+  end
 end
 
 # Backport APIs
