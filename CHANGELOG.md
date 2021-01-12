@@ -2,6 +2,8 @@
 
 ## master
 
+## 0.12.0 (2021-01-12)
+
 - Added required keyword arguments rewriter. ([@palkan][])
 
 Required kwargs were introduced in 2.1. Now we make them possible in 2.0.
