@@ -73,10 +73,12 @@ jobs:
     - name: Bundle install
       run: |
         bundle install
-    - name: Run MSpec
+    - name: Run MSpec Core
       run: |
-        bundle install
-        bundle exec mspec/bin/mspec
+        bundle exec mspec/bin/mspec :core
+    - name: Run MSpec Language
+      run: |
+        bundle exec mspec/bin/mspec :language
     - name: Run language specs with AST mode
       env:
         RUBY_NEXT_TRANSPILE_MODE: "ast"
