@@ -21,8 +21,20 @@ That's why Ruby Next implements the `master` features as fast as possible.
 
 Read more about the motivation behind the Ruby Next in this post: [Ruby Next: Make all Rubies quack alike](https://evilmartians.com/chronicles/ruby-next-make-all-rubies-quack-alike).
 
-<a href="https://evilmartians.com/?utm_source=ruby-next">
-<img src="https://evilmartians.com/badges/sponsored-by-evil-martians.svg" alt="Sponsored by Evil Martians" width="236" height="54"></a>
+<table style="border:none;">
+<tr>
+<td>
+     <a href="https://evilmartians.com/?utm_source=ruby-next">
+          <img src="https://evilmartians.com/badges/sponsored-by-evil-martians.svg" alt="Sponsored by Evil Martians" width="236" height="54">
+     </a>
+</td>
+<td>
+     <a href="http://www.digitalfukuoka.jp/topics/169">
+          <img src="http://www.digitalfukuoka.jp/javascripts/kcfinder/upload/images/excellence.jpg" width="200">
+     </a>
+</td>
+</tr>
+</table>
 
 ## Posts
 
