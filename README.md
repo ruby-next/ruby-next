@@ -522,7 +522,7 @@ require "ruby-next/language/runtime"
 
 ### Supported edge features
 
-No new features since 3.0 release.
+`Array#intersect?` ([#15198](https://bugs.ruby-lang.org/issues/15198))
 
 ### Supported proposed features
 

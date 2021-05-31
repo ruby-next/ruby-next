@@ -188,6 +188,8 @@ require "ruby-next/core/struct/deconstruct_keys"
 
 require "ruby-next/core/hash/except"
 
+require "ruby-next/core/array/intersect"
+
 # Generate refinements
 RubyNext.module_eval do
   RubyNext::Core.patches.refined.each do |mod, patches|

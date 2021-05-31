@@ -70,6 +70,10 @@ The possible translation depends on the _end_ type which could hardly be inferre
 
 - Single-line pattern matching (`{a: 2} in {a:, b:}` or `{a: 2} => {a:, b:}`)
 
+### 3.1
+
+- `Array#intersect?` ([#15198](https://bugs.ruby-lang.org/issues/15198))
+
 ### Proposals
 
 - **REVERTED IN RUBY ([#16275](https://bugs.ruby-lang.org/issues/16275))** Method reference operator (`Module.:method`) ([#12125](https://bugs.ruby-lang.org/issues/12125), [#13581](https://bugs.ruby-lang.org/issues/13581))

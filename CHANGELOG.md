@@ -2,6 +2,8 @@
 
 ## master
 
+- Added `Array#intersect?`. ([@skryukov][])
+
 ## 0.12.0 (2021-01-12)
 
 - Added required keyword arguments rewriter. ([@palkan][])
@@ -281,3 +283,4 @@ p a #=> 1
 [@palkan]: https://github.com/palkan
 [backports]: https://github.com/marcandre/backports
 [@sl4vr]: https://github.com/sl4vr
+[@skryukov]: https://github.com/skryukov
