@@ -15,20 +15,11 @@ jobs:
       CI: true
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/cache@v1
-      with:
-        path: /home/runner/bundle
-        key: bundle-${{ hashFiles('../Gemfile') }}-${{ hashFiles('**/*.gemspec') }}
-        restore-keys: |
-          bundle-
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: 2.7
-    - name: Bundle install
-      run: |
-        bundle config path /home/runner/bundle
-        bundle install
-        bundle update
+        bundler: 2.2.15
+        bundler-cache: true
     - name: Transpile Ruby Next
       run: |
         make transpile
@@ -59,18 +50,15 @@ jobs:
       RUBY_NEXT_CORE_STRATEGY: backports
       BUNDLE_JOBS: 4
       BUNDLE_RETRY: 3
+      BUNDLE_GEMFILE: "gemfiles/eol.gemfile"
       CI: true
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/cache@v1
-      with:
-        path: /home/runner/bundle
-        key: bundle-${{ matrix.ruby }}-${{ hashFiles('../gemfiles/eol.gemfile') }}-${{ hashFiles('**/*.gemspec') }}
-        restore-keys: |
-          bundle-${{ matrix.ruby }}-
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
+        bundler: 1.17
+        bundler-cache: true
     - name: Restore transpiled files
       uses: actions/download-artifact@v2
       with:
@@ -79,12 +67,6 @@ jobs:
     - name: Download MSpec
       run: |
         git clone --branch v1.7.0 https://github.com/ruby/mspec.git mspec
-    - name: Bundle install
-      run: |
-        bundle config path /home/runner/bundle
-        bundle config --global gemfile gemfiles/eol.gemfile
-        bundle install
-        bundle update
     - name: Run MSpec
       run: |
         bundle install --jobs 4 --retry 3

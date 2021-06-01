@@ -18,6 +18,7 @@ jobs:
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: 2.6
+        bundler: 2.2.15
     - name: Run Markdown linter
       run: |
         gem install mdl
@@ -26,19 +27,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/cache@v1
-      with:
-        path: /home/runner/bundle
-        key: bundle-rubocop-${{ hashFiles('../Gemfile') }}-${{ hashFiles('**/*.gemspec') }}
-        restore-keys: |
-          bundle-rubocop-
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: 2.7
+        bundler: 2.2.15
+        bundler-cache: true
     - name: Lint Markdown files with RuboCop
       run: |
-        bundle config path /home/runner/bundle
-        bundle install --jobs 4 --retry 3
         bundle exec rubocop -c .rubocop-md.yml
   forspell:
     runs-on: ubuntu-latest
@@ -50,6 +45,7 @@ jobs:
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: 2.6
+        bundler: 2.2.15
     - name: Run Forspell
       run: |
         gem install forspell

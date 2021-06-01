@@ -15,23 +15,14 @@ jobs:
       CI: true
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/cache@v1
-      with:
-        path: /home/runner/bundle
-        key: bundle-head-${{ hashFiles('../Gemfile') }}-${{ hashFiles('**/*.gemspec') }}
-        restore-keys: |
-          bundle-head-
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: head
+        bundler: 2.2.15
+        bundler-cache: true
     - name: Download MSpec
       run: |
         git clone https://github.com/ruby/mspec.git mspec
-    - name: Bundle install
-      run: |
-        bundle config path /home/runner/bundle
-        bundle install
-        bundle update
     - name: Run MSpec
       run: |
         bundle exec mspec/bin/mspec

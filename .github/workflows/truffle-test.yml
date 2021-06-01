@@ -15,20 +15,11 @@ jobs:
       CI: true
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/cache@v1
-      with:
-        path: /home/runner/bundle
-        key: bundle-${{ hashFiles('../Gemfile') }}-${{ hashFiles('**/*.gemspec') }}
-        restore-keys: |
-          bundle-
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: 2.7
-    - name: Bundle install
-      run: |
-        bundle config path /home/runner/bundle
-        bundle install
-        bundle update
+        bundler: 2.2.15
+        bundler-cache: true
     - name: Transpile Ruby Next
       run: |
         make transpile
@@ -56,6 +47,8 @@ jobs:
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: truffleruby-head
+        bundler: 2.2.15
+        bundler-cache: true
     - name: Restore transpiled files
       uses: actions/download-artifact@v1
       with:
@@ -64,15 +57,6 @@ jobs:
     - name: Download MSpec
       run: |
         git clone https://github.com/ruby/mspec.git mspec
-    - uses: actions/cache@v1
-      with:
-        path: /home/runner/bundle
-        key: bundle-truffle-${{ hashFiles('../Gemfile') }}-${{ hashFiles('**/*.gemspec') }}
-        restore-keys: |
-          bundle-truffle-
-    - name: Bundle install
-      run: |
-        bundle install
     - name: Run MSpec Core
       run: |
         bundle exec mspec/bin/mspec :core
