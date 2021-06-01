@@ -181,6 +181,7 @@ unless defined?(NoMatchingPatternError)
 end
 
 require "ruby-next/core/constants/no_matching_pattern_error"
+require "ruby-next/core/constants/frozen_error"
 require "ruby-next/core/array/deconstruct"
 require "ruby-next/core/hash/deconstruct_keys"
 require "ruby-next/core/struct/deconstruct"
