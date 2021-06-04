@@ -94,52 +94,25 @@ module RubyNext
         @runtime
       end
 
-      def transform(*args, **kwargs)
-        if mode == :rewrite
-          rewrite(*args, **kwargs)
-        else
-          regenerate(*args, **kwargs)
-        end
-      rescue Unparser::UnknownNodeError
-        if Gem::Version.new(::RubyNext.current_ruby_version) >= Gem::Version.new("3.0.0")
-          RubyNext.warn "Ruby Next fallbacks to \"rewrite\" transpiling mode since Unparser doesn't support 3.0+ AST yet.\n" \
-            "See https://github.com/mbj/unparser/issues/168"
-          self.mode = :rewrite
-        end
-        rewrite(*args, **kwargs)
-      end
-
-      def regenerate(source, rewriters: self.rewriters, using: RubyNext::Core.refine?, context: TransformContext.new)
-        parse_with_comments(source).then do |(ast, comments)|
-          rewriters.inject(ast) do |tree, rewriter|
-            rewriter.new(context).process(tree)
-          end.then do |new_ast|
-            next source unless context.dirty?
-
-            Unparser.unparse(new_ast, comments)
-          end.then do |source|
-            next source unless RubyNext::Core.refine?
-            next source unless using && context.use_ruby_next?
-
-            Core.inject! source.dup
+      def transform(source, rewriters: self.rewriters, using: RubyNext::Core.refine?, context: TransformContext.new)
+        begin
+          if mode == :rewrite
+            rewrite(source, rewriters: rewriters, using: using, context: context)
+          else
+            regenerate(source, rewriters: rewriters, using: using, context: context)
           end
-        end
-      end
-
-      def rewrite(source, rewriters: self.rewriters, using: RubyNext::Core.refine?, context: TransformContext.new)
-        rewriters.inject(source) do |src, rewriter|
-          buffer = Parser::Source::Buffer.new("<dynamic>")
-          buffer.source = src
-
-          rewriter.new(context).rewrite(buffer, parse(src))
+        rescue Unparser::UnknownNodeError
+          if Gem::Version.new(::RubyNext.current_ruby_version) >= Gem::Version.new("3.0.0")
+            RubyNext.warn "Ruby Next fallbacks to \"rewrite\" transpiling mode since Unparser doesn't support 3.0+ AST yet.\n" \
+              "See https://github.com/mbj/unparser/issues/168"
+            self.mode = :rewrite
+          end
+          retry
         end.then do |new_source|
-          next source unless context.dirty?
-          new_source
-        end.then do |source|
-          next source unless RubyNext::Core.refine?
-          next source unless using && context.use_ruby_next?
+          next new_source unless RubyNext::Core.refine?
+          next new_source unless using && context.use_ruby_next?
 
-          Core.inject! source.dup
+          Core.inject! new_source.dup
         end
       end
 
@@ -163,6 +136,31 @@ module RubyNext
       end
 
       private
+
+      def regenerate(source, rewriters:, using:, context:)
+        parse_with_comments(source).then do |(ast, comments)|
+          rewriters.inject(ast) do |tree, rewriter|
+            rewriter.new(context).process(tree)
+          end.then do |new_ast|
+            next source unless context.dirty?
+
+            Unparser.unparse(new_ast, comments)
+          end
+        end
+      end
+
+      def rewrite(source, rewriters:, using:, context:)
+        rewriters.inject(source) do |src, rewriter|
+          buffer = Parser::Source::Buffer.new("<dynamic>")
+          buffer.source = src
+
+          rewriter.new(context).rewrite(buffer, parse(src))
+        end.then do |new_source|
+          next source unless context.dirty?
+
+          new_source
+        end
+      end
 
       attr_writer :watch_dirs
     end
