@@ -149,6 +149,8 @@ end
 
 require "backports/2.5" if RubyNext::Core.backports?
 
+require "ruby-next/core/constants/frozen_error"
+
 require "ruby-next/core/kernel/then"
 
 require "ruby-next/core/proc/compose"
