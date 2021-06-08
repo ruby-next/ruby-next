@@ -40,6 +40,7 @@ jobs:
 
   ruby-test:
     needs: transpile
+    timeout-minutes: 5
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -77,6 +78,7 @@ jobs:
       run: bundle exec mspec/bin/mspec :language
   ruby-20-test:
     needs: transpile
+    timeout-minutes: 5
     runs-on: ubuntu-latest
     container:
        image: ruby:2.0

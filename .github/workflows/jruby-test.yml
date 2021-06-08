@@ -31,6 +31,7 @@ jobs:
 
   jruby-test:
     needs: transpile
+    timeout-minutes: 20
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
