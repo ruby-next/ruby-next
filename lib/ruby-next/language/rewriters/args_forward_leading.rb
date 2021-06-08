@@ -23,7 +23,7 @@ module RubyNext
           super
         end
 
-        def on_forward_arg(node)
+        def on_args(node)
           return super if leading_farg?
 
           node

@@ -11,16 +11,20 @@ module RubyNext
         REST = :__rest__
         BLOCK = :__block__
 
-        def on_forward_arg(node)
+        def on_args(node)
+          farg = node.children.find { |child| child.is_a?(::Parser::AST::Node) && child.type == :forward_arg }
+          return unless farg
+
           context.track! self
 
           node = super(node)
 
-          replace(node.loc.expression, "*#{REST}, &#{BLOCK}")
+          replace(farg.loc.expression, "*#{REST}, &#{BLOCK}")
 
           node.updated(
             :args,
             [
+              *node.children.slice(0, node.children.index(farg)),
               s(:restarg, REST),
               s(:blockarg, BLOCK)
             ]

@@ -95,25 +95,30 @@ module RubyNext
       end
 
       def transform(source, rewriters: self.rewriters, using: RubyNext::Core.refine?, context: TransformContext.new)
+        retried = 0
+        new_source = nil
         begin
-          if mode == :rewrite
-            rewrite(source, rewriters: rewriters, using: using, context: context)
-          else
-            regenerate(source, rewriters: rewriters, using: using, context: context)
-          end
+          new_source =
+            if mode == :rewrite
+              rewrite(source, rewriters: rewriters, using: using, context: context)
+            else
+              regenerate(source, rewriters: rewriters, using: using, context: context)
+            end
         rescue Unparser::UnknownNodeError
           if Gem::Version.new(::RubyNext.current_ruby_version) >= Gem::Version.new("3.0.0")
             RubyNext.warn "Ruby Next fallbacks to \"rewrite\" transpiling mode since Unparser doesn't support 3.0+ AST yet.\n" \
               "See https://github.com/mbj/unparser/issues/168"
             self.mode = :rewrite
+            retried += 1
+            retry unless retried > 1
           end
-          retry
-        end.then do |new_source|
-          next new_source unless RubyNext::Core.refine?
-          next new_source unless using && context.use_ruby_next?
-
-          Core.inject! new_source.dup
+          raise
         end
+
+        return new_source unless RubyNext::Core.refine?
+        return new_source unless using && context.use_ruby_next?
+
+        Core.inject! new_source.dup
       end
 
       def transformable?(path)

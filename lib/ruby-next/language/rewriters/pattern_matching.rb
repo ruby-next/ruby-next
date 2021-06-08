@@ -353,7 +353,7 @@ module RubyNext
 
           else_clause = (else_clause || no_matching_pattern).then do |node|
             next node unless node.type == :empty_else
-            s(:empty)
+            nil
           end
 
           clauses << else_clause
