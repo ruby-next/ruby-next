@@ -9,6 +9,7 @@ on:
 jobs:
   transpile:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     env:
       BUNDLE_JOBS: 4
       BUNDLE_RETRY: 3
@@ -77,6 +78,7 @@ jobs:
       run: bundle exec mspec/bin/mspec :language
   ruby-20-test:
     needs: transpile
+    timeout-minutes: 5
     runs-on: ubuntu-latest
     container:
        image: ruby:2.0

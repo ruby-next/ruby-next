@@ -32,6 +32,7 @@ jobs:
 
   ruby-test:
     needs: transpile
+    timeout-minutes: 5
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
