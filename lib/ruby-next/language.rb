@@ -71,6 +71,8 @@ module RubyNext
         @watch_dirs
       end
 
+      attr_accessor :rewriters, :text_rewriters
+
       attr_accessor :strategy
 
       MODES = %i[rewrite ast].freeze
@@ -101,14 +103,17 @@ module RubyNext
       end
 
       def transform(source, rewriters: self.rewriters, using: RubyNext::Core.refine?, context: TransformContext.new)
+        text_rewriters, ast_rewriters = rewriters.partition(&:text?)
+
         retried = 0
-        new_source = nil
+        new_source = text_rewrite(source, rewriters: text_rewriters, using: using, context: context)
+
         begin
           new_source =
             if mode == :rewrite
-              rewrite(source, rewriters: rewriters, using: using, context: context)
+              rewrite(new_source, rewriters: ast_rewriters, using: using, context: context)
             else
-              regenerate(source, rewriters: rewriters, using: using, context: context)
+              regenerate(new_source, rewriters: ast_rewriters, using: using, context: context)
             end
         rescue Unparser::UnknownNodeError => err
           RubyNext.warn "Ruby Next fallbacks to \"rewrite\" transpiling mode since the version of Unparser you use doesn't support some syntax yet: #{err.message}.\n" \
@@ -180,11 +185,22 @@ module RubyNext
         end
       end
 
+      def text_rewrite(source, rewriters:, using:, context:)
+        rewriters.inject(source) do |src, rewriter|
+          rewriter.new(context).rewrite(src)
+        end.then do |new_source|
+          next source unless context.dirty?
+
+          new_source
+        end
+      end
+
       attr_writer :watch_dirs
       attr_writer :include_patterns, :exclude_patterns
     end
 
     self.rewriters = []
+    self.text_rewriters = []
     self.watch_dirs = [].tap do |dirs|
       # For backward compatibility
       dirs.define_singleton_method(:<<) do |dir|
@@ -197,7 +213,9 @@ module RubyNext
     self.exclude_patterns = %w[vendor/bundle].map { |path| File.join(Dir.pwd, path, "*") }
     self.mode = ENV.fetch("RUBY_NEXT_TRANSPILE_MODE", "rewrite").to_sym
 
+    require "ruby-next/language/rewriters/abstract"
     require "ruby-next/language/rewriters/base"
+    require "ruby-next/language/rewriters/text"
 
     require "ruby-next/language/rewriters/2.1/numeric_literals"
     rewriters << Rewriters::NumericLiterals
