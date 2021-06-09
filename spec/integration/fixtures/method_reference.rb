@@ -3,7 +3,7 @@
 require "json"
 
 def main(val)
-  "status: #{JSON.:parse.call(val)["status"]}"
+  "status: " + JSON.:parse.call(val)["status"].to_s
 end
 
 # p main('{}') #=> "status: nil"
