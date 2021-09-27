@@ -2,6 +2,8 @@
 
 ## master
 
+## 0.13.0 (2021-09-27)
+
 - Added `Enumerable#tally` with the resulting hash. ([@skryukov][])
 
 - Added `Array#intersect?`. ([@skryukov][])
