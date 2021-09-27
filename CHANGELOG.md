@@ -2,6 +2,10 @@
 
 ## master
 
+## 0.13.1 (2021-09-27)
+
+- Fix checking for realpath during $LOAD_PATH setup. ([@palkan][])
+
 ## 0.13.0 (2021-09-27)
 
 - Added `Enumerable#tally` with the resulting hash. ([@skryukov][])
