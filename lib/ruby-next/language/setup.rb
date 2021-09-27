@@ -50,7 +50,8 @@ module RubyNext
         GemTranspiler.maybe_transpile(File.dirname(dirname), lib_dir, next_dirname) if transpile
 
         current_index = $LOAD_PATH.find_index do |load_path|
-          Pathname.new(load_path).realpath.to_s == dirname
+          pn = Pathname.new(load_path)
+          pn.exist? && pn.realpath.to_s == dirname
         end
 
         raise "Gem's lib is not in the $LOAD_PATH: #{dirname}" if current_index.nil?
