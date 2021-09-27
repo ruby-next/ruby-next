@@ -104,14 +104,12 @@ module RubyNext
             else
               regenerate(source, rewriters: rewriters, using: using, context: context)
             end
-        rescue Unparser::UnknownNodeError
-          if Gem::Version.new(::RubyNext.current_ruby_version) >= Gem::Version.new("3.0.0")
-            RubyNext.warn "Ruby Next fallbacks to \"rewrite\" transpiling mode since Unparser doesn't support 3.0+ AST yet.\n" \
-              "See https://github.com/mbj/unparser/issues/168"
-            self.mode = :rewrite
-            retried += 1
-            retry unless retried > 1
-          end
+        rescue Unparser::UnknownNodeError => err
+          RubyNext.warn "Ruby Next fallbacks to \"rewrite\" transpiling mode since the version of Unparser you use doesn't support some syntax yet: #{err.message}.\n" \
+            "Try upgrading the Unparser or set transpiling mode to \"rewrite\" in case you use some edge or experimental syntax."
+          self.mode = :rewrite
+          retried += 1
+          retry unless retried > 1
           raise
         end
 
