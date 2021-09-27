@@ -63,8 +63,8 @@ jobs:
         bundle exec mspec/bin/mspec :core
     - name: Run MSpec Language
       run: |
-        bundle exec mspec/bin/mspec :language
-    - name: Run language specs with AST mode
-      env:
-        RUBY_NEXT_TRANSPILE_MODE: "ast"
-      run: bundle exec mspec/bin/mspec :language
+        ruby -e '
+          Dir.glob("spec/language/**/*_spec.rb").all? do |file|
+            system("bundle", "exec", "mspec/bin/mspec", file)
+          end || raise("Failures")
+        '
