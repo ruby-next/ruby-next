@@ -144,6 +144,19 @@ describe "custom tests for pattern mathing" do
         end
       end
     end
+
+    it "mixed" do
+      assert_block do
+        case [{a: 1, b: [1]}, {a: 1, c: ["2"]}]
+          in [{a:, c:},]
+            false
+          in [{a: 1, b:}, {a: 1, c: [Integer]}]
+            false
+          in [_, {a: 1, c: [String]}]
+            true
+        end
+      end
+    end
   end
 
   describe "AS pattern" do
