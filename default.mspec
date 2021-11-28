@@ -3,6 +3,10 @@
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
+if defined?(Warning) && Warning.respond_to?(:[]=)
+  Warning[:experimental] = false
+end
+
 begin
   require "pry-byebug"
 rescue LoadError

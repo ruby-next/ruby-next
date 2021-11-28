@@ -21,6 +21,10 @@ module TestUnitToMspec
       block.should raise_error(error)
     end
 
+    def assert_raise_with_message(error, msg, &block)
+      block.should raise_error(error)
+    end
+
     def assert_nothing_raised(&block)
       block.should_not raise_error
     end
