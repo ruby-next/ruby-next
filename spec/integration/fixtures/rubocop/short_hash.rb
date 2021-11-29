@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 def short_hash(a, b)
-  {a:, sum: a + b, b:} # rubocop:disable Layout/SpaceAfterColon
+  {a:, sum: a + b, b:}
 end
 
 a = 1
-short_hash(a:) # rubocop:disable Layout/SpaceAfterColon
+short_hash(a:)

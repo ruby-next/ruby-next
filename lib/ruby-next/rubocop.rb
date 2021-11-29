@@ -143,6 +143,15 @@ module RuboCop
           node.loc.expression.line
         end
       end)
+
+      require "rubocop/cop/layout/space_after_colon"
+      SpaceAfterColon.prepend(Module.new do
+        def on_pair(node)
+          return if node.children[0].loc.last_column == node.children[1].loc.last_column
+
+          super(node)
+        end
+      end)
     end
 
     module Style
