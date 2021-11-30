@@ -15,6 +15,18 @@ module RubyNext
 
       class Base < ::Parser::TreeRewriter
         class LocalsTracker
+          using(Module.new do
+            refine ::Parser::AST::Node do
+              def to_index
+                children&.first || type
+              end
+            end
+
+            refine ::Object do
+              alias to_index itself
+            end
+          end)
+
           attr_reader :stacks
 
           def initialize
@@ -29,7 +41,7 @@ module RubyNext
           def [](name, suffix = nil)
             fetch(name).then do |name|
               next name unless suffix
-              :"#{name}#{suffix}__"
+              :"#{name}#{suffix.to_index}__"
             end
           end
 
