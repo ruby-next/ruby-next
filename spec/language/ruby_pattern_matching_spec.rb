@@ -337,7 +337,7 @@ END
       end
     end
 
-    # TODO: support beginless range
+    # WONTFIX: support beginless range
     # assert_block do
     #   case [0, 1, 2, 3, 4, 5]
     #   in [0..1, 0...2, 0.., 0..., (...5), (..5)]
@@ -1399,13 +1399,12 @@ END
       {a: 1} => {a: 0}
     end
 
-    # FIXME: Fails in 3.0
-    # [1, 2] => a, b
-    # assert_equal 1, a
-    # assert_equal 2, b
+    [1, 2] => a, b
+    assert_equal 1, a
+    assert_equal 2, b
 
-    # {a: 1} => a:
-    # assert_equal 1, a
+    {a: 1} => a:
+    assert_equal 1, a
 
     assert_equal true, (1 in 1)
     assert_equal false, (1 in 2)
@@ -1481,11 +1480,10 @@ END
       [0] => [*, 1, *]
     end
 
-    # FIXME: ?
-    # assert_raise_with_message(NoMatchingPatternError, "[0]: [0] does not match to find pattern") do
-    #   [0] => [*, {a:}, *]
-    #   raise a # suppress "unused variable: a" warning
-    # end
+    assert_raise_with_message(NoMatchingPatternError, "[0]: [0] does not match to find pattern") do
+      [0] => [*, {a:}, *]
+      raise a # suppress "unused variable: a" warning
+    end
   end
 
   def test_single_pattern_error_hash_pattern
@@ -1632,7 +1630,7 @@ END
       end
     end
 
-    # TODO: MRI only caches top-level #deconstruct
+    # WONTFIX: MRI only caches top-level #deconstruct
     # assert_block do
     #   case [CDeconstructCache.new([[0], [1]])]
     #   in [[1]]

@@ -34,8 +34,12 @@ OptionParser.new do |opts|
     transform_opts[:rewriters] = RubyNext::Language.current_rewriters
   end
 
-  opts.on("--rewrite", "User rewrite transpiling mode") do
+  opts.on("--rewrite", "Use rewrite transpiling mode") do
     RubyNext::Language.mode = :rewrite
+  end
+
+  opts.on("--ast", "Use AST transpiling mode") do
+    RubyNext::Language.mode = :ast
   end
 end.parse!
 

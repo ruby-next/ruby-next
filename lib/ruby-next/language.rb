@@ -208,6 +208,9 @@ module RubyNext
     require "ruby-next/language/rewriters/in_pattern"
     rewriters << Rewriters::InPattern
 
+    require "ruby-next/language/rewriters/oneline_pattern_parensless"
+    rewriters << Rewriters::OnelinePatternParensless
+
     # Put endless range in the end, 'cause Parser fails to parse it in
     # pattern matching
     require "ruby-next/language/rewriters/endless_range"
