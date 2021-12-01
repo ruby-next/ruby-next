@@ -37,6 +37,7 @@ module RubyNext
 
           source = args.shift
           new_source = ::RubyNext::Language::Runtime.transform(source, using: false)
+
           RubyNext.debug_source(new_source, "(#{caller_locations(1, 1).first})")
           super new_source, *args
         end

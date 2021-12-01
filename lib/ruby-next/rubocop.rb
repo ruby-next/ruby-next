@@ -104,6 +104,21 @@ module RuboCop
       end
     end
 
+    Commissioner.prepend(Module.new do
+      # Ignore anonymous blocks
+      def on_block_pass(node)
+        return if node.children == [nil]
+
+        super
+      end
+
+      def on_blockarg(node)
+        return if node.children == [nil]
+
+        super
+      end
+    end)
+
     module Layout
       require "rubocop/cop/layout/assignment_indentation"
 

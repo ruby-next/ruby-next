@@ -45,6 +45,13 @@ module TestUnitToMspec
     def assert_instance_of(klass, obj)
       (klass === obj).should == true
     end
+
+    def assert_separately(_args, source)
+      obj = Object.new
+      obj.singleton_class.include MSpecEnvExt
+      new_source = ::RubyNext::Language::Runtime.transform(source, using: false)
+      obj.instance_eval(new_source)
+    end
   end
 
   if defined?(MSpecEnv) && RubyNext::Utils.refine_modules?

@@ -3,7 +3,7 @@
 require_relative '../spec_helper'
 require_relative 'fixtures/delegation'
 
-using RubyNext::Language::ClassEval
+using RubyNext::Language::Eval
 
 ruby_version_is "2.7" do
   describe "delegation with def(...)" do
@@ -41,6 +41,60 @@ ruby_version_is "2.7" do
         end
 
         a.new.delegate(1, b: 2).should == Range.new([[], {}], nil, true)
+      end
+    end
+  end
+
+  describe "anonymous block delegation" do
+    ruby_version_is "3.1" do
+      it "delegates block" do
+        result = nil
+
+        Class.new do
+          result = class_eval(<<~RUBY)
+            def self.b(&) = c(&)
+            def self.c(&) = yield(1)
+
+            a = nil
+
+            instance_eval do
+              b { |c| a = c }
+            end
+
+            a
+          RUBY
+        end
+
+        result.should == 1
+      end
+
+      it "delegates block to super" do
+        k = Class.new do
+          def b(v, &block)
+            block.call(v)
+          end
+
+          def c
+            yield 1
+          end
+        end
+
+        sk = Class.new(k) do
+          class_eval <<~RUBY
+            def b(v, &)
+              super
+            end
+
+            def c(&)
+              super(&)
+            end
+          RUBY
+        end
+
+        a = sk.new
+
+        a.b(1) { |v| v + 2 }.should == 3
+        a.c(&:itself).should == 1
       end
     end
   end

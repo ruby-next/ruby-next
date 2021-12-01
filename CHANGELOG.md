@@ -6,6 +6,8 @@
 
 - Support omitting parentheses in one-line pattern matching. ([@palkan][])
 
+- Anonymous blocks `def b(&); c(&); end` ([@palkan][]).
+
 ## 0.13.2 (2021-11-28)
 
 - Parser upgrade.

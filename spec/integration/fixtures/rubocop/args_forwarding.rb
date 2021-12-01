@@ -8,4 +8,12 @@ module Test
   def super_delegate(...)
     super(...)
   end
+
+  def anoblock(&)
+    delegate(&)
+  end
+
+  def super_anoblock(&)
+    super(&)
+  end
 end

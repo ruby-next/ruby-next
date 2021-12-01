@@ -82,6 +82,8 @@ The possible translation depends on the _end_ type which could hardly be inferre
 
 - Pinning instance, class and global variables and expressions ([#17724](https://bugs.ruby-lang.org/issues/17724), [#17411](https://bugs.ruby-lang.org/issues/17411)).
 
+- Anonymous blocks `def b(&); c(&); end` ([#11256](https://bugs.ruby-lang.org/issues/11256)).
+
 ### Proposals
 
 - **REVERTED IN RUBY ([#16275](https://bugs.ruby-lang.org/issues/16275))** Method reference operator (`Module.:method`) ([#12125](https://bugs.ruby-lang.org/issues/12125), [#13581](https://bugs.ruby-lang.org/issues/13581))
