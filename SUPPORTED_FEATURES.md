@@ -80,6 +80,8 @@ The possible translation depends on the _end_ type which could hardly be inferre
 
 - Shorthand Hash/kwarg notation (`data = {x:, y:}` or `foo(x:, y:)`) ([#15236](https://bugs.ruby-lang.org/issues/15236)).
 
+- Pinning instance, class and global variables and expressions ([#17724](https://bugs.ruby-lang.org/issues/17724), [#17411](https://bugs.ruby-lang.org/issues/17411)).
+
 ### Proposals
 
 - **REVERTED IN RUBY ([#16275](https://bugs.ruby-lang.org/issues/16275))** Method reference operator (`Module.:method`) ([#12125](https://bugs.ruby-lang.org/issues/12125), [#13581](https://bugs.ruby-lang.org/issues/13581))

@@ -8,13 +8,12 @@
 require_relative '../spec_helper'
 
 using RubyNext::Language::Eval
-
 ruby_version_is "2.7" do
   describe "Pattern matching" do
     # TODO: Remove excessive eval calls when support of previous version
     #       Ruby 2.6 will be dropped
 
-    before do
+    before :each do
       ScratchPad.record []
     end
 
@@ -24,6 +23,63 @@ ruby_version_is "2.7" do
           eval(<<-RUBY).should == [0, 1]
             [0, 1] => [a, b]
             [a, b]
+          RUBY
+        end
+      end
+
+      describe "find pattern" do
+        it "captures preceding elements to the pattern" do
+          eval(<<~RUBY).should == [0, 1]
+            case [0, 1, 2, 3]
+            in [*pre, 2, 3]
+              pre
+            else
+              false
+            end
+          RUBY
+        end
+
+        it "captures following elements to the pattern" do
+          eval(<<~RUBY).should == [2, 3]
+            case [0, 1, 2, 3]
+            in [0, 1, *post]
+              post
+            else
+              false
+            end
+          RUBY
+        end
+
+        it "captures both preceding and following elements to the pattern" do
+          eval(<<~RUBY).should == [[0, 1], [3, 4]]
+            case [0, 1, 2, 3, 4]
+            in [*pre, 2, *post]
+              [pre, post]
+            else
+              false
+            end
+          RUBY
+        end
+
+        it "can capture the entirety of the pattern" do
+          eval(<<~RUBY).should == [0, 1, 2, 3, 4]
+            case [0, 1, 2, 3, 4]
+            in [*everything]
+              everything
+            else
+              false
+            end
+          RUBY
+        end
+
+        it "will match an empty Array-like structure" do
+          eval(<<~RUBY).should == []
+            case []
+            in [*everything]
+              everything
+            else
+              false
+            end
           RUBY
         end
       end
@@ -47,18 +103,6 @@ ruby_version_is "2.7" do
         in [0, 1] then :bar
         end
       RUBY
-    end
-
-    describe "warning" do
-      before do
-        ruby_version_is ""..."3.0" do
-          @src = 'case [0, 1]; in [a, b]; end'
-        end
-
-        ruby_version_is "3.0" do
-          @src = '[0, 1] => [a, b]'
-        end
-      end
     end
 
     it "binds variables" do
@@ -133,6 +177,19 @@ ruby_version_is "2.7" do
           end
         RUBY
       }.should raise_error(SyntaxError, /unexpected/)
+    end
+
+    it "evaluates the case expression once for multiple patterns, caching the result" do
+      eval(<<~RUBY).should == true
+        case (ScratchPad << :foo; 1)
+        in 0
+          false
+        in 1
+          true
+        end
+      RUBY
+
+      ScratchPad.recorded.should == [:foo]
     end
 
     describe "guards" do
@@ -428,6 +485,28 @@ ruby_version_is "2.7" do
           end
         RUBY
       end
+
+      it "can be used as a nested pattern" do
+        eval(<<~RUBY).should == true
+          case [[1], ["2"]]
+            in [[0] | nil, _]
+              false
+            in [[1], [1]]
+              false
+            in [[1], [2 | "2"]]
+              true
+          end
+        RUBY
+
+        eval(<<~RUBY).should == true
+          case [1, 2]
+            in [0, _] | {a: 0}
+              false
+            in {a: 1, b: 2} | [1, 2]
+              true
+          end
+        RUBY
+      end
     end
 
     describe "AS pattern" do
@@ -513,6 +592,50 @@ ruby_version_is "2.7" do
         RUBY
       end
 
+      ruby_version_is "3.0" do
+        it "calls #deconstruct once for multiple patterns, caching the result" do
+          # 2.7 doesn't cache
+          next skip if RUBY_VERSION =~ /^2\.7\./
+
+          obj = Object.new
+
+          def obj.deconstruct
+            ScratchPad << :deconstruct
+            [0, 1]
+          end
+
+          eval(<<~RUBY).should == true
+            case obj
+            in [1, 2]
+              false
+            in [0, 1]
+              true
+            end
+          RUBY
+
+          ScratchPad.recorded.should == [:deconstruct]
+        end
+      end
+
+      it "calls #deconstruct even on objects that are already an array" do
+        obj = [1, 2]
+        def obj.deconstruct
+          ScratchPad << :deconstruct
+          [3, 4]
+        end
+
+        eval(<<~RUBY).should == true
+          case obj
+          in [3, 4]
+            true
+          else
+            false
+          end
+        RUBY
+
+        ScratchPad.recorded.should == [:deconstruct]
+      end
+
       it "does not match object if Constant === object returns false" do
         eval(<<~RUBY).should == false
           case [0, 1, 2]
@@ -526,6 +649,7 @@ ruby_version_is "2.7" do
 
       it "does not match object without #deconstruct method" do
         obj = Object.new
+        obj.should_receive(:respond_to?).with(:deconstruct)
 
         eval(<<~RUBY).should == false
           case obj
@@ -549,6 +673,26 @@ ruby_version_is "2.7" do
             end
           RUBY
         }.should raise_error(TypeError, /deconstruct must return Array/)
+      end
+
+      it "accepts a subclass of Array from #deconstruct" do
+        obj = Object.new
+        def obj.deconstruct
+          subarray = Class.new(Array).new(2)
+          def subarray.[](n)
+            n
+          end
+          subarray
+        end
+
+        eval(<<~RUBY).should == true
+          case obj
+          in [1, 2]
+            false
+          in [0, 1]
+            true
+          end
+        RUBY
       end
 
       it "does not match object if elements of array returned by #deconstruct method does not match elements in pattern" do
@@ -624,6 +768,28 @@ ruby_version_is "2.7" do
           case [0, 1]
           in *;
             true
+          end
+        RUBY
+      end
+
+      it "can be used as a nested pattern" do
+        eval(<<~RUBY).should == true
+          case [[1], ["2"]]
+            in [[0] | nil, _]
+              false
+            in [[1], [1]]
+              false
+            in [[1], [2 | "2"]]
+              true
+          end
+        RUBY
+
+        eval(<<~RUBY).should == true
+          case [1, 2]
+            in [0, _] | {a: 0}
+              false
+            in {a: 1, b: 2} | [1, 2]
+              true
           end
         RUBY
       end
@@ -783,6 +949,26 @@ ruby_version_is "2.7" do
         RUBY
       end
 
+      it "calls #deconstruct_keys per pattern" do
+        obj = Object.new
+
+        def obj.deconstruct_keys(*)
+          ScratchPad << :deconstruct_keys
+          {a: 1}
+        end
+
+        eval(<<~RUBY).should == true
+          case obj
+          in {b: 1}
+            false
+          in {a: 1}
+            true
+          end
+        RUBY
+
+        ScratchPad.recorded.should == [:deconstruct_keys, :deconstruct_keys]
+      end
+
       it "does not match object if Constant === object returns false" do
         eval(<<~RUBY).should == false
           case {a: 1}
@@ -796,6 +982,7 @@ ruby_version_is "2.7" do
 
       it "does not match object without #deconstruct_keys method" do
         obj = Object.new
+        obj.should_receive(:respond_to?).with(:deconstruct_keys)
 
         eval(<<~RUBY).should == false
           case obj
@@ -961,12 +1148,33 @@ ruby_version_is "2.7" do
           end
         RUBY
       end
+
+      it "can be used as a nested pattern" do
+        eval(<<~RUBY).should == true
+          case {a: {a: 1, b: 1}, b: {a: 1, b: 2}}
+            in {a: {a: 0}}
+              false
+            in {a: {a: 1}, b: {b: 1}}
+              false
+            in {a: {a: 1}, b: {b: 2}}
+              true
+          end
+        RUBY
+
+        eval(<<~RUBY).should == true
+          case [{a: 1, b: [1]}, {a: 1, c: ["2"]}]
+            in [{a:, c:},]
+              false
+            in [{a: 1, b:}, {a: 1, c: [Integer]}]
+              false
+            in [_, {a: 1, c: [String]}]
+              true
+          end
+        RUBY
+      end
     end
 
     describe "refinements" do
-      # JRuby doesn't play well with these refinements
-      next if defined?(JRUBY_VERSION)
-
       it "are used for #deconstruct" do
         refinery = Module.new do
           refine Array do
@@ -1037,6 +1245,79 @@ ruby_version_is "2.7" do
         end
 
         result.should == true
+      end
+    end
+
+    ruby_version_is "3.1" do
+      it "can omit parentheses in one line pattern matching" do
+        eval(<<~RUBY).should == [1, 2]
+          [1, 2] => a, b
+          [a, b]
+        RUBY
+
+        eval(<<~RUBY).should == 1
+          {a: 1} => a:
+          a
+        RUBY
+      end
+
+      it "supports pinning instance variables" do
+        eval(<<~RUBY).should == true
+          @a = /a/
+          case 'abc'
+          in ^@a
+            true
+          end
+        RUBY
+      end
+
+      it "supports pinning class variables" do
+        result = nil
+        Module.new do
+          result = module_eval(<<~RUBY)
+            @@a = 0..10
+
+            case 2
+            in ^@@a
+              true
+            end
+          RUBY
+        end
+
+        result.should == true
+      end
+
+      it "supports pinning global variables" do
+        eval(<<~RUBY).should == true
+          $a = /a/
+          case 'abc'
+          in ^$a
+            true
+          end
+        RUBY
+      end
+
+      it "supports pinning expressions" do
+        eval(<<~RUBY).should == true
+          case 'abc'
+            in ^(/a/)
+            true
+          end
+        RUBY
+
+        eval(<<~RUBY).should == true
+          case {name: '2.6', released_at: Time.new(2018, 12, 25)}
+            in {released_at: ^(Time.new(2010)..Time.new(2020))}
+            true
+          end
+        RUBY
+
+        eval(<<~RUBY).should == true
+          case 0
+          in ^(0+0)
+            true
+          end
+        RUBY
       end
     end
   end

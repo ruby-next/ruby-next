@@ -526,6 +526,8 @@ require "ruby-next/language/runtime"
 
 - Shorthand Hash/kwarg notation (`data = {x:, y:}` or `foo(x:, y:)`) ([#15236](https://bugs.ruby-lang.org/issues/15236)).
 
+- Pinning instance, class and global variables and expressions in pattern matching ([#17724](https://bugs.ruby-lang.org/issues/17724), [#17411](https://bugs.ruby-lang.org/issues/17411)).
+
 ### Supported proposed features
 
 - _Method reference_ operator (`.:`) ([#13581](https://bugs.ruby-lang.org/issues/13581)).

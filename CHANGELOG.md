@@ -2,6 +2,8 @@
 
 ## master
 
+- Added support for instance, class and global variables and expressions for pin operator. ([@palkan][])
+
 - Support omitting parentheses in one-line pattern matching. ([@palkan][])
 
 ## 0.13.2 (2021-11-28)

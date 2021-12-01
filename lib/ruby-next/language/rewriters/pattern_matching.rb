@@ -861,6 +861,10 @@ module RubyNext
           match_var_clause(child, s(:lvar, locals[:hash]))
         end
 
+        def pin_hash_element(node, index)
+          case_eq_hash_element node.children[0], index
+        end
+
         def case_eq_hash_element(node, key)
           case_eq_clause node, hash_value_at(key)
         end

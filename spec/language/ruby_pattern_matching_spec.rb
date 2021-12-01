@@ -419,15 +419,15 @@ END
       end
     end
 
-    # TODO: https://github.com/ruby-next/ruby-next/issues/84
-    # assert_block do
-    #   @a = /a/
-    #   case 'abc'
-    #   in ^@a
-    #     true
-    #   end
-    # end
+    assert_block do
+      @a = /a/
+      case 'abc'
+      in ^@a
+        true
+      end
+    end
 
+    # WONTFIX: fails in 3.0 with class variable access from toplevel
     # assert_block do
     #   @@TestPatternMatching = /a/
     #   case 'abc'
@@ -436,38 +436,37 @@ END
     #   end
     # end
 
-    # assert_block do
-    #   $TestPatternMatching = /a/
-    #   case 'abc'
-    #   in ^$TestPatternMatching
-    #     true
-    #   end
-    # end
+    assert_block do
+      $TestPatternMatching = /a/
+      case 'abc'
+      in ^$TestPatternMatching
+        true
+      end
+    end
   end
 
-  # TODO: https://github.com/ruby-next/ruby-next/issues/84
-  # def test_pin_operator_expr_pattern
-  #   assert_block do
-  #     case 'abc'
-  #       in ^(/a/)
-  #       true
-  #     end
-  #   end
+  def test_pin_operator_expr_pattern
+    assert_block do
+      case 'abc'
+        in ^(/a/)
+        true
+      end
+    end
 
-  #   assert_block do
-  #     case {name: '2.6', released_at: Time.new(2018, 12, 25)}
-  #       in {released_at: ^(Time.new(2010)..Time.new(2020))}
-  #       true
-  #     end
-  #   end
+    assert_block do
+      case {name: '2.6', released_at: Time.new(2018, 12, 25)}
+        in {released_at: ^(Time.new(2010)..Time.new(2020))}
+        true
+      end
+    end
 
-  #   assert_block do
-  #     case 0
-  #     in ^(0+0)
-  #       true
-  #     end
-  #   end
-  # end
+    assert_block do
+      case 0
+      in ^(0+0)
+        true
+      end
+    end
+  end
 
   def test_array_pattern
     assert_block do
@@ -1497,7 +1496,8 @@ END
       raise a # suppress "unused variable: a" warning
     end
 
-    # TODO: Add NoMatchingPatternKeyError
+    # WONTFIX: It's hardly possible to backport NoMatchingPatternKeyError to 2.7, 3.0
+    # it's better to rely on NoMatchingPattern for compatibility
     # assert_raise_with_message(NoMatchingPatternKeyError, "{:a=>0}: key not found: :aa") do
     #   {a: 0} => {aa:}
     #   raise aa # suppress "unused variable: aa" warning

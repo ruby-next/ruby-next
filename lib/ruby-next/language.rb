@@ -211,6 +211,9 @@ module RubyNext
     require "ruby-next/language/rewriters/oneline_pattern_parensless"
     rewriters << Rewriters::OnelinePatternParensless
 
+    require "ruby-next/language/rewriters/pin_vars_pattern"
+    rewriters << Rewriters::PinVarsPattern
+
     # Put endless range in the end, 'cause Parser fails to parse it in
     # pattern matching
     require "ruby-next/language/rewriters/endless_range"
