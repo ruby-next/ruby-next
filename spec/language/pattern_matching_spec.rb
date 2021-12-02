@@ -4,6 +4,7 @@
 # - Add `using RubyNext::Language::Eval`
 # - Remove expected messages from SyntaxError
 # - Skip warnings specs
+# - Move `using refinery` inside `eval`
 
 require_relative '../spec_helper'
 
@@ -1186,9 +1187,9 @@ ruby_version_is "2.7" do
 
         result = nil
         Module.new do
-          using refinery
-
           result = eval(<<~RUBY)
+            using refinery
+
             case []
             in [0]
               true
@@ -1210,9 +1211,9 @@ ruby_version_is "2.7" do
 
         result = nil
         Module.new do
-          using refinery
-
           result = eval(<<~RUBY)
+            using refinery
+
             case {}
             in a: 0
               true
@@ -1234,9 +1235,9 @@ ruby_version_is "2.7" do
 
         result = nil
         Module.new do
-          using refinery
-
           result = eval(<<~RUBY)
+            using refinery
+
             case {}
             in Array
               true
