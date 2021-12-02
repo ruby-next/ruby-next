@@ -217,6 +217,9 @@ module RubyNext
     require "ruby-next/language/rewriters/anonymous_block"
     rewriters << Rewriters::AnonymousBlock
 
+    require "ruby-next/language/rewriters/refinement_import_methods"
+    rewriters << Rewriters::RefinementImportMethods
+
     # Put endless range in the end, 'cause Parser fails to parse it in
     # pattern matching
     require "ruby-next/language/rewriters/endless_range"

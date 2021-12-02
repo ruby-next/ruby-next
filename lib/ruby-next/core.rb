@@ -173,6 +173,8 @@ require "ruby-next/core/unboundmethod/bind_call"
 require "ruby-next/core/time/floor"
 require "ruby-next/core/time/ceil"
 
+require "ruby-next/core/refinement/import"
+
 # Core extensions required for pattern matching
 # Required for pattern matching with refinements
 unless defined?(NoMatchingPatternError)
