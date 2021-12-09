@@ -8,6 +8,12 @@
 
 - Anonymous blocks `def b(&); c(&); end` ([@palkan][]).
 
+## 0.13.3 (2021-12-08)
+
+- Revert 0.13.2 and freeze Parser version. ([@skryukov][])
+
+Postpone upgrade 'till v0.14 due to breaking shorthand hash changes.
+
 ## 0.13.2 (2021-11-28)
 
 - Parser upgrade.
