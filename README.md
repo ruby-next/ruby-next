@@ -522,13 +522,13 @@ require "ruby-next/language/runtime"
 
 ### Supported edge features
 
-- `Array#intersect?` ([#15198](https://bugs.ruby-lang.org/issues/15198))
-
-- Shorthand Hash/kwarg notation (`data = {x:, y:}` or `foo(x:, y:)`) ([#15236](https://bugs.ruby-lang.org/issues/15236)).
+`Array#intersect?` ([#15198](https://bugs.ruby-lang.org/issues/15198))
 
 ### Supported proposed features
 
 - _Method reference_ operator (`.:`) ([#13581](https://bugs.ruby-lang.org/issues/13581)).
+
+- Shorthand Hash/kwarg notation (`data = {x, y}` or `foo(x:, y:)`) ([#15236](https://bugs.ruby-lang.org/issues/15236)).
 
 ## Contributing
 
