@@ -42,12 +42,6 @@
 
 - `Hash#except` ([#15822](https://bugs.ruby-lang.org/issues/15822))
 
-## 3.1
-
-- `Array#intersect?` ([#15198](https://bugs.ruby-lang.org/issues/15198))
-
-- `Enumerable#tally` with the resulting hash ([#17744](https://bugs.ruby-lang.org/issues/17744))
-
 ## Syntax
 
 ### 2.6
@@ -78,8 +72,12 @@ The possible translation depends on the _end_ type which could hardly be inferre
 
 ### 3.1
 
-- Shorthand Hash/kwarg notation (`data = {x:, y:}` or `foo(x:, y:)`) ([#15236](https://bugs.ruby-lang.org/issues/15236)).
+- `Array#intersect?` ([#15198](https://bugs.ruby-lang.org/issues/15198))
+
+- `Enumerable#tally` with the resulting hash ([#17744](https://bugs.ruby-lang.org/issues/17744))
 
 ### Proposals
 
 - **REVERTED IN RUBY ([#16275](https://bugs.ruby-lang.org/issues/16275))** Method reference operator (`Module.:method`) ([#12125](https://bugs.ruby-lang.org/issues/12125), [#13581](https://bugs.ruby-lang.org/issues/13581))
+
+- Shorthand Hash/kwarg notation (`data = {x, y}` or `foo(x:, y:)`) ([#15236](https://bugs.ruby-lang.org/issues/15236)).
