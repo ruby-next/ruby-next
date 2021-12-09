@@ -5,15 +5,13 @@ module RubyNext
     module Rewriters
       class ShorthandHash < Base
         NAME = "shorthand-hash"
-        SYNTAX_PROBE = "data = {x:}"
-        MIN_SUPPORTED_VERSION = Gem::Version.new("3.1.0")
+        SYNTAX_PROBE = "data = {x}"
+        MIN_SUPPORTED_VERSION = Gem::Version.new(RubyNext::NEXT_VERSION)
 
-        def on_pair(node)
-          return super(node) unless node.children[0].loc.last_column == node.children[1].loc.last_column
-
+        def on_ipair(node)
           context.track! self
 
-          _, ident, = *node.children
+          ident, = *node.children
 
           key = key_from_ident(ident)
 

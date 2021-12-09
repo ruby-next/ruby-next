@@ -79,6 +79,10 @@ module RuboCop
         trigger_responding_cops(:on_meth_ref, node)
       end
 
+      def on_ipair(node)
+        trigger_responding_cops(:on_ipair, node)
+      end
+
       unless method_defined?(:on_numblock)
         def on_numblock(node)
           children = node.children
