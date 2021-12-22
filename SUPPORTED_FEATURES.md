@@ -48,6 +48,8 @@
 
 - `Enumerable#tally` with the resulting hash ([#17744](https://bugs.ruby-lang.org/issues/17744))
 
+- `Refinement#import_methods` ([#17429](https://bugs.ruby-lang.org/issues/17429))
+
 ## Syntax
 
 ### 2.6
