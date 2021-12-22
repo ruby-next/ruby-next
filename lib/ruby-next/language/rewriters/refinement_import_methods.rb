@@ -34,7 +34,7 @@ module RubyNext
         def on_send(node)
           return super unless @within_refinement
 
-          receiver, mid, *children = *node
+          _receiver, mid, *children = *node
 
           return super unless mid == :import_methods
 
@@ -43,7 +43,7 @@ module RubyNext
           updated = node.updated(
             nil,
             [
-              receiver,
+              s(:const, s(:const, s(:cbase), :RubyNext), :Core),
               mid,
               *children,
               s(:send, nil, :binding)

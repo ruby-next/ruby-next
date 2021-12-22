@@ -2,6 +2,12 @@
 
 ## master
 
+- Add `Refinement#import_methods` support. ([@palkan][])
+
+This API only works in conjunction with transpiling, since it couldn't be backported purely as a method and requires passing an additional argument (Binding).
+
+You can find the details in [the PR](https://github.com/ruby-next/ruby-next/pull/85).
+
 - Added support for instance, class and global variables and expressions for pin operator. ([@palkan][])
 
 - Support omitting parentheses in one-line pattern matching. ([@palkan][])

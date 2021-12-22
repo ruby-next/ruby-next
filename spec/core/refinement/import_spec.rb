@@ -13,12 +13,12 @@ module RefinementSpecs
     module B
       BAR = "bar"
 
-      def bar
-        "#{foo}:#{BAR}"
-      end
+      def bar(); "#{foo}:#{BAR}"; end
     end
 
     module C
+      using RubyNext
+
       refine A do
         import_methods B
 
