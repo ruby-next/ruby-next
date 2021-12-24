@@ -2,6 +2,18 @@
 
 # Convert test-unit assertions into mspec should matchers
 module TestUnitToMspec
+  module CheckSyntax
+    module_function
+
+    def call(source)
+      new_source = RubyNext::Language.transform(source, rewriters: RubyNext::Language.current_rewriters)
+
+      catch(:valid) do
+        eval("BEGIN{throw :valid}\nObject.new.instance_eval { #{new_source} }") # rubocop:disable all
+      end
+    end
+  end
+
   module MSpecEnvExt
     def assert_equal(a, b)
       a.should == b
@@ -30,11 +42,11 @@ module TestUnitToMspec
     end
 
     def assert_syntax_error(str, *)
-      -> { RubyNext::Language.transform(str) }.should raise_error(SyntaxError)
+      -> { CheckSyntax.call(str) }.should raise_error(SyntaxError)
     end
 
     def assert_valid_syntax(str)
-      -> { RubyNext::Language.transform(str) }.should_not raise_error
+      -> { CheckSyntax.call(str) }.should_not raise_error
     end
 
     # Let's skip for now
