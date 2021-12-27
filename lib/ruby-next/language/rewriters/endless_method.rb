@@ -8,14 +8,13 @@ module RubyNext
         SYNTAX_PROBE = "obj = Object.new; def obj.foo() = 42"
         MIN_SUPPORTED_VERSION = Gem::Version.new("3.0.0")
 
-        unless Parser::Meta::NODE_TYPES.include?(:def_e)
-          def on_def(node)
-            return on_def_e(node) if node.loc.end.nil?
-            super(node)
-          end
+        def on_def(node)
+          return process_def(node) if endless?(node)
+
+          super(node)
         end
 
-        def on_def_e(node)
+        def process_def(node)
           context.track! self
 
           replace(node.loc.assignment, "; ")
@@ -33,14 +32,12 @@ module RubyNext
           )
         end
 
-        unless Parser::Meta::NODE_TYPES.include?(:def_e)
-          def on_defs(node)
-            return on_defs_e(node) if node.loc.end.nil?
-            super(node)
-          end
+        def on_defs(node)
+          return process_defs(node) if endless?(node)
+          super(node)
         end
 
-        def on_defs_e(node)
+        def process_defs(node)
           context.track! self
 
           replace(node.loc.assignment, "; ")
@@ -56,6 +53,12 @@ module RubyNext
               location: new_loc
             )
           )
+        end
+
+        private
+
+        def endless?(node)
+          node.loc.end.nil?
         end
       end
     end

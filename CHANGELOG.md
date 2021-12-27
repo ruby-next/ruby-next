@@ -2,6 +2,8 @@
 
 ## master
 
+- Add support for command syntax in endless methods (`def foo() = puts "bar"`)
+
 - Add `Refinement#import_methods` support. ([@palkan][])
 
 This API only works in conjunction with transpiling, since it couldn't be backported purely as a method and requires passing an additional argument (Binding).
