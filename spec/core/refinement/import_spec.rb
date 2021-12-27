@@ -1,5 +1,8 @@
 # source: https://github.com/ruby/ruby/blob/524a808d23f1ed3eca946236e98e049b55458e71/test/ruby/test_refinement.rb#L2604-L2669
 
+# Ruby 2.3- doesn't support top-level return and we neither
+unless RUBY_VERSION >= "3.1.0"
+
 require_relative '../../spec_helper'
 
 module RefinementSpecs
@@ -73,4 +76,6 @@ ruby_version_is "3.1" do
       end.should raise_error(ArgumentError)
     end
   end
+end
+
 end
