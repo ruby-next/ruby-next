@@ -86,6 +86,8 @@ The possible translation depends on the _end_ type which could hardly be inferre
 
 - Anonymous blocks `def b(&); c(&); end` ([#11256](https://bugs.ruby-lang.org/issues/11256)).
 
+- Command syntax in endless methods (`def foo() = puts "bar"`) ([#17398](https://bugs.ruby-lang.org/issues/17398))
+
 ### Proposals
 
 - **REVERTED IN RUBY ([#16275](https://bugs.ruby-lang.org/issues/16275))** Method reference operator (`Module.:method`) ([#12125](https://bugs.ruby-lang.org/issues/12125), [#13581](https://bugs.ruby-lang.org/issues/13581))

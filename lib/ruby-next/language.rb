@@ -220,6 +220,9 @@ module RubyNext
     require "ruby-next/language/rewriters/refinement_import_methods"
     rewriters << Rewriters::RefinementImportMethods
 
+    require "ruby-next/language/rewriters/endless_method_command"
+    rewriters << Rewriters::EndlessMethodCommand
+
     # Put endless range in the end, 'cause Parser fails to parse it in
     # pattern matching
     require "ruby-next/language/rewriters/endless_range"
