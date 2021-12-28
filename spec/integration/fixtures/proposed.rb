@@ -2,8 +2,8 @@
 
 require "ruby-next/language"
 
-require "ruby-next/language/edge"
-require "ruby-next/language/proposed"
+require "ruby-next/language/rewriters/edge"
+require "ruby-next/language/rewriters/proposed"
 
 require "ruby-next/language/runtime"
 

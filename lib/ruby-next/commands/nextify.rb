@@ -48,11 +48,11 @@ module RubyNext
           end
 
           opts.on("--edge", "Enable edge (master) Ruby features") do |val|
-            require "ruby-next/language/edge"
+            require "ruby-next/language/rewriters/edge"
           end
 
           opts.on("--proposed", "Enable proposed/experimental Ruby features") do |val|
-            require "ruby-next/language/proposed"
+            require "ruby-next/language/rewriters/proposed"
           end
 
           opts.on(

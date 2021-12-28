@@ -174,72 +174,72 @@ module RubyNext
 
     require "ruby-next/language/rewriters/base"
 
-    require "ruby-next/language/rewriters/squiggly_heredoc"
-    rewriters << Rewriters::SquigglyHeredoc
-
-    require "ruby-next/language/rewriters/safe_navigation"
-    rewriters << Rewriters::SafeNavigation
-
-    require "ruby-next/language/rewriters/numeric_literals"
+    require "ruby-next/language/rewriters/2.1/numeric_literals"
     rewriters << Rewriters::NumericLiterals
 
-    require "ruby-next/language/rewriters/required_kwargs"
+    require "ruby-next/language/rewriters/2.1/required_kwargs"
     rewriters << Rewriters::RequiredKwargs
 
-    require "ruby-next/language/rewriters/args_forward"
+    require "ruby-next/language/rewriters/2.3/squiggly_heredoc"
+    rewriters << Rewriters::SquigglyHeredoc
+
+    require "ruby-next/language/rewriters/2.3/safe_navigation"
+    rewriters << Rewriters::SafeNavigation
+
+    require "ruby-next/language/rewriters/2.7/args_forward"
     rewriters << Rewriters::ArgsForward
+
+    require "ruby-next/language/rewriters/2.7/numbered_params"
+    rewriters << Rewriters::NumberedParams
+
+    require "ruby-next/language/rewriters/2.7/pattern_matching"
+    rewriters << Rewriters::PatternMatching
 
     # Must be added after general args forward rewriter to become
     # no-op in Ruby <2.7
-    require "ruby-next/language/rewriters/args_forward_leading"
+    require "ruby-next/language/rewriters/3.0/args_forward_leading"
     rewriters << Rewriters::ArgsForwardLeading
-
-    require "ruby-next/language/rewriters/numbered_params"
-    rewriters << Rewriters::NumberedParams
-
-    require "ruby-next/language/rewriters/pattern_matching"
-    rewriters << Rewriters::PatternMatching
 
     # Must be added after general pattern matching rewriter to become
     # no-op in Ruby <2.7
-    require "ruby-next/language/rewriters/find_pattern"
+    require "ruby-next/language/rewriters/3.0/find_pattern"
     rewriters << Rewriters::FindPattern
 
-    require "ruby-next/language/rewriters/in_pattern"
+    require "ruby-next/language/rewriters/3.0/in_pattern"
     rewriters << Rewriters::InPattern
 
-    require "ruby-next/language/rewriters/oneline_pattern_parensless"
+    require "ruby-next/language/rewriters/3.0/endless_method"
+    RubyNext::Language.rewriters << RubyNext::Language::Rewriters::EndlessMethod
+
+    require "ruby-next/language/rewriters/3.1/oneline_pattern_parensless"
     rewriters << Rewriters::OnelinePatternParensless
 
-    require "ruby-next/language/rewriters/pin_vars_pattern"
+    require "ruby-next/language/rewriters/3.1/pin_vars_pattern"
     rewriters << Rewriters::PinVarsPattern
 
-    require "ruby-next/language/rewriters/anonymous_block"
+    require "ruby-next/language/rewriters/3.1/anonymous_block"
     rewriters << Rewriters::AnonymousBlock
 
-    require "ruby-next/language/rewriters/refinement_import_methods"
+    require "ruby-next/language/rewriters/3.1/refinement_import_methods"
     rewriters << Rewriters::RefinementImportMethods
 
-    require "ruby-next/language/rewriters/endless_method_command"
+    require "ruby-next/language/rewriters/3.1/endless_method_command"
     rewriters << Rewriters::EndlessMethodCommand
 
-    require "ruby-next/language/rewriters/bind_vars_pattern"
-    rewriters << Rewriters::BindVarsPattern
+    require "ruby-next/language/rewriters/3.1/shorthand_hash"
+    rewriters << RubyNext::Language::Rewriters::ShorthandHash
 
     # Put endless range in the end, 'cause Parser fails to parse it in
     # pattern matching
-    require "ruby-next/language/rewriters/endless_range"
+    require "ruby-next/language/rewriters/2.6/endless_range"
     rewriters << Rewriters::EndlessRange
 
-    require "ruby-next/language/rewriters/endless_method"
-    RubyNext::Language.rewriters << RubyNext::Language::Rewriters::EndlessMethod
-
     if ENV["RUBY_NEXT_EDGE"] == "1"
-      require "ruby-next/language/edge"
+      require "ruby-next/language/rewriters/edge"
     end
 
     if ENV["RUBY_NEXT_PROPOSED"] == "1"
-      require "ruby-next/language/proposed"
+      require "ruby-next/language/rewriters/proposed"
     end
   end
 end

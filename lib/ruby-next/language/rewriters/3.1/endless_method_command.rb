@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "ruby-next/language/rewriters/endless_method"
-
 module RubyNext
   module Language
     module Rewriters
