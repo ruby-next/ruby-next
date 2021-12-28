@@ -2,6 +2,10 @@
 
 ## master
 
+- Add `Integer.try_convert`. ([@palkan][])
+
+- Add `Enumerable#compact`, `Enumerator::Lazy#compact`. ([@palkan][])
+
 - [Proposed] Add support for binding instance, class, global variables in pattern matching. ([@palkan][])
 
 This brings back rightward assignment: `42 => @v`.

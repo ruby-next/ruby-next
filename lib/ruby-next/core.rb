@@ -194,6 +194,8 @@ require "ruby-next/core/hash/except"
 require "ruby-next/core/array/intersect"
 
 require "ruby-next/core/matchdata/match"
+require "ruby-next/core/enumerable/compact"
+require "ruby-next/core/integer/try_convert"
 
 # Generate refinements
 RubyNext.module_eval do

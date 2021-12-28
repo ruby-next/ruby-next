@@ -52,6 +52,10 @@
 
 - `MatchData#match` ([#18172](https://bugs.ruby-lang.org/issues/18172))
 
+- `Enumerable#compact`, `Enumerator::Lazy#compact` ([#17312](https://bugs.ruby-lang.org/issues/17312))
+
+- `Integer.try_convert` ([#15211](https://bugs.ruby-lang.org/issues/15211))
+
 ## Syntax
 
 ### 2.6
