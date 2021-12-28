@@ -231,7 +231,7 @@ Usage: ruby-next nextify DIRECTORY_OR_FILE [options]
 
 The behaviour depends on whether you transpile a single file or a directory:
 
-- When transpiling a directory, the `.rbnext` subfolder is created within the target folder with subfolders for each supported Ruby versions (e.g., `.rbnext/2.6`, `.rbnext/2.7`, `.rbnext/3.0`). If you want to create only a single version (the smallest), you can also pass `--single-version` flag. In that case, no version directory is created (i.e., transpiled files go into `.rbnext`).
+- When transpiling a directory, the `.rbnext` subfolder is created within the target folder with subfolders for each supported Ruby versions (e.g., `.rbnext/2.6`, `.rbnext/2.7`, `.rbnext/3.0`, etc.). If you want to create only a single version (the smallest), you can also pass `--single-version` flag. In that case, no version directory is created (i.e., transpiled files go into `.rbnext`).
 
 - When transpiling a file and providing the output path as a _file_ path, only a single version is created. For example:
 
@@ -283,6 +283,8 @@ $ ruby-next core_ext -l --name=filter --name=deconstruct
   - EnumeratorLazyFilterMap
   - HashDeconstructKeys
   - StructDeconstruct
+
+...
 ```
 
 ### CLI configuration file
@@ -522,13 +524,7 @@ require "ruby-next/language/runtime"
 
 ### Supported edge features
 
-- `Array#intersect?` ([#15198](https://bugs.ruby-lang.org/issues/15198))
-
-- Shorthand Hash/kwarg notation (`data = {x:, y:}` or `foo(x:, y:)`) ([#15236](https://bugs.ruby-lang.org/issues/15236)).
-
-- Pinning instance, class and global variables and expressions in pattern matching ([#17724](https://bugs.ruby-lang.org/issues/17724), [#17411](https://bugs.ruby-lang.org/issues/17411)).
-
-- Anonymous blocks `def b(&); c(&); end` ([#11256](https://bugs.ruby-lang.org/issues/11256)).
+It's too early, Ruby 3.1 has just been released. See its features in the [supported features list](./SUPPORTED_FEATURES.md).
 
 ### Supported proposed features
 
