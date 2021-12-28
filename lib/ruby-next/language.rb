@@ -223,6 +223,9 @@ module RubyNext
     require "ruby-next/language/rewriters/endless_method_command"
     rewriters << Rewriters::EndlessMethodCommand
 
+    require "ruby-next/language/rewriters/bind_vars_pattern"
+    rewriters << Rewriters::BindVarsPattern
+
     # Put endless range in the end, 'cause Parser fails to parse it in
     # pattern matching
     require "ruby-next/language/rewriters/endless_range"
