@@ -62,7 +62,6 @@ module RubyNext
     end
 
     class << self
-      attr_accessor :rewriters
       attr_reader :include_patterns
       attr_reader :exclude_patterns
 
@@ -187,7 +186,7 @@ module RubyNext
 
       def text_rewrite(source, rewriters:, using:, context:)
         rewriters.inject(source) do |src, rewriter|
-          rewriter.new(context).rewrite(src)
+          rewriter.new(context).safe_rewrite(src)
         end.then do |new_source|
           next source unless context.dirty?
 
@@ -255,7 +254,7 @@ module RubyNext
     rewriters << Rewriters::InPattern
 
     require "ruby-next/language/rewriters/3.0/endless_method"
-    RubyNext::Language.rewriters << RubyNext::Language::Rewriters::EndlessMethod
+    rewriters << RubyNext::Language::Rewriters::EndlessMethod
 
     require "ruby-next/language/rewriters/3.1/oneline_pattern_parensless"
     rewriters << Rewriters::OnelinePatternParensless

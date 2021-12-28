@@ -33,4 +33,5 @@ Gem::Specification.new do |s|
   s.add_dependency "ruby-next-parser", ">= 3.1.1.0"
   s.add_dependency "require-hooks", "~> 0.2"
   s.add_dependency "unparser", "~> 0.6.0"
+  s.add_dependency "paco", "~> 0.2"
 end
