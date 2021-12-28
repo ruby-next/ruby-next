@@ -22,7 +22,15 @@ module RubyNext
           end
         end
 
-        def on_in_match(node)
+        def on_match_pattern(node)
+          @has_pin_vars = false
+          process_regular_node(node).then do |new_node|
+            return new_node unless has_pin_vars
+            super(node)
+          end
+        end
+
+        def on_match_pattern_p(node)
           @has_pin_vars = false
           process_regular_node(node).then do |new_node|
             return new_node unless has_pin_vars

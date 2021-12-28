@@ -306,6 +306,38 @@ module RubyNext
 
         alias on_in_match on_match_pattern
 
+        def on_match_pattern_p(node)
+          context.track! self
+
+          @deconstructed_keys = {}
+          @predicates = Predicates::Noop.new
+
+          matchee =
+            s(:begin, s(:lvasgn, MATCHEE, node.children[0]))
+
+          pattern =
+            locals.with(
+              matchee: MATCHEE,
+              arr: MATCHEE_ARR,
+              hash: MATCHEE_HASH
+            ) do
+              send(
+                :"#{node.children[1].type}_clause",
+                node.children[1]
+              )
+            end
+
+          node.updated(
+            :and,
+            [
+              matchee,
+              pattern
+            ]
+          ).tap do |new_node|
+            replace(node.loc.expression, inline_blocks(unparse(new_node)))
+          end
+        end
+
         private
 
         def rewrite_case_in!(node, matchee, new_node)
@@ -407,13 +439,14 @@ module RubyNext
         end
 
         def match_var_clause(node, left = s(:lvar, locals[:matchee]))
-          return s(:true) if node.children[0] == :_
+          var = node.children[0]
+          return s(:true) if var == :_
 
-          check_match_var_alternation! node.children[0]
+          check_match_var_alternation!(var) unless var.is_a?(::Parser::AST::Node)
 
           s(:begin,
             s(:or,
-              s(:begin, s(:lvasgn, node.children[0], left)),
+              s(:begin, build_var_assignment(var, left)),
               s(:true)))
         end
 
@@ -512,7 +545,7 @@ module RubyNext
 
           head_match =
             unless head.children.empty?
-              match_vars << s(:lvasgn, head.children[0].children[0])
+              match_vars << build_var_assignment(head.children[0].children[0])
 
               arr_take = s(:send,
                 s(:lvar, locals[:arr]),
@@ -524,16 +557,16 @@ module RubyNext
 
           tail_match =
             unless tail.children.empty?
-              match_vars << s(:lvasgn, tail.children[0].children[0])
+              match_vars << build_var_assignment(tail.children[0].children[0])
 
               match_var_clause(tail.children[0], arr_slice(index + nodes.size, -1))
             end
 
           nodes.each do |node|
             if node.type == :match_var
-              match_vars << s(:lvasgn, node.children[0])
+              match_vars << build_var_assignment(node.children[0])
             elsif node.type == :match_as
-              match_vars << s(:lvasgn, node.children[1].children[0])
+              match_vars << build_var_assignment(node.children[1].children[0])
             end
           end
 
@@ -971,6 +1004,15 @@ module RubyNext
         # have single-line blocks with `{ ... }`.
         def inline_blocks(source)
           source.gsub(/(?:do|{) \|_, __i__\|\n\s*([^\n]+)\n\s*(?:end|})/, '{ |_, __i__| \1 }')
+        end
+
+        # Value could be omitted for mass assignment
+        def build_var_assignment(var, value = nil)
+          return s(:lvasgn, *[var, value].compact) unless var.is_a?(::Parser::AST::Node)
+
+          asign_type = :"#{var.type.to_s[0]}vasgn"
+
+          s(asign_type, *[var.children[0], value].compact)
         end
       end
     end

@@ -2,6 +2,10 @@
 
 ## master
 
+- [Proposed] Add support for binding instance, class, global variables in pattern matching. ([@palkan][])
+
+This brings back rightward assignment: `42 => @v`.
+
 - Add `MatchData#match`. ([@palkan][])
 
 - Add support for command syntax in endless methods (`def foo() = puts "bar"`)

@@ -533,6 +533,7 @@ require "ruby-next/language/runtime"
 ### Supported proposed features
 
 - _Method reference_ operator (`.:`) ([#13581](https://bugs.ruby-lang.org/issues/13581)).
+- Binding non-local variables in pattern matching (`42 => @v`) ([#18408](https://bugs.ruby-lang.org/issues/18408)).
 
 ## Contributing
 

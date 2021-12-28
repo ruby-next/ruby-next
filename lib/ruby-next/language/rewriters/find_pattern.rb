@@ -22,7 +22,7 @@ module RubyNext
           end
         end
 
-        def on_in_match(node)
+        def on_match_pattern(node)
           @has_find_pattern = false
           process_regular_node(node).then do |new_node|
             return new_node unless has_find_pattern

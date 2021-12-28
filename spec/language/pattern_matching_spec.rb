@@ -9,6 +9,7 @@
 require_relative '../spec_helper'
 
 using RubyNext::Language::Eval
+
 ruby_version_is "2.7" do
   describe "Pattern matching" do
     # TODO: Remove excessive eval calls when support of previous version
@@ -1319,6 +1320,68 @@ ruby_version_is "2.7" do
             true
           end
         RUBY
+      end
+    end
+
+    ruby_version_is "3.2" do
+      it "supports binding instance variables" do
+        eval(<<~RUBY).should == true
+          case %w[a b c]
+          in [@a, @b, *]
+            true
+          end
+        RUBY
+
+        @a.should == 'a'
+        @b.should == 'b'
+
+        eval(<<~RUBY)
+          %w[foo bar] => @a, @b
+        RUBY
+
+        @a.should == 'foo'
+        @b.should == 'bar'
+
+        eval(<<~RUBY)
+          42 in @a
+        RUBY
+
+        @a.should == 42
+      end
+
+      it "supports binding class variables" do
+        result = nil
+        Module.new do
+          result = module_eval(<<~RUBY)
+            @@a = 0
+            case 2
+            in @@a
+              true
+            end
+
+            @@a
+          RUBY
+        end
+
+        result.should == 2
+      end
+
+      it "supports binding global variables" do
+        eval(<<~RUBY).should == true
+          $a = 0
+          case {a: 1, b: 2021}
+          in {a: $a, **}
+            true
+          end
+        RUBY
+
+        $a.should == 1
+
+        eval(<<~RUBY)
+          42 => $a
+        RUBY
+
+        $a.should == 42
       end
     end
   end
