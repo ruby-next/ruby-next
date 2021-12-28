@@ -2,6 +2,8 @@
 
 ## master
 
+- Add `MatchData#match`. ([@palkan][])
+
 - Add support for command syntax in endless methods (`def foo() = puts "bar"`)
 
 - Add `Refinement#import_methods` support. ([@palkan][])

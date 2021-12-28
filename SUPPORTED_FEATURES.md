@@ -50,6 +50,8 @@
 
 - `Refinement#import_methods` ([#17429](https://bugs.ruby-lang.org/issues/17429))
 
+- `MatchData#match` ([#18172](https://bugs.ruby-lang.org/issues/18172))
+
 ## Syntax
 
 ### 2.6

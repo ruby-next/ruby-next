@@ -193,6 +193,8 @@ require "ruby-next/core/hash/except"
 
 require "ruby-next/core/array/intersect"
 
+require "ruby-next/core/matchdata/match"
+
 # Generate refinements
 RubyNext.module_eval do
   RubyNext::Core.patches.refined.each do |mod, patches|
