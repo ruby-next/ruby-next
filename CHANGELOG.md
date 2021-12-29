@@ -2,6 +2,8 @@
 
 ## master
 
+## 0.14.0 🎄
+
 - Add `Integer.try_convert`. ([@palkan][])
 
 - Add `Enumerable#compact`, `Enumerator::Lazy#compact`. ([@palkan][])
