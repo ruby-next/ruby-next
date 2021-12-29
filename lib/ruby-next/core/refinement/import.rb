@@ -13,7 +13,7 @@ RubyNext::Core.singleton_class.module_eval do
       location = meth.source_location
 
       if location.nil? || location.first.match?(/(<internal:|resource:\/truffleruby\/core)/)
-        raise ArgumentError, "Can't import method: #{other}##{mid}"
+        raise ArgumentError, "Can't import method: #{other}##{mid} from #{location}"
       end
 
       source_file, lineno = *location

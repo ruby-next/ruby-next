@@ -73,6 +73,7 @@ _Please, submit a PR to add your project to the list!_
 - [RuboCop](#rubocop)
 - [Using with EOL Rubies](#using-with-eol-rubies)
 - [Proposed & edge features](#proposed-and-edge-features)
+- [Known limitations](#known-limitations)
 
 ## Overview
 
@@ -199,8 +200,6 @@ You can change the transpiler mode:
 - From code by setting `RubyNext::Language.mode = :ast` or `RubyNext::Language.mode = :rewrite`.
 - Via environmental variable `RUBY_NEXT_TRANSPILE_MODE=ast`.
 - Via CLI option ([see below](#cli)).
-
-**NOTE:** For the time being, Unparser doesn't support Ruby 3.0 AST nodes, so we always use rewrite mode in Ruby 3.0+.
 
 ## CLI
 
@@ -530,6 +529,32 @@ It's too early, Ruby 3.1 has just been released. See its features in the [suppor
 
 - _Method reference_ operator (`.:`) ([#13581](https://bugs.ruby-lang.org/issues/13581)).
 - Binding non-local variables in pattern matching (`42 => @v`) ([#18408](https://bugs.ruby-lang.org/issues/18408)).
+
+## Known limitations
+
+Ruby Next aims to be _reasonably compatible_ with MRI. That means, some edge cases could be uncovered. Below is the list of known limitations.
+
+For gem authors, we recommend testing against all supported versions on CI to make sure you're not hit by edge cases.
+
+### Enumerable methods
+
+Using refinements (`using RubyNext`) for modules could lead to unexpected behaviour in case there is also a `prepend` for the same module in Ruby <2.7.
+To eliminate this, we also refine Array (when appropriate), but other enumerables could be affected.
+
+See [this issue](https://bugs.ruby-lang.org/issues/13446) for details.
+
+### `Refinement#import_methods`
+
+- Doesn't support importing methods generated with `eval`.
+- Doesn't support aliases (both `alias` and `alias_method`).
+- In JRuby, importing attribute accessors/readers/writers is not supported.
+- When using AST transpiling in runtime, likely fails to import methods from a transpiled files (due to the updated source location).
+
+See the [original PR](https://github.com/ruby-next/ruby-next/pull/85) for more details.
+
+### Other
+
+See [Parser's known issues](https://github.com/whitequark/parser#known-issues).
 
 ## Contributing
 
