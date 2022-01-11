@@ -442,7 +442,7 @@ module RubyNext
           var = node.children[0]
           return s(:true) if var == :_
 
-          check_match_var_alternation!(var) unless var.is_a?(::Parser::AST::Node)
+          check_match_var_alternation!(var)
 
           s(:begin,
             s(:or,
@@ -988,6 +988,10 @@ module RubyNext
         # https://github.com/ruby/ruby/blob/672213ef1ca2b71312084057e27580b340438796/compile.c#L5900
         def check_match_var_alternation!(name)
           return unless locals.key?(ALTERNATION_MARKER)
+
+          if name.is_a?(::Parser::AST::Node)
+            raise ::SyntaxError, "illegal variable in alternative pattern (#{name.children.first})"
+          end
 
           return if name.start_with?("_")
 

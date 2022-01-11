@@ -1384,6 +1384,34 @@ ruby_version_is "2.7" do
 
         $a.should == 42
       end
+
+      it "doesn't support non-local variable binding in alternation pattern" do
+        -> {
+          eval <<~RUBY
+            case 0
+            in 0 | @a
+            end
+          RUBY
+        }.should raise_error(SyntaxError, /illegal variable in alternative pattern/)
+
+        -> {
+          Module.new do
+            module_eval(<<~RUBY)
+              case 0
+              in 0 | @@a
+              end
+            RUBY
+          end
+        }.should raise_error(SyntaxError, /illegal variable in alternative pattern/)
+
+        -> {
+          eval <<~RUBY
+            case 0
+            in 0 | $a
+            end
+          RUBY
+        }.should raise_error(SyntaxError, /illegal variable in alternative pattern/)
+      end
     end
   end
 end
