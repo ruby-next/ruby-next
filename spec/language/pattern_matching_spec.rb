@@ -1343,7 +1343,7 @@ ruby_version_is "2.7" do
         @b.should == 'bar'
 
         eval(<<~RUBY)
-          42 in @a
+          42 in Integer => @a
         RUBY
 
         @a.should == 42
@@ -1369,13 +1369,14 @@ ruby_version_is "2.7" do
       it "supports binding global variables" do
         eval(<<~RUBY).should == true
           $a = 0
-          case {a: 1, b: 2021}
-          in {a: $a, **}
+          case Hash[a: 1, b: 2022]
+          in {a: $a, **$b}
             true
           end
         RUBY
 
         $a.should == 1
+        $b.should == {b: 2022}
 
         eval(<<~RUBY)
           42 => $a
