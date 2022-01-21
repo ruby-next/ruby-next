@@ -1,9 +1,9 @@
 default: test
 
 test:
-	RUBY_NEXT_TRANSPILE_MODE=ast bundle exec mspec/bin/mspec
-	RUBY_NEXT_TRANSPILE_MODE=rewrite CORE_EXT=gem bundle exec mspec/bin/mspec
-	CORE_EXT=generated bundle exec mspec/bin/mspec
+	bundle exec mspec/bin/mspec
+	CORE_EXT=gem bundle exec mspec/bin/mspec :language :core
+	CORE_EXT=generated bundle exec mspec/bin/mspec :language :core
 
 lint:
 	bundle exec rubocop
