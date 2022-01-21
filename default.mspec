@@ -9,7 +9,12 @@ end
 
 begin
   require "pry-byebug"
-rescue LoadError
+rescue LoadError, NameError
+end
+
+begin
+  require "dead_end"
+rescue LoadError, NameError
 end
 
 class MSpecScript
