@@ -2,6 +2,8 @@
 
 ## master
 
+## 0.14.1 (2022-01-21)
+
 - Fix nested find patterns transpiling. ([@palkan][])
 
 ## 0.14.0 🎄
