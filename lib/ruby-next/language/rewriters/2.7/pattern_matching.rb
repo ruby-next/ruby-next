@@ -243,6 +243,7 @@ module RubyNext
 
           @deconstructed_keys = {}
           @predicates = Predicates::CaseIn.new
+          @lvars = []
 
           matchee_ast =
             s(:begin, s(:lvasgn, MATCHEE, node.children[0]))
@@ -272,6 +273,7 @@ module RubyNext
 
           @deconstructed_keys = {}
           @predicates = Predicates::Noop.new
+          @lvars = []
 
           matchee =
             s(:begin, s(:lvasgn, MATCHEE, node.children[0]))
@@ -282,10 +284,12 @@ module RubyNext
               arr: MATCHEE_ARR,
               hash: MATCHEE_HASH
             ) do
-              send(
-                :"#{node.children[1].type}_clause",
-                node.children[1]
-              ).then do |node|
+              with_declared_locals do
+                send(
+                  :"#{node.children[1].type}_clause",
+                  node.children[1]
+                )
+              end.then do |node|
                 s(:begin,
                   s(:or,
                     node,
@@ -311,6 +315,7 @@ module RubyNext
 
           @deconstructed_keys = {}
           @predicates = Predicates::Noop.new
+          @lvars = []
 
           matchee =
             s(:begin, s(:lvasgn, MATCHEE, node.children[0]))
@@ -321,10 +326,12 @@ module RubyNext
               arr: MATCHEE_ARR,
               hash: MATCHEE_HASH
             ) do
-              send(
-                :"#{node.children[1].type}_clause",
-                node.children[1]
-              )
+              with_declared_locals do
+                send(
+                  :"#{node.children[1].type}_clause",
+                  node.children[1]
+                )
+              end
             end
 
           node.updated(
@@ -395,13 +402,15 @@ module RubyNext
         def build_when_clause(clause)
           predicates.reset!
           [
-            with_guard(
-              send(
-                :"#{clause.children[0].type}_clause",
-                clause.children[0]
-              ),
-              clause.children[1] # guard
-            ),
+            with_declared_locals do
+              with_guard(
+                send(
+                  :"#{clause.children[0].type}_clause",
+                  clause.children[0]
+                ),
+                clause.children[1] # guard
+              )
+            end,
             process(clause.children[2] || s(:nil)) # expression
           ].then do |children|
             s(:when, *children)
@@ -541,11 +550,10 @@ module RubyNext
         def array_find(head, *nodes, tail)
           index = s(:lvar, :__i__)
 
-          match_vars = []
-
           head_match =
             unless head.children.empty?
-              match_vars << build_var_assignment(head.children[0].children[0])
+              # we only need to call this to track the lvar usage
+              build_var_assignment(head.children[0].children[0])
 
               arr_take = s(:send,
                 s(:lvar, locals[:arr]),
@@ -557,16 +565,19 @@ module RubyNext
 
           tail_match =
             unless tail.children.empty?
-              match_vars << build_var_assignment(tail.children[0].children[0])
+              # we only need to call this to track the lvar usage
+              build_var_assignment(tail.children[0].children[0])
 
               match_var_clause(tail.children[0], arr_slice(index + nodes.size, -1))
             end
 
           nodes.each do |node|
             if node.type == :match_var
-              match_vars << build_var_assignment(node.children[0])
+              # we only need to call this to track the lvar usage
+              build_var_assignment(node.children[0])
             elsif node.type == :match_as
-              match_vars << build_var_assignment(node.children[1].children[0])
+              # we only need to call this to track the lvar usage
+              build_var_assignment(node.children[1].children[0])
             end
           end
 
@@ -594,19 +605,7 @@ module RubyNext
             s(:args,
               s(:arg, :_),
               s(:arg, :__i__)),
-            pattern).then do |block|
-            next block if match_vars.empty?
-
-            # We need to declare match vars outside of `find` block
-            locals_declare = s(:begin, s(:masgn,
-              s(:mlhs, *match_vars),
-              s(:nil)))
-
-            s(:begin,
-              s(:or,
-                locals_declare,
-                block))
-          end
+            pattern)
         end
 
         def array_match_rest(index, node, *tail)
@@ -646,6 +645,14 @@ module RubyNext
           locals.with(arr: locals[:arr, index]) do
             predicates.push :"i#{index}"
             array_pattern_clause(node, element).tap { predicates.pop }
+          end
+        end
+
+        def find_pattern_array_element(node, index)
+          element = arr_item_at(index)
+          locals.with(arr: locals[:arr, index]) do
+            predicates.push :"i#{index}"
+            find_pattern_clause(node, element).tap { predicates.pop }
           end
         end
 
@@ -829,6 +836,15 @@ module RubyNext
           end
         end
 
+        def find_pattern_hash_element(node, key)
+          element = hash_value_at(key)
+          key_index = deconstructed_key(key)
+          locals.with(arr: locals[:hash, key_index]) do
+            predicates.push :"k#{key_index}"
+            find_pattern_clause(node, element).tap { predicates.pop }
+          end
+        end
+
         def hash_element(head, *tail)
           send("#{head.type}_hash_element", head).then do |node|
             next node if tail.empty?
@@ -948,6 +964,24 @@ module RubyNext
           end
         end
 
+        def with_declared_locals
+          lvars.clear
+          node = yield
+
+          return node if lvars.empty?
+
+          # We need to declare match lvars outside of the outer `find` block,
+          # so we do that for that whole pattern
+          locals_declare = s(:begin, s(:masgn,
+            s(:mlhs, *lvars.uniq.map { s(:lvasgn, _1) }),
+            s(:nil)))
+
+          s(:begin,
+            s(:or,
+              locals_declare,
+              node))
+        end
+
         def no_matching_pattern
           raise_error(
             :NoMatchingPatternError,
@@ -982,7 +1016,7 @@ module RubyNext
 
         private
 
-        attr_reader :deconstructed_keys, :predicates
+        attr_reader :deconstructed_keys, :predicates, :lvars
 
         # Raise SyntaxError if match-var is used within alternation
         # https://github.com/ruby/ruby/blob/672213ef1ca2b71312084057e27580b340438796/compile.c#L5900
@@ -1012,7 +1046,10 @@ module RubyNext
 
         # Value could be omitted for mass assignment
         def build_var_assignment(var, value = nil)
-          return s(:lvasgn, *[var, value].compact) unless var.is_a?(::Parser::AST::Node)
+          unless var.is_a?(::Parser::AST::Node)
+            lvars << var
+            return s(:lvasgn, *[var, value].compact)
+          end
 
           asign_type = :"#{var.type.to_s[0]}vasgn"
 

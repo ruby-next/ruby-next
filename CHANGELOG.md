@@ -2,6 +2,8 @@
 
 ## master
 
+- Fix nested find patterns transpiling. ([@palkan][])
+
 ## 0.14.0 🎄
 
 - Add `Integer.try_convert`. ([@palkan][])
