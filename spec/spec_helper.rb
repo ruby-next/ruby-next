@@ -24,3 +24,7 @@ end
 if !defined?(MSpecEnv) || !RubyNext::Utils.refine_modules?
   require_relative "test_unit_to_mspec"
 end
+
+root = File.dirname(__FILE__)
+dir = "fixtures/code"
+CODE_LOADING_DIR = File.realpath(dir, root)
