@@ -24,6 +24,8 @@ module RubyNext
           contents = File.read(path)
           transpile path, contents
         end
+
+        ensure_rbnext!
       end
 
       def parse!(args)
@@ -183,6 +185,17 @@ module RubyNext
 
         log "Remove old files: #{next_dir_path}"
         FileUtils.rm_r(next_dir_path)
+      end
+
+      def ensure_rbnext!
+        return if CLI.dry_run? || stdout?
+
+        return if File.directory?(next_dir_path)
+
+        return if next_dir_path.end_with?(".rb")
+
+        FileUtils.mkdir_p next_dir_path
+        File.write(File.join(next_dir_path, ".keep"), "")
       end
 
       def next_dir_path

@@ -47,11 +47,17 @@ describe "setup load path" do
     ) do |_status, output, _err|
       output.should include("ok;ok")
       File.directory?(File.join(__dir__, "fixtures", "lib", ".rbnext_test")).should equal true
-      # .rbnextrc is preserved
-      File.exist?(File.join(__dir__, "fixtures", "lib", ".rbnext_test", "2.7", "txen", "cards.rb")).should equal true
-      File.read(File.join(__dir__, "fixtures", "lib", ".rbnext_test", "2.7", "txen", "cards.rb")).lines.size.should equal(
-        File.read(File.join(__dir__, "fixtures", "lib", "txen", "cards.rb")).lines.size
-      )
+
+      if RUBY_VERSION >= "2.7.0"
+        # No need to transpile anything
+        File.exist?(File.join(__dir__, "fixtures", "lib", ".rbnext_test", "2.7", "txen", "cards.rb")).should equal false
+      else
+        # .rbnextrc is preserved
+        File.exist?(File.join(__dir__, "fixtures", "lib", ".rbnext_test", "2.7", "txen", "cards.rb")).should equal true
+        File.read(File.join(__dir__, "fixtures", "lib", ".rbnext_test", "2.7", "txen", "cards.rb")).lines.size.should equal(
+          File.read(File.join(__dir__, "fixtures", "lib", "txen", "cards.rb")).lines.size
+        )
+      end
     end
   end
 end
