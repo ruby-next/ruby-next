@@ -71,6 +71,7 @@ _Please, submit a PR to add your project to the list!_
   - [`ruby -ruby-next`](#uby-next)
   - [Logging & Debugging](#logging-and-debugging)
 - [RuboCop](#rubocop)
+- [Pry](#pry)
 - [Using with EOL Rubies](#using-with-eol-rubies)
 - [Proposed & edge features](#proposed-and-edge-features)
 - [Known limitations](#known-limitations)
@@ -453,6 +454,20 @@ AllCops:
 ```
 
 **NOTE:** you need `ruby-next` gem available in the environment where you run RuboCop (having `ruby-next-core` is not enough).
+
+## Pry
+
+Ruby Next supports Pry. In order to enable edge Ruby features for your REPL, add the following line to your `.pryrc`:
+
+```ruby
+require "ruby-next/pry"
+```
+
+Alternatively, you can require it at startup:
+
+```sh
+pry -r ruby-next/pry
+```
 
 ## Using with EOL Rubies
 
