@@ -8,6 +8,8 @@ This would prevent from auto-transpiling a library every time when no files shou
 
 - Auto-transpile using the current Ruby version. ([@palkan][])
 
+- Support Pry. ([@baygeldin][])
+
 ## 0.14.1 (2022-01-21)
 
 - Fix nested find patterns transpiling. ([@palkan][])
