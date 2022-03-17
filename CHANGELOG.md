@@ -10,6 +10,8 @@ This would prevent from auto-transpiling a library every time when no files shou
 
 - Support Pry. ([@baygeldin][])
 
+- Add `rescue/ensure/else` within block rewriter for Ruby < 2.5. ([@fargelus][])
+
 ## 0.14.1 (2022-01-21)
 
 - Fix nested find patterns transpiling. ([@palkan][])

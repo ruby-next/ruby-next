@@ -66,7 +66,7 @@ module RubyNext
         end
 
         class << self
-          # Returns true if the syntax is supported
+          # Returns true if the syntax is not supported
           # by the current Ruby (performs syntax check, not version check)
           def unsupported_syntax?
             save_verbose, $VERBOSE = $VERBOSE, nil
