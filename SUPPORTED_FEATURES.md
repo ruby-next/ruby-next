@@ -58,6 +58,10 @@
 
 ## Syntax
 
+### 2.5
+
+- do/end blocks work with ensure/rescue/else ([#12906](https://bugs.ruby-lang.org/issues/12906))
+
 ### 2.6
 
 - Endless ranges (`1..` or `1...`) ([ref](https://rubyreferences.github.io/rubychanges/2.6.html#endless-range-1))

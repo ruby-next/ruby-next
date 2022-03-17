@@ -186,6 +186,9 @@ module RubyNext
     require "ruby-next/language/rewriters/2.3/safe_navigation"
     rewriters << Rewriters::SafeNavigation
 
+    require "ruby-next/language/rewriters/2.5/rescue_within_block"
+    rewriters << Rewriters::RescueWithinBlock
+
     require "ruby-next/language/rewriters/2.7/args_forward"
     rewriters << Rewriters::ArgsForward
 
