@@ -22,7 +22,16 @@ module RubyNext
 
           context.track! self
 
-          replace(exception_node.loc.expression, s(:kwbegin, exception_node))
+          insert_before(exception_node.loc.expression, "begin;")
+          insert_after(exception_node.loc.expression, ";end")
+
+          new_childrens = block_node.children.map do |child|
+            next s(:kwbegin, exception_node) if child == exception_node
+
+            child
+          end
+
+          block_node.updated(:block, new_childrens)
         end
       end
     end
