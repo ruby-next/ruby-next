@@ -71,7 +71,8 @@ _Please, submit a PR to add your project to the list!_
   - [`ruby -ruby-next`](#uby-next)
   - [Logging & Debugging](#logging-and-debugging)
 - [RuboCop](#rubocop)
-- [Pry](#pry)
+- [Using with IRB](#irb)
+- [Using with Pry](#pry)
 - [Using with EOL Rubies](#using-with-eol-rubies)
 - [Proposed & edge features](#proposed-and-edge-features)
 - [Known limitations](#known-limitations)
@@ -455,6 +456,22 @@ AllCops:
 
 **NOTE:** you need `ruby-next` gem available in the environment where you run RuboCop (having `ruby-next-core` is not enough).
 
+## IRB
+
+Ruby Next supports IRB. In order to enable edge Ruby features for your REPL, add the following line to your `.irbrc`:
+
+```ruby
+require "ruby-next/irb"
+```
+
+Alternatively, you can require it at startup:
+
+```sh
+irb -r ruby-next/irb
+# or
+irb -ruby-next/irb
+```
+
 ## Pry
 
 Ruby Next supports Pry. In order to enable edge Ruby features for your REPL, add the following line to your `.pryrc`:
@@ -467,6 +484,8 @@ Alternatively, you can require it at startup:
 
 ```sh
 pry -r ruby-next/pry
+# or
+pry -ruby-next/pry
 ```
 
 ## Using with EOL Rubies

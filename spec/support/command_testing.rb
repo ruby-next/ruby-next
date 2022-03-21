@@ -10,12 +10,13 @@ module Kernel
     "bundle exec ruby"
   end
 
-  def run_command(command, chdir: nil, should_fail: false, env: {})
+  def run_command(command, chdir: nil, should_fail: false, env: {}, input: nil)
     output, err, status =
       Open3.capture3(
         env,
         command,
-        chdir: chdir || File.expand_path("../..", __dir__)
+        chdir: chdir || File.expand_path("../..", __dir__),
+        stdin_data: input&.join("\n")
       )
 
     if ENV["COMMAND_DEBUG"] || (!status.success? && !should_fail)
@@ -33,5 +34,10 @@ module Kernel
 
   def run_ruby_next(command, **options, &block)
     run_command("#{RUBY_RUNNER} #{File.join(__dir__, "../../bin/ruby-next")} #{command}", **options, &block)
+  end
+
+  def run_irb(flags = nil, input: [], **options, &block)
+    input << "exit"
+    run_command("bundle exec irb --noecho -rbundler/setup -I#{File.expand_path(File.join(__dir__, "../../lib"))} #{flags}", input: input, **options, &block)
   end
 end

@@ -2,6 +2,8 @@
 
 ## master
 
+- Support IRB ([@palkan][])
+
 - Create empty `.rbnext` folder during `nextify` if nothing to transpile. ([@palkan][])
 
 This would prevent from auto-transpiling a library every time when no files should be transpiled.
