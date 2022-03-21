@@ -2,6 +2,8 @@
 
 ## master
 
+## 0.15.0 (2022-03-21)
+
 - Support IRB ([@palkan][])
 
 - Create empty `.rbnext` folder during `nextify` if nothing to transpile. ([@palkan][])
