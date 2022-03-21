@@ -23,4 +23,7 @@ module Eternal
       a: 1,
       b: 2
     }
+
+  # add lambda with rescue
+  lambda do 1/0; rescue ZeroDivisionError; puts "1/0"; end # rubocop:disable Layout/SpaceAroundOperators
 end
