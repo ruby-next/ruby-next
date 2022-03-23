@@ -544,9 +544,9 @@ These features are disabled by default, you must opt-in in one of the following 
 # It's important to load language module first
 require "ruby-next/language"
 
-require "ruby-next/language/edge"
+require "ruby-next/language/rewriters/edge"
 # or
-require "ruby-next/language/proposed"
+require "ruby-next/language/rewriters/proposed"
 
 # and then activate the runtime mode
 require "ruby-next/language/runtime"
