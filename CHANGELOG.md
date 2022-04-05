@@ -2,6 +2,10 @@
 
 ## master
 
+## 0.15.1 (2022-04-05)
+
+- Fix transpiling `rescue` within nested blocks. ([@palkan][])
+
 ## 0.15.0 (2022-03-21)
 
 - Support IRB ([@palkan][])
