@@ -15,23 +15,25 @@ module RubyNext
 
         def on_block(block_node)
           exception_node = block_node.children.find do |node|
-            node.type == :rescue || node.type == :ensure
+            node && (node.type == :rescue || node.type == :ensure)
           end
 
-          return unless exception_node
+          return super(block_node) unless exception_node
 
           context.track! self
 
           insert_before(exception_node.loc.expression, "begin;")
           insert_after(exception_node.loc.expression, ";end")
 
-          new_childrens = block_node.children.map do |child|
+          new_children = block_node.children.map do |child|
             next s(:kwbegin, exception_node) if child == exception_node
 
             child
           end
 
-          block_node.updated(:block, new_childrens)
+          process(
+            block_node.updated(:block, new_children)
+          )
         end
       end
     end

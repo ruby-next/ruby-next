@@ -134,6 +134,18 @@ ruby_version_is "2.5" do
                 end", binding)
         end.should_not raise_error SyntaxError
       end
+
+      it "catches exception within a nested iterator" do
+        lambda do
+          eval("[1, 2].each do |i|
+                  i.upto(3) do |j|
+                    raise 'error'
+                  rescue
+                    $!
+                  end
+                end", binding)
+        end.should_not raise_error SyntaxError
+      end
     end
   end
 end
