@@ -152,6 +152,7 @@ module RubyNext
         transpile path, contents, version: version
       rescue SyntaxError, StandardError => e
         warn "Failed to transpile #{path}: #{e.class} — #{e.message}"
+        warn e.backtrace.take(10).join("\n") if ENV["RUBY_NEXT_DEBUG"] == "1"
         exit 1
       end
 
