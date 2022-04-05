@@ -67,7 +67,7 @@ end
 
 # Patch Kernel to hijack require/require_relative/load/eval
 module Kernel
-  module_function # rubocop:disable Style/ModuleFunction
+  module_function
 
   alias_method :require_without_ruby_next, :require
   def require(path)

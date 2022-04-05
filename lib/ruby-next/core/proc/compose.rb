@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# rubocop:disable Style/LambdaCall
 RubyNext::Core.patch Proc, name: "ProcCompose", method: :<<, version: "2.6" do
   <<-RUBY
 def <<(other)

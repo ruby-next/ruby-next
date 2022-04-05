@@ -62,7 +62,7 @@ module RubyNext
         mod_name = singleton? ? singleton.name : mod.name
         camelized_method_name = method_name.to_s.split("_").map(&:capitalize).join
 
-        "#{mod_name}#{camelized_method_name}".gsub(/\W/, "") # rubocop:disable Performance/StringReplacement
+        "#{mod_name}#{camelized_method_name}".gsub(/\W/, "")
       end
 
       def build_location(trace_locations)

@@ -182,7 +182,6 @@ module RubyNext
           end
         end
 
-        # rubocop:disable Style/MethodMissingSuper
         # rubocop:disable Style/MissingRespondToMissing
         class Noop < Base
           # Return node itself, no memoization

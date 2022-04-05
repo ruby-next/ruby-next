@@ -1,5 +1,5 @@
 require:
-  - standard/cop/semantic_blocks
+  - standard
   - ./lib/ruby-next/rubocop.rb
 
 inherit_gem:
@@ -20,7 +20,7 @@ AllCops:
   DisplayCopNames: true
   TargetRubyVersion: next
 
-Standard/SemanticBlocks:
+Standard/BlockSingleLineBraces:
   Enabled: false
 
 Style/FrozenStringLiteralComment:
@@ -51,3 +51,10 @@ Lint/BooleanSymbol:
 Layout/HeredocIndentation:
   Exclude:
     - 'lib/ruby-next/core/**/*.rb'
+
+Style/SlicingWithRange:
+  Enabled: false
+
+Lint/LiteralAsCondition:
+  Exclude:
+    - 'spec/**/*'

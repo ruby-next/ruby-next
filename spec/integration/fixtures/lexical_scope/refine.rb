@@ -14,7 +14,7 @@ module Test
   # Add some code to be transpiled to make sure
   # we transform it
   case 1
-    in Integer
-      puts "Refined: #{"1".to_i}" #=> Refined: 0
+  in Integer
+    puts "Refined: #{"1".to_i}" #=> Refined: 0
   end
 end

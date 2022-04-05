@@ -54,7 +54,7 @@ RubyNext::Core.singleton_class.module_eval do
 
     # Copy constants (they could be accessed from methods)
     other.constants.each do |name|
-      Kernel.eval "#{name} = #{other}::#{name}", bind
+      Kernel.eval "#{name} = #{other}::#{name}", bind # rubocop:disable Style/EvalWithLocation
     end
   end
 end
