@@ -24,9 +24,6 @@ module RubyNext
       "core_ext" => Commands::CoreExt
     }.freeze
 
-    def initialize
-    end
-
     def run(args = ARGV)
       maybe_print_version(args)
 

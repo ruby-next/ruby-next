@@ -68,7 +68,11 @@ module TestUnitToMspec
 
   if defined?(MSpecEnv) && RubyNext::Utils.refine_modules?
     refine MSpecEnv do
-      include MSpecEnvExt
+      if RUBY_VERSION >= "3.1.0"
+        import_methods MSpecEnvExt
+      else
+        include MSpecEnvExt
+      end
     end
   else
     Object.send(:include, TestUnitToMspec::MSpecEnvExt)
@@ -89,7 +93,11 @@ module TestUnitToMspec
 
   if RubyNext::Utils.refine_modules?
     refine Kernel do
-      include TestUnitToMspec::KernelExt
+      if RUBY_VERSION >= "3.1.0"
+        import_methods TestUnitToMspec::KernelExt
+      else
+        include TestUnitToMspec::KernelExt
+      end
     end
   else
     module ::Kernel
