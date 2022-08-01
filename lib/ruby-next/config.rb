@@ -19,8 +19,8 @@ module RubyNext
   NEXT_VERSION = "1995.next.0"
 
   class << self
-    # TruffleRuby claims it's 2.7.2 compatible but...
-    if defined?(TruffleRuby) && ::RUBY_VERSION =~ /^2\.7/
+    # TruffleRuby claims its RUBY_VERSION to be X.Y while not supporting all the features
+    if defined?(TruffleRuby)
       def current_ruby_version
         "2.6.5"
       end
