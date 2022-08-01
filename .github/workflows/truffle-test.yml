@@ -69,3 +69,10 @@ jobs:
             system("bundle", "exec", "mspec/bin/mspec", file)
           end || raise("Failures")
         '
+    - name: Run MSpec integration
+      run: |
+        ruby -e '
+          Dir.glob("spec/integration/**/*_spec.rb").all? do |file|
+            system("bundle", "exec", "mspec/bin/mspec", file)
+          end || raise("Failures")
+        '
