@@ -2,6 +2,10 @@
 
 ## master
 
+- Use `ruby2_keywords` when transpiling arguments forwarding. ([@palkan][])
+
+That makes transpiled code forward compatible with the modern Ruby versions.
+
 ## 0.15.1 (2022-04-05)
 
 - Fix transpiling `rescue` within nested blocks. ([@palkan][])

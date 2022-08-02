@@ -45,7 +45,64 @@ module RubyNext
           process_fargs(node, fargs)
         end
 
+        def on_def(node)
+          return super unless forward_arg?(node.children[1])
+
+          new_node = super
+
+          name = node.children[0]
+
+          insert_after(node.loc.expression, "; respond_to?(:ruby2_keywords, true) && (ruby2_keywords :#{name})")
+
+          s(:begin,
+            new_node,
+            ruby2_keywords_node(nil, name))
+        end
+
+        def on_defs(node)
+          return super unless forward_arg?(node.children[2])
+
+          new_node = super
+
+          receiver = node.children[0]
+          name = node.children[1]
+
+          # Using self.ruby2_keywords :name results in undefined method error,
+          # singleton_class works as expected
+          receiver = s(:send, nil, :singleton_class) if receiver.type == :self
+
+          receiver_name =
+            case receiver.type
+            when :send
+              receiver.children[1]
+            when :const
+              receiver.children[1]
+            end
+
+          insert_after(node.loc.expression, "; #{receiver_name}.respond_to?(:ruby2_keywords, true) && (#{receiver_name}.send(:ruby2_keywords, :#{name}))")
+
+          s(:begin,
+            new_node,
+            ruby2_keywords_node(receiver, name))
+        end
+
         private
+
+        def ruby2_keywords_node(receiver, name)
+          s(:and,
+            s(:send, receiver, :respond_to?,
+              s(:sym, :ruby2_keywords), s(:true)),
+            s(:begin,
+              s(:send, receiver, :send,
+                s(:sym, :ruby2_keywords),
+                s(:sym, name))))
+        end
+
+        def forward_arg?(args)
+          return false unless args&.children
+
+          args.children.any? { |arg| arg.type == :forward_arg }
+        end
 
         def extract_fargs(node)
           node.children.find { |child| child.is_a?(::Parser::AST::Node) && child.type == :forwarded_args }
