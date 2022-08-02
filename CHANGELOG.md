@@ -2,6 +2,12 @@
 
 ## master
 
+## 0.15.2 (2022-08-02)
+
+- Fix loading transpiled in TruffleRuby. ([@palkan][])
+
+TruffleRuby doesn't support all Ruby 3.0 features yet, so we should treat as an older Ruby.
+
 - Use `ruby2_keywords` when transpiling arguments forwarding. ([@palkan][])
 
 That makes transpiled code forward compatible with the modern Ruby versions.
