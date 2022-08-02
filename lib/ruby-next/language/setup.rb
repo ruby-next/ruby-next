@@ -12,7 +12,7 @@ module RubyNext
         return if File.directory?(target_dir)
 
         Dir.chdir(root_dir) do
-          unless system("bundle exec ruby-next nextify ./#{lib_dir} -o #{target_dir} --min-version=#{RUBY_VERSION} > /dev/null 2>&1")
+          unless system("bundle exec ruby-next nextify ./#{lib_dir} -o #{target_dir} --min-version=#{RubyNext.current_ruby_version} > /dev/null 2>&1")
             RubyNext.warn "Traspiled files are missing in: #{target_dir}. \n" \
               "Make sure you have gem 'ruby-next' in your Gemfile to auto-transpile the required files from source on load. " \
               "Otherwise the code from #{root_dir} may not work correctly."

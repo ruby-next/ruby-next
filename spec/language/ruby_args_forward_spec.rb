@@ -25,10 +25,6 @@ describe "args forwarding def(...)" do
     assert_syntax_error('def foo(...) defined?(...); end', /unexpected/)
   end
 
-  # FIXME: figure out how to deal with full kwargs separation
-  # https://github.com/ruby/ruby/pull/2794
-  next if Gem::Version.new(::RubyNext.current_ruby_version) > Gem::Version.new("2.7")
-
   obj1 = Object.new
   def obj1.bar(*args, **kws, &block)
     if block
@@ -37,11 +33,11 @@ describe "args forwarding def(...)" do
       [args, kws]
     end
   end
-  def obj1.name; "obj1"; end
+  obj4 = obj1.clone
+  obj5 = obj1.clone
   obj1.instance_eval('def foo(...) bar(...) end', __FILE__, __LINE__)
-
+  
   klass = Class.new {
-    def name; "obj2"; end
     def foo(*args, **kws, &block)
       if block
         block.call(args, kws)
@@ -66,29 +62,43 @@ describe "args forwarding def(...)" do
       [args, kws]
     end
   end
-  def obj3.name; "obj3"; end
   obj3.instance_eval('def foo(...) bar(...) end', __FILE__, __LINE__)
 
-  [obj1, obj2, obj3].each do |obj|
-    it obj.name do
+  ruby2_keywords =
+    begin
+      Object.new.tap { |obj| def obj.foo(a, k:); [a, k]; end; def obj.bar(*args); foo(*args); end }.bar(1, k: 2)
+      true
+    rescue ArgumentError
+      false
+    end
+
+  [obj1, obj2, obj3].each.with_index do |obj, i|
+    it "obj#{i + 1}" do
       assert_warning('') {
         assert_equal([[1, 2, 3], {k1: 4, k2: 5}], obj.foo(1, 2, 3, k1: 4, k2: 5) {|*x| x})
       }
       assert_warning('') {
         assert_equal([[1, 2, 3], {k1: 4, k2: 5}], obj.foo(1, 2, 3, k1: 4, k2: 5))
       }
-      warning = "warning: The last argument is used as the keyword parameter"
-      assert_warning(/\A\z|:(?!#{__LINE__+1})\d+: #{warning}/o) {
-        assert_equal([[], {}], obj.foo({}) {|*x| x})
+      array = (obj == obj3) || ruby2_keywords ? [] : [{}]
+
+      assert_warning('') {
+        assert_equal([array, {}], obj.foo({}) {|*x| x})
       }
-      assert_warning(/\A\z|:(?!#{__LINE__+1})\d+: #{warning}/o) {
-        assert_equal([[], {}], obj.foo({}))
+      assert_warning('') {
+        assert_equal([array, {}], obj.foo({}))
       }
       assert_equal(-1, obj.method(:foo).arity)
-
       parameters = obj.method(:foo).parameters
-      assert_equal(:rest, parameters.dig(0, 0))
-      assert_equal(:block, parameters.dig(1, 0))
+
+      if ruby2_keywords
+        assert_equal(:rest, parameters.dig(0, 0))
+        assert_equal(:block, parameters.dig(1, 0))
+      else
+        assert_equal(:rest, parameters.dig(0, 0))
+        assert_equal(:keyrest, parameters.dig(1, 0))
+        assert_equal(:block, parameters.dig(2, 0))
+      end
     end
   end
 

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "../support/command_testing"
+require "fileutils"
 
 describe "setup load path" do
   after do
@@ -39,7 +40,7 @@ describe "setup load path" do
     end
   end
 
-  it "autotranspiles files is rbnext_dir is missing" do
+  it "autotranspiles files when rbnext_dir is missing" do
     run_ruby(
       "-I#{File.join(__dir__, "fixtures", "lib")} " \
       "-r txen_source " \
@@ -48,7 +49,7 @@ describe "setup load path" do
       output.should include("ok;ok")
       File.directory?(File.join(__dir__, "fixtures", "lib", ".rbnext_test")).should equal true
 
-      if RUBY_VERSION >= "2.7.0"
+      if RubyNext.current_ruby_version >= "2.7.0"
         # No need to transpile anything
         File.exist?(File.join(__dir__, "fixtures", "lib", ".rbnext_test", "2.7", "txen", "cards.rb")).should equal false
       else
