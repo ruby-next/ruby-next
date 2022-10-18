@@ -425,15 +425,15 @@ module RubyNext
             s(:begin,
               s(:and,
                 node,
-                send(:"#{pattern.type}_clause", pattern)))
+                send(:"#{pattern.type}_clause", pattern, right)))
           end
         end
 
-        def match_alt_clause(node)
+        def match_alt_clause(node, matchee = s(:lvar, locals[:matchee]))
           children = locals.with(ALTERNATION_MARKER => true) do
             node.children.map.with_index do |child, i|
               predicates.terminate! if i == 1
-              send :"#{child.type}_clause", child
+              send :"#{child.type}_clause", child, matchee
             end
           end
           s(:begin, s(:or, *children))
@@ -663,6 +663,14 @@ module RubyNext
           end
         end
 
+        def const_pattern_array_element(node, index)
+          element = arr_item_at(index)
+          locals.with(arr: locals[:arr, index]) do
+            predicates.push :"i#{index}"
+            const_pattern_clause(node, element).tap { predicates.pop }
+          end
+        end
+
         def match_alt_array_element(node, index)
           children = node.children.map do |child, i|
             send :"#{child.type}_array_element", child, index
@@ -671,11 +679,19 @@ module RubyNext
         end
 
         def match_var_array_element(node, index)
-          match_var_clause(node, arr_item_at(index))
+          element = arr_item_at(index)
+          locals.with(arr: locals[:arr, index]) do
+            predicates.push :"i#{index}"
+            match_var_clause(node, element).tap { predicates.pop }
+          end
         end
 
         def match_as_array_element(node, index)
-          match_as_clause(node, arr_item_at(index))
+          element = arr_item_at(index)
+          locals.with(arr: locals[:arr, index]) do
+            predicates.push :"i#{index}"
+            match_as_clause(node, element).tap { predicates.pop }
+          end
         end
 
         def pin_array_element(node, index)
@@ -844,6 +860,15 @@ module RubyNext
           end
         end
 
+        def const_pattern_hash_element(node, key)
+          element = hash_value_at(key)
+          key_index = deconstructed_key(key)
+          locals.with(hash: locals[:hash, key_index]) do
+            predicates.push :"k#{key_index}"
+            const_pattern_clause(node, element).tap { predicates.pop }
+          end
+        end
+
         def hash_element(head, *tail)
           send("#{head.type}_hash_element", head).then do |node|
             next node if tail.empty?
@@ -884,12 +909,22 @@ module RubyNext
         end
 
         def match_as_hash_element(node, key)
-          match_as_clause(node, hash_value_at(key))
+          element = hash_value_at(key)
+          key_index = deconstructed_key(key)
+          locals.with(hash: locals[:hash, key_index]) do
+            predicates.push :"k#{key_index}"
+            match_as_clause(node, element).tap { predicates.pop }
+          end
         end
 
         def match_var_hash_element(node, key = nil)
           key ||= node.children[0]
-          match_var_clause(node, hash_value_at(key))
+          element = hash_value_at(key)
+          key_index = deconstructed_key(key)
+          locals.with(hash: locals[:hash, key_index]) do
+            predicates.push :"k#{key_index}"
+            match_var_clause(node, element).tap { predicates.pop }
+          end
         end
 
         def match_nil_pattern_hash_element(node, _key = nil)

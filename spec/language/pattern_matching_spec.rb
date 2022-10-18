@@ -1294,6 +1294,30 @@ ruby_version_is "2.7" do
       end
     end
 
+    describe "Constant" do
+      it "supports form Constant[id: { arr: [...] }] => var)" do
+        eval(<<~RUBY).should == true
+          var = [
+            {
+              contents: {
+                parts: [1, 2, 3]
+              }
+            }
+          ]
+          case var
+          in Array[
+            {
+              contents: Hash[
+                parts: Array[_, _, *] => arr
+                ] => hash
+            }
+          ]
+            arr == [1, 2, 3] && hash[:parts].size == 3
+          end
+        RUBY
+      end
+    end
+
     ruby_version_is "3.1" do
       it "can omit parentheses in one line pattern matching" do
         eval(<<~RUBY).should == [1, 2]
