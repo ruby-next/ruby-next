@@ -2,6 +2,10 @@
 
 ## master
 
+## 0.15.3 (2022-10-16)
+
+- Fix handling nested const patterns. ([@palkan][])
+
 ## 0.15.2 (2022-08-02)
 
 - Fix loading transpiled in TruffleRuby. ([@palkan][])
