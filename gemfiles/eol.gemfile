@@ -18,7 +18,8 @@ if RUBY_VERSION >= "2.4.0"
 end
 
 if RUBY_VERSION >= "2.3.0"
-  gem "bootsnap", platform: :mri
+  gem "bootsnap", "< 1.11.0", platform: :mri
+  gem "msgpack", "< 1.4.2"
 end
 
 # Unparser >= 0.5.0 doesn't support Ruby <2.4
