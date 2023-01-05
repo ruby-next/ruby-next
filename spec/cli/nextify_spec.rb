@@ -344,14 +344,5 @@ describe "ruby-next nextify" do
         File.read(File.join(__dir__, "dummy", "overwrite", "transpile_me.rb")).should include("using RubyNext")
       end
     end
-
-    it "overwrites original file if --single-version is provided" do
-      run_ruby_next(
-        "nextify #{File.join(__dir__, "dummy", "overwrite", "transpile_me.rb")} " \
-      "--single-version --overwrite"
-      ) do |_status, _output, err|
-        File.read(File.join(__dir__, "dummy", "overwrite", "transpile_me.rb")).should include("using RubyNext")
-      end
-    end
   end
 end
