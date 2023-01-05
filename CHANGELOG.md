@@ -2,6 +2,12 @@
 
 ## master
 
+## 0.15.4 (2023-01-05)
+
+- Support passing --overwrite to CLI. ([@prog-supdex][])
+
+Use `nextify original_file --single-version --overwrite` to overwrite the original file without create new one.
+
 ## 0.15.3 (2022-10-16)
 
 - Fix handling nested const patterns. ([@palkan][])
@@ -364,3 +370,4 @@ p a #=> 1
 [backports]: https://github.com/marcandre/backports
 [@sl4vr]: https://github.com/sl4vr
 [@skryukov]: https://github.com/skryukov
+[@prog-supdex]: https://github.com/prog-supdex
