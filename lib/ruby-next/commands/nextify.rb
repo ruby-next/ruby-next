@@ -10,11 +10,11 @@ module RubyNext
     class Nextify < Base
       using RubyNext
 
-      attr_reader :lib_path, :paths, :out_path, :min_version, :single_version, :specified_rewriters
+      attr_reader :lib_path, :paths, :out_path, :min_version, :single_version, :specified_rewriters, :overwrite_original_file
 
       def run
-        log "RubyNext core strategy: #{RubyNext::Core.strategy}"
-        log "RubyNext transpile mode: #{RubyNext::Language.mode}"
+        log "RubyNext core123132 strategy: #{RubyNext::Core.strategy}"
+        log "RubyNext transpile12313 mode: #{RubyNext::Language.mode}"
 
         remove_rbnext!
 
@@ -33,6 +33,7 @@ module RubyNext
         print_rewriters = false
         rewriter_names = []
         @single_version = false
+        @overwrite_original_file = false
 
         optparser = base_parser do |opts|
           opts.banner = "Usage: ruby-next nextify DIRECTORY_OR_FILE [options]"
@@ -47,6 +48,10 @@ module RubyNext
 
           opts.on("--single-version", "Only create one version of a file (for the earliest Ruby version)") do
             @single_version = true
+          end
+
+          opts.on("--overwrite", "Overwrite original file") do
+            @overwrite_original_file = true
           end
 
           opts.on("--edge", "Enable edge (master) Ruby features") do |val|
@@ -163,6 +168,12 @@ module RubyNext
 
         paths.unshift(version.segments[0..1].join(".")) unless single_version?
 
+        if overwrite_original_file?
+          overwrite_file_content!(path: path, contents: contents)
+
+          return
+        end
+
         next_path =
           if next_dir_path.end_with?(".rb")
             out_path
@@ -177,6 +188,14 @@ module RubyNext
         end
 
         log "Generated: #{next_path}"
+      end
+
+      def overwrite_file_content!(path:, contents:)
+        unless CLI.dry_run?
+          File.write(path, contents)
+        end
+
+        log "Overwritten: #{path}"
       end
 
       def remove_rbnext!
@@ -195,6 +214,8 @@ module RubyNext
 
         return if next_dir_path.end_with?(".rb")
 
+        return if overwrite_original_file?
+
         FileUtils.mkdir_p next_dir_path
         File.write(File.join(next_dir_path, ".keep"), "")
       end
@@ -209,6 +230,10 @@ module RubyNext
 
       def single_version?
         single_version || specified_rewriters
+      end
+
+      def overwrite_original_file?
+        single_version? && overwrite_original_file
       end
     end
   end
