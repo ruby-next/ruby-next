@@ -13,8 +13,8 @@ module RubyNext
       attr_reader :lib_path, :paths, :out_path, :min_version, :single_version, :specified_rewriters, :overwrite_original_file
 
       def run
-        log "RubyNext core123132 strategy: #{RubyNext::Core.strategy}"
-        log "RubyNext transpile12313 mode: #{RubyNext::Language.mode}"
+        log "RubyNext core strategy: #{RubyNext::Core.strategy}"
+        log "RubyNext transpile mode: #{RubyNext::Language.mode}"
 
         remove_rbnext!
 
