@@ -330,18 +330,50 @@ describe "ruby-next nextify" do
     end
   end
 
-  context "with --overwrite" do
-    after do
-      old_content = File.read(File.join(__dir__, "dummy", "transpile_me.rb"))
-      File.write(File.join(__dir__, "dummy", "overwrite", "transpile_me.rb"), old_content)
+  context "when --overwrite is provided" do
+    context "when --single-version is not provided" do
+      it "warns an error" do
+        run_ruby_next(
+          "nextify #{File.join(__dir__, "dummy", "overwrite", "transpile_me.rb")} " \
+      " --overwrite",
+          should_fail: true
+        ) do |_status, output, err|
+          output.should include("--single-version is missing, --overwrite arg works only with --single-version")
+        end
+      end
     end
 
-    it "overwrites original file if --single-version is provided" do
-      run_ruby_next(
-        "nextify #{File.join(__dir__, "dummy", "overwrite", "transpile_me.rb")} " \
+    context "when --single-version is provided" do
+      after do
+        old_content = File.read(File.join(__dir__, "dummy", "transpile_me.rb"))
+        File.write(File.join(__dir__, "dummy", "overwrite", "transpile_me.rb"), old_content)
+      end
+
+      it "overwrites original file" do
+        run_ruby_next(
+          "nextify #{File.join(__dir__, "dummy", "overwrite", "transpile_me.rb")} " \
       "--single-version --overwrite"
-      ) do |_status, _output, err|
-        File.read(File.join(__dir__, "dummy", "overwrite", "transpile_me.rb")).should include("using RubyNext")
+        ) do |_status, _output, err|
+          overwritten_file_path = File.join(__dir__, "dummy", "overwrite", "transpile_me.rb")
+          original_file_path = File.join(__dir__, "dummy", "transpile_me.rb")
+
+          File.read(overwritten_file_path).should_not == File.read(original_file_path)
+
+          run_ruby(
+            "-r #{overwritten_file_path} " \
+          "-e 'p  A.transform(status: :approve)'"
+          ) do |_status, output, _err|
+            output.should include("{:status=>:approve}")
+          end
+
+          run_ruby(
+            "-r #{overwritten_file_path} " \
+          "-e 'p  A.transform(another_hash: :approve)'",
+            should_fail: true
+          ) do |_status, output, err|
+            err.should include("NoMatchingPatternError")
+          end
+        end
       end
     end
   end
