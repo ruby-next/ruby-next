@@ -89,6 +89,27 @@ describe "ruby-next nextify" do
     end
   end
 
+  describe "--overwrite flag" do
+    file_path = File.join(__dir__, "dummy", "transpile_me2.rb")
+    before { File.write(file_path, File.read(File.join(__dir__, "dummy", "transpile_me.rb"))) }
+
+    it "overwrites the file if --single-version flag is specified" do
+      run_ruby_next("nextify #{file_path} --single-version --overwrite") do |_status, _output, _err|
+        File.exist?(file_path).should equal true
+        File.read(file_path).should include("deconstruct_keys([:status])")
+      end
+    end
+
+    it "displays a warning message if --single-version if not specified" do
+      run_ruby_next("nextify #{file_path} --overwrite") do |_status, _output, _err|
+        File.exist?(file_path).should equal true
+        File.read(file_path).should_not include("deconstruct_keys([:status])")
+      end
+    end
+
+    after { File.delete(file_path) if File.exists? file_path }
+  end
+
   it "can generate a single file and store it into a specified path" do
     run_ruby_next(
       "nextify #{File.join(__dir__, "dummy", "transpile_me.rb")} " \

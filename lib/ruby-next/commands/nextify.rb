@@ -10,7 +10,7 @@ module RubyNext
     class Nextify < Base
       using RubyNext
 
-      attr_reader :lib_path, :paths, :out_path, :min_version, :single_version, :specified_rewriters
+      attr_reader :lib_path, :paths, :out_path, :min_version, :single_version, :specified_rewriters, :arguments
 
       def run
         log "RubyNext core strategy: #{RubyNext::Core.strategy}"
@@ -33,12 +33,17 @@ module RubyNext
         print_rewriters = false
         rewriter_names = []
         @single_version = false
+        @arguments = args.dup
 
         optparser = base_parser do |opts|
           opts.banner = "Usage: ruby-next nextify DIRECTORY_OR_FILE [options]"
 
           opts.on("-o", "--output=OUTPUT", "Specify output directory or file or stdout") do |val|
             @out_path = val
+          end
+
+          opts.on("--overwrite", "Overwrite the file") do |_|
+            @out_path = arguments[0]
           end
 
           opts.on("--min-version=VERSION", "Specify the minimum Ruby version to support") do |val|
@@ -106,6 +111,11 @@ module RubyNext
         if rewriter_names.any? && min_version
           $stdout.puts "--rewrite cannot be used with --min-version simultaneously"
           exit 2
+        end
+
+        if arguments.include?("--overwrite") && !single_version
+          $stdout.puts "--single-version is missing, --overwrite arg works only with --single-version"
+          exit
         end
 
         @specified_rewriters =

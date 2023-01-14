@@ -2,6 +2,12 @@
 
 ## master
 
+## 0.15.4 (2022-01-14)
+
+- Support passing `--overwrite` option to CLI ([@tagirahmad][])
+
+Use `nextify path/to/file --single-version --overwrite` to overwrite the original file.
+
 ## 0.15.3 (2022-10-16)
 
 - Fix handling nested const patterns. ([@palkan][])
@@ -364,3 +370,4 @@ p a #=> 1
 [backports]: https://github.com/marcandre/backports
 [@sl4vr]: https://github.com/sl4vr
 [@skryukov]: https://github.com/skryukov
+[@tagirahmad]: https://github.com/tagirahmad
