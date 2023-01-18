@@ -2,8 +2,6 @@
 
 ## master
 
-## 0.15.4 (2023-01-05)
-
 - Support passing --overwrite to CLI. ([@prog-supdex][])
 
 Use `nextify original_file --single-version --overwrite` to overwrite the original file without create new one.
