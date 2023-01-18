@@ -219,7 +219,7 @@ Usage: ruby-next nextify DIRECTORY_OR_FILE [options]
     -o, --output=OUTPUT              Specify output directory or file or stdout
         --min-version=VERSION        Specify the minimum Ruby version to support
         --single-version             Only create one version of a file (for the earliest Ruby version)
-        --overwrite                  Overwrites the original file with one version of --single-version (Works with --single-version)
+        --overwrite                  Overwrites the original file with one version of --single-version (works only with --single-version)
         --edge                       Enable edge (master) Ruby features
         --proposed                   Enable proposed/experimental Ruby features
         --transpile-mode=MODE        Transpiler mode (ast or rewrite). Default: ast
