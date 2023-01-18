@@ -113,7 +113,7 @@ module RubyNext
           exit 2
         end
 
-        if @overwrite_original_file && !@single_version
+        if overwrite_original_file? && !single_version?
           $stdout.puts "--single-version is missing, --overwrite arg works only with --single-version"
           exit 2
         end
@@ -238,7 +238,7 @@ module RubyNext
       end
 
       def overwrite_original_file?
-        single_version && overwrite_original_file
+        overwrite_original_file
       end
     end
   end
