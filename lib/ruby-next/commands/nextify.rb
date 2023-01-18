@@ -113,11 +113,6 @@ module RubyNext
           exit 2
         end
 
-        if overwrite_original_file? && !single_version?
-          $stdout.puts "--single-version is missing, --overwrite arg works only with --single-version"
-          exit 2
-        end
-
         @specified_rewriters =
           if rewriter_names.any?
             begin
@@ -128,6 +123,11 @@ module RubyNext
               exit 2
             end
           end
+
+        if overwrite_original_file? && !single_version?
+          $stdout.puts "--single-version and --rewrite are missing, --overwrite arg works only with --single-version or --rewrite"
+          exit 2
+        end
 
         @paths =
           if File.directory?(lib_path)
