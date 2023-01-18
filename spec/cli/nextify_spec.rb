@@ -337,13 +337,18 @@ describe "ruby-next nextify" do
           "nextify #{File.join(__dir__, "dummy", "overwrite", "transpile_me.rb")} " \
       " --overwrite",
           should_fail: true
-        ) do |_status, output, err|
+        ) do |_status, output, _err|
           output.should include("--single-version and --rewrite are missing, --overwrite arg works only with --single-version or --rewrite")
         end
       end
     end
 
     context "when --single-version or --rewrite is provided" do
+      before(:all) do
+        @overwritten_file_path = File.join(__dir__, "dummy", "overwrite", "transpile_me.rb")
+        @original_file_path = File.join(__dir__, "dummy", "transpile_me.rb")
+      end
+
       after do
         old_content = File.read(File.join(__dir__, "dummy", "transpile_me.rb"))
         File.write(File.join(__dir__, "dummy", "overwrite", "transpile_me.rb"), old_content)
@@ -353,24 +358,21 @@ describe "ruby-next nextify" do
         run_ruby_next(
           "nextify #{File.join(__dir__, "dummy", "overwrite", "transpile_me.rb")} " \
       "--single-version --overwrite"
-        ) do |_status, _output, err|
-          overwritten_file_path = File.join(__dir__, "dummy", "overwrite", "transpile_me.rb")
-          original_file_path = File.join(__dir__, "dummy", "transpile_me.rb")
-
-          File.read(overwritten_file_path).should_not == File.read(original_file_path)
+        ) do |_status, _output, _err|
+          File.read(@overwritten_file_path).should_not equal(File.read(@original_file_path))
 
           run_ruby(
-            "-r #{overwritten_file_path} " \
+            "-r #{@overwritten_file_path} " \
           "-e 'p  A.transform(status: :approve)'"
           ) do |_status, output, _err|
             output.should include("{:status=>:approve}")
           end
 
           run_ruby(
-            "-r #{overwritten_file_path} " \
+            "-r #{@overwritten_file_path} " \
           "-e 'p  A.transform(another_hash: :approve)'",
             should_fail: true
-          ) do |_status, output, err|
+          ) do |_status, _output, err|
             err.should include("NoMatchingPatternError")
           end
         end
@@ -380,24 +382,21 @@ describe "ruby-next nextify" do
         run_ruby_next(
           "nextify #{File.join(__dir__, "dummy", "overwrite", "transpile_me.rb")} " \
       "--rewrite=endless-range --rewrite=pattern-matching --overwrite"
-        ) do
-          overwritten_file_path = File.join(__dir__, "dummy", "overwrite", "transpile_me.rb")
-          original_file_path = File.join(__dir__, "dummy", "transpile_me.rb")
-
-          File.read(overwritten_file_path).should_not == File.read(original_file_path)
+        ) do |_status, _output, _err|
+          File.read(@overwritten_file_path).should_not equal(File.read(@original_file_path))
 
           run_ruby(
-            "-r #{overwritten_file_path} " \
+            "-r #{@overwritten_file_path} " \
             "-e 'p  A.transform(status: :approve)'"
           ) do |_status, output, _err|
             output.should include("{:status=>:approve}")
           end
 
           run_ruby(
-            "-r #{overwritten_file_path} " \
+            "-r #{@overwritten_file_path} " \
             "-e 'p  A.transform(another_hash: :approve)'",
             should_fail: true
-          ) do |_status, output, err|
+          ) do |_status, _output, err|
             err.should include("NoMatchingPatternError")
           end
         end
