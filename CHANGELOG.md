@@ -2,6 +2,8 @@
 
 ## master
 
+- Add ability to --overwrite original file(s). ([@dem23step](https://github.com/dem23step))
+
 ## 0.15.3 (2022-10-16)
 
 - Fix handling nested const patterns. ([@palkan][])

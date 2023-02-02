@@ -17,6 +17,7 @@ AllCops:
     - 'spec/optional/language/**/*'
     - 'mspec/**/*'
     - 'benchmarks/**/*'
+    - 'spec/**/*_transpiled.rb'
   DisplayCopNames: true
   TargetRubyVersion: next
 

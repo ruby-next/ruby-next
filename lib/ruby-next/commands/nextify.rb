@@ -10,7 +10,9 @@ module RubyNext
     class Nextify < Base
       using RubyNext
 
-      attr_reader :lib_path, :paths, :out_path, :min_version, :single_version, :specified_rewriters
+      attr_reader :lib_path, :paths, :out_path, :min_version, :single_version, :specified_rewriters, :overwrite
+
+      alias overwrite? overwrite
 
       def run
         log "RubyNext core strategy: #{RubyNext::Core.strategy}"
@@ -33,6 +35,7 @@ module RubyNext
         print_rewriters = false
         rewriter_names = []
         @single_version = false
+        @overwrite = false
 
         optparser = base_parser do |opts|
           opts.banner = "Usage: ruby-next nextify DIRECTORY_OR_FILE [options]"
@@ -79,6 +82,10 @@ module RubyNext
           opts.on("-h", "--help", "Print help") do
             print_help = true
           end
+
+          opts.on("--overwrite", "Overwrite original file") do
+            @overwrite = true
+          end
         end
 
         optparser.parse!(args)
@@ -106,6 +113,13 @@ module RubyNext
         if rewriter_names.any? && min_version
           $stdout.puts "--rewrite cannot be used with --min-version simultaneously"
           exit 2
+        end
+
+        if overwrite?
+          unless single_version?
+            $stdout.puts "--overwrite must be used with --single-version only"
+            exit 2
+          end
         end
 
         @specified_rewriters =
@@ -158,6 +172,7 @@ module RubyNext
 
       def save(contents, path, version)
         return $stdout.puts(contents) if stdout?
+        return overwrite!(contents, path) if overwrite?
 
         paths = [Pathname.new(path).relative_path_from(Pathname.new(lib_path))]
 
@@ -191,12 +206,20 @@ module RubyNext
       def ensure_rbnext!
         return if CLI.dry_run? || stdout?
 
+        return if overwrite?
+
         return if File.directory?(next_dir_path)
 
         return if next_dir_path.end_with?(".rb")
 
         FileUtils.mkdir_p next_dir_path
         File.write(File.join(next_dir_path, ".keep"), "")
+      end
+
+      def overwrite!(contents, path)
+        File.write(path, contents) unless dry_run?
+
+        log "Generated: #{path}"
       end
 
       def next_dir_path

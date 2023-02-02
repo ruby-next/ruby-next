@@ -225,6 +225,7 @@ Usage: ruby-next nextify DIRECTORY_OR_FILE [options]
         --[no-]refine                Do not inject `using RubyNext`
         --list-rewriters             List available rewriters
         --rewrite=REWRITERS...       Specify particular Ruby features to rewrite
+        --overwrite                  Overwrite original file (must be used with --single-version only)
     -h, --help                       Print help
     -V                               Turn on verbose mode
         --dry-run                    Print verbose output without generating files
