@@ -362,14 +362,14 @@ describe "ruby-next nextify" do
           File.read(@overwritten_file_path).should_not equal(File.read(@original_file_path))
 
           run_ruby(
-            "-r #{@overwritten_file_path} " \
+            "-r ruby-next -r #{@overwritten_file_path} " \
           "-e 'p  A.transform(status: :approve)'"
           ) do |_status, output, _err|
             output.should include("{:status=>:approve}")
           end
 
           run_ruby(
-            "-r #{@overwritten_file_path} " \
+            "-r ruby-next -r #{@overwritten_file_path} " \
           "-e 'p  A.transform(another_hash: :approve)'",
             should_fail: true
           ) do |_status, _output, err|
@@ -378,7 +378,7 @@ describe "ruby-next nextify" do
         end
       end
 
-      it "overwrites original file if --rewrite" do
+      it "overwrites original file if --rewrite and --overwrite" do
         run_ruby_next(
           "nextify #{File.join(__dir__, "dummy", "overwrite", "transpile_me.rb")} " \
       "--rewrite=endless-range --rewrite=pattern-matching --overwrite"
@@ -386,14 +386,14 @@ describe "ruby-next nextify" do
           File.read(@overwritten_file_path).should_not equal(File.read(@original_file_path))
 
           run_ruby(
-            "-r #{@overwritten_file_path} " \
+            "-r ruby-next -r #{@overwritten_file_path} " \
             "-e 'p  A.transform(status: :approve)'"
           ) do |_status, output, _err|
             output.should include("{:status=>:approve}")
           end
 
           run_ruby(
-            "-r #{@overwritten_file_path} " \
+            "-r ruby-next -r #{@overwritten_file_path} " \
             "-e 'p  A.transform(another_hash: :approve)'",
             should_fail: true
           ) do |_status, _output, err|
