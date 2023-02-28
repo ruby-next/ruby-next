@@ -278,9 +278,9 @@ describe "ruby-next nextify" do
     Dir.chdir(File.join(__dir__, "dummy")) do
       File.write(".rbnextrc",
         <<~YML
-                   nextify: |
-                     --min-version=2.6
-                     --transpile-mode=rewrite
+          nextify: |
+            --min-version=2.6
+            --transpile-mode=rewrite
         YML
       )
 
