@@ -329,4 +329,73 @@ describe "ruby-next nextify" do
       output.should include('method-reference ("Language.:transform")')
     end
   end
+
+  context 'in overwrite mode' do
+    context 'providing a single file' do
+      require 'tempfile'
+      before do
+        @original_content = File.read(File.join(__dir__, "dummy", "transpile_me.rb"))
+        @file = Tempfile.new('foo')
+        @file.write @original_content
+        @file.close
+      end
+      after do
+        @file&.unlink
+      end
+      it "should silently overwrite file" do
+        run_ruby_next "nextify --output=overwrite #{@file.path}" do |status, output, err|
+          status.success?.should == true
+          output.should be_empty
+          File.read(@file.path).should_not == @original_content
+        end
+      end
+      it "should log actions" do
+        run_ruby_next "nextify -V --output=overwrite #{@file.path}" do |status, output, err|
+          status.success?.should == true
+          output.should include('Overwrote')
+          output.should include @file.path
+        end
+        # Second run does not touch already transpilled files
+        run_ruby_next "nextify -V --output=overwrite #{@file.path}" do |status, output, err|
+          status.success?.should == true
+          output.should_not include('Overwrote')
+          output.should include('Not touched')
+          output.should include @file.path
+        end
+      end
+    end
+
+    context 'providing a directory' do
+      require 'tmpdir'
+      before do
+        @tmpdir = Dir.mktmpdir
+        @source_files = Dir[File.join(__dir__, "dummy", "*.rb")]
+        @source_files.each do |file|
+          FileUtils.cp(file, @tmpdir)
+        end
+      end
+      after do
+        FileUtils.rm_f @tmpdir
+      end
+      it "should silently overwrite file" do
+        run_ruby_next "nextify --output=overwrite #{@tmpdir}" do |status, output, err|
+          status.success?.should == true
+          @source_files.each do |file|
+            File.read(file).should_not == File.read(File.join(@tmpdir, File.basename(file)))
+          end
+        end
+      end
+      it "should log actions" do
+        run_ruby_next "nextify -V --output=overwrite #{@tmpdir}" do |status, output, err|
+          status.success?.should == true
+          output.should include('Overwrote')
+        end
+        run_ruby_next "nextify -V --output=overwrite #{@tmpdir}" do |status, output, err|
+          status.success?.should == true
+          output.should_not include('Overwrote')
+          output.should include('Not touched')
+        end
+      end
+    end
+  end
 end

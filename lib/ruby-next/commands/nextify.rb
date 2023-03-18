@@ -21,8 +21,16 @@ module RubyNext
         @min_version ||= MIN_SUPPORTED_VERSION
 
         paths.each do |path|
-          contents = File.read(path)
-          transpile path, contents
+          if overwrite?
+            transpile_and_overwrite path
+          else
+            contents = File.read(path)
+            transpile path, contents
+          end
+        rescue SyntaxError, StandardError => e
+          warn "Failed to transpile #{path}: #{e.class} — #{e.message}"
+          warn e.backtrace.take(10).join("\n") if ENV["RUBY_NEXT_DEBUG"] == "1"
+          exit 1
         end
 
         ensure_rbnext!
@@ -37,7 +45,7 @@ module RubyNext
         optparser = base_parser do |opts|
           opts.banner = "Usage: ruby-next nextify DIRECTORY_OR_FILE [options]"
 
-          opts.on("-o", "--output=OUTPUT", "Specify output directory or file or stdout") do |val|
+          opts.on("-o", "--output=OUTPUT", "Specify output directory or file or stdout or overwrite") do |val|
             @out_path = val
           end
 
@@ -131,6 +139,30 @@ module RubyNext
 
       private
 
+      def transpile_and_overwrite(path)
+        file = File.open(path, 'r+')
+        rewriters = specified_rewriters || Language.rewriters.select { |rw| rw.unsupported_version?(min_version) }
+
+        context = Language::TransformContext.new
+
+        contents = file.read
+
+        new_contents = Language.transform contents, context: context, rewriters: rewriters
+
+        unless context.dirty?
+          log "Not touched: #{file.path}"
+          return
+        end
+
+        unless CLI.dry_run?
+          file.rewind
+          file.write(new_contents)
+        end
+        log "Overwrote: #{file.path}"
+      ensure
+        file&.close
+      end
+
       def transpile(path, contents, version: min_version)
         rewriters = specified_rewriters || Language.rewriters.select { |rw| rw.unsupported_version?(version) }
 
@@ -150,10 +182,6 @@ module RubyNext
 
         # Then, generate the source code for the next version
         transpile path, contents, version: version
-      rescue SyntaxError, StandardError => e
-        warn "Failed to transpile #{path}: #{e.class} — #{e.message}"
-        warn e.backtrace.take(10).join("\n") if ENV["RUBY_NEXT_DEBUG"] == "1"
-        exit 1
       end
 
       def save(contents, path, version)
@@ -180,7 +208,7 @@ module RubyNext
       end
 
       def remove_rbnext!
-        return if CLI.dry_run? || stdout?
+        return if CLI.dry_run? || stdout? || overwrite?
 
         return unless File.directory?(next_dir_path)
 
@@ -189,7 +217,7 @@ module RubyNext
       end
 
       def ensure_rbnext!
-        return if CLI.dry_run? || stdout?
+        return if CLI.dry_run? || stdout? || overwrite?
 
         return if File.directory?(next_dir_path)
 
@@ -201,6 +229,10 @@ module RubyNext
 
       def next_dir_path
         @next_dir_path ||= (out_path || File.join(lib_path, RUBY_NEXT_DIR))
+      end
+
+      def overwrite?
+        out_path == "overwrite"
       end
 
       def stdout?

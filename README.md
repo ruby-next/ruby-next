@@ -216,7 +216,7 @@ It has the following interface:
 ```sh
 $ ruby-next nextify
 Usage: ruby-next nextify DIRECTORY_OR_FILE [options]
-    -o, --output=OUTPUT              Specify output directory or file or stdout
+    -o, --output=OUTPUT              Specify output directory or file or stdout or overwrite
         --min-version=VERSION        Specify the minimum Ruby version to support
         --single-version             Only create one version of a file (for the earliest Ruby version)
         --edge                       Enable edge (master) Ruby features
@@ -240,6 +240,22 @@ The behaviour depends on whether you transpile a single file or a directory:
 $ ruby-next nextify my_ruby.rb -o my_ruby_next.rb -V
 Ruby Next core strategy: refine
 Generated: my_ruby_next.rb
+```
+
+- When transpiling and overwrite a single file by providing `overwrite` mode as the output path no additional files or directories are created and the file is overwritten by transpiled code. For example:
+
+```sh
+$ ruby-next nextify my_ruby.rb -o overwrite -V
+Ruby Next core strategy: refine
+Overwrote: my_ruby.rb
+```
+
+Second run does not touch file because it is already transpilled:
+
+```sh
+$ ruby-next nextify my_ruby.rb -o overwrite -V
+Ruby Next core strategy: refine
+Not touched: my_ruby.rb
 ```
 
 ### `ruby-next core_ext`

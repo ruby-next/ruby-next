@@ -2,6 +2,8 @@
 
 ## master
 
+- An option to rewrite file inplace for ruby-next nextify. ([@dapi][])
+
 ## 0.15.3 (2022-10-16)
 
 - Fix handling nested const patterns. ([@palkan][])
@@ -364,3 +366,4 @@ p a #=> 1
 [backports]: https://github.com/marcandre/backports
 [@sl4vr]: https://github.com/sl4vr
 [@skryukov]: https://github.com/skryukov
+[@dapi]: https://github.com/dapi
