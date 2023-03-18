@@ -82,7 +82,7 @@ module RubyNext
           # Returns true if the syntax is supported
           # by the specified version
           def unsupported_version?(version)
-            self::MIN_SUPPORTED_VERSION > version
+            version < self::MIN_SUPPORTED_VERSION
           end
 
           private
