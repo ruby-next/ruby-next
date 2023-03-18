@@ -25,7 +25,7 @@ module RubyNext
 
             context.track! self
 
-            left_p, right_p = pattern.type == :array_pattern ? %w([ ]) : %w[{ }]
+            left_p, right_p = (pattern.type == :array_pattern) ? %w([ ]) : %w[{ }]
 
             insert_before(pattern.loc.expression, left_p)
             insert_after(pattern.loc.expression, right_p)

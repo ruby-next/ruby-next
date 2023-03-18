@@ -50,7 +50,7 @@ module RubyNext
 
           return false unless fargs
 
-          node.children.index(fargs) > (node.type == :send ? 2 : 0)
+          node.children.index(fargs) > ((node.type == :send) ? 2 : 0)
         end
 
         def method_with_leading_arg(node)
@@ -62,7 +62,7 @@ module RubyNext
         end
 
         def def_with_leading_farg(node)
-          args = node.type == :defs ? node.children[2] : node.children[1]
+          args = (node.type == :defs) ? node.children[2] : node.children[1]
           args = args.children
 
           farg = args.detect { |child| child.type == :forward_arg }
