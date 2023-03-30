@@ -93,7 +93,9 @@ module TestUnitToMspec
 
   if RubyNext::Utils.refine_modules?
     refine Kernel do
-      if RUBY_VERSION >= "3.1.0"
+      # TrufflyRuby doesn't support super in imported methods:
+      # https://github.com/oracle/truffleruby/issues/2971
+      if RUBY_VERSION >= "3.1.0" && !defined?(TruffleRuby)
         import_methods TestUnitToMspec::KernelExt
       else
         include TestUnitToMspec::KernelExt
