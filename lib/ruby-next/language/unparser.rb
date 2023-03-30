@@ -5,6 +5,11 @@ save_verbose, $VERBOSE = $VERBOSE, nil
 require "parser/current"
 $VERBOSE = save_verbose
 
+# For backward compatibility with older Unparser for EOL Rubies
+if !Parser::Lexer.const_defined?(:ESCAPES)
+  Parser::Lexer::ESCAPES = Parser::LexerStrings::ESCAPES
+end
+
 require "unparser"
 
 # For backward compatibility with older Unparser
