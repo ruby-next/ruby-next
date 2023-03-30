@@ -10,7 +10,8 @@ module RubyNext
     class Nextify < Base
       using RubyNext
 
-      attr_reader :lib_path, :paths, :out_path, :min_version, :single_version, :specified_rewriters, :overwrite_original_file
+      attr_reader :lib_path, :paths, :out_path, :min_version, :single_version, :specified_rewriters, :overwrite
+      alias_method :overwrite?, :overwrite
 
       def run
         log "RubyNext core strategy: #{RubyNext::Core.strategy}"
@@ -33,7 +34,7 @@ module RubyNext
         print_rewriters = false
         rewriter_names = []
         @single_version = false
-        @overwrite_original_file = false
+        @overwrite = false
 
         optparser = base_parser do |opts|
           opts.banner = "Usage: ruby-next nextify DIRECTORY_OR_FILE [options]"
@@ -51,7 +52,7 @@ module RubyNext
           end
 
           opts.on("--overwrite", "Overwrite original file") do
-            @overwrite_original_file = true
+            @overwrite = true
           end
 
           opts.on("--edge", "Enable edge (master) Ruby features") do |val|
@@ -124,8 +125,8 @@ module RubyNext
             end
           end
 
-        if overwrite_original_file? && !single_version?
-          $stdout.puts "--single-version and --rewrite are missing, --overwrite arg works only with --single-version or --rewrite"
+        if overwrite? && !single_version?
+          $stdout.puts "--overwrite only works with --single-version or explcit rewritires specified (via --rewrite)"
           exit 2
         end
 
@@ -173,7 +174,7 @@ module RubyNext
 
         paths.unshift(version.segments[0..1].join(".")) unless single_version?
 
-        if overwrite_original_file?
+        if overwrite?
           overwrite_file_content!(path: path, contents: contents)
 
           return
@@ -219,7 +220,7 @@ module RubyNext
 
         return if next_dir_path.end_with?(".rb")
 
-        return if overwrite_original_file?
+        return if overwrite?
 
         FileUtils.mkdir_p next_dir_path
         File.write(File.join(next_dir_path, ".keep"), "")
@@ -235,10 +236,6 @@ module RubyNext
 
       def single_version?
         single_version || specified_rewriters
-      end
-
-      def overwrite_original_file?
-        overwrite_original_file
       end
     end
   end

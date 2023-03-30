@@ -330,76 +330,55 @@ describe "ruby-next nextify" do
     end
   end
 
-  context "when --overwrite is provided" do
-    context "when --single-version and --rewrite are not provided" do
-      it "warns an error" do
+  context "with --overwrite" do
+    before do
+      @original_path = File.join(__dir__, "dummy", "transpile_me.rb")
+      @target_path = File.join(__dir__, "dummy", "overwrite_me.rb")
+      @transpiled_path = File.join(__dir__, "dummy", "transpiled.rb")
+      FileUtils.cp(@original_path, @target_path)
+    end
+
+    after do
+      File.delete(@target_path) if File.file?(@target_path)
+      File.delete(@transpiled_path) if File.file?(@transpiled_path)
+    end
+
+    it "overwrites original file when --single-version is specified" do
+      run_ruby_next(
+        "nextify #{@target_path} --single-version -o #{@transpiled_path}"
+      ) do
         run_ruby_next(
-          "nextify #{File.join(__dir__, "dummy", "overwrite", "transpile_me.rb")} " \
-      " --overwrite",
-          should_fail: true
-        ) do |_status, output, _err|
-          output.should include("--single-version and --rewrite are missing, --overwrite arg works only with --single-version or --rewrite")
+          "nextify #{@target_path} " \
+      "--single-version --overwrite"
+        ) do |_status, _output, _err|
+          FileUtils.compare_file(@original_path, @target_path).should_not equal true
+          FileUtils.compare_file(@transpiled_path, @target_path).should equal true
         end
       end
     end
 
-    context "when --single-version or --rewrite is provided" do
-      before(:all) do
-        @overwritten_file_path = File.join(__dir__, "dummy", "overwrite", "transpile_me.rb")
-        @original_file_path = File.join(__dir__, "dummy", "transpile_me.rb")
-      end
-
-      after do
-        old_content = File.read(File.join(__dir__, "dummy", "transpile_me.rb"))
-        File.write(File.join(__dir__, "dummy", "overwrite", "transpile_me.rb"), old_content)
-      end
-
-      it "overwrites original file if --single-version" do
+    it "overwrites original file when --rewrite is specified" do
+      run_ruby_next(
+        "nextify #{@target_path} " \
+        "--rewrite=endless-range --rewrite=pattern-matching " \
+        "-o #{@transpiled_path}"
+      ) do
         run_ruby_next(
-          "nextify #{File.join(__dir__, "dummy", "overwrite", "transpile_me.rb")} " \
-      "--single-version --overwrite"
+          "nextify #{@target_path} " \
+          "--rewrite=endless-range --rewrite=pattern-matching --overwrite"
         ) do |_status, _output, _err|
-          File.read(@overwritten_file_path).should_not equal(File.read(@original_file_path))
-
-          run_ruby(
-            "-r ruby-next -r #{@overwritten_file_path} " \
-          "-e 'p  A.transform(status: :approve)'"
-          ) do |_status, output, _err|
-            output.should include("{:status=>:approve}")
-          end
-
-          run_ruby(
-            "-r ruby-next -r #{@overwritten_file_path} " \
-          "-e 'p  A.transform(another_hash: :approve)'",
-            should_fail: true
-          ) do |_status, _output, err|
-            err.should include("NoMatchingPatternError")
-          end
+          FileUtils.compare_file(@original_path, @target_path).should_not equal true
+          FileUtils.compare_file(@transpiled_path, @target_path).should equal true
         end
       end
+    end
 
-      it "overwrites original file if --rewrite and --overwrite" do
-        run_ruby_next(
-          "nextify #{File.join(__dir__, "dummy", "overwrite", "transpile_me.rb")} " \
-      "--rewrite=endless-range --rewrite=pattern-matching --overwrite"
-        ) do |_status, _output, _err|
-          File.read(@overwritten_file_path).should_not equal(File.read(@original_file_path))
-
-          run_ruby(
-            "-r ruby-next -r #{@overwritten_file_path} " \
-            "-e 'p  A.transform(status: :approve)'"
-          ) do |_status, output, _err|
-            output.should include("{:status=>:approve}")
-          end
-
-          run_ruby(
-            "-r ruby-next -r #{@overwritten_file_path} " \
-            "-e 'p  A.transform(another_hash: :approve)'",
-            should_fail: true
-          ) do |_status, _output, err|
-            err.should include("NoMatchingPatternError")
-          end
-        end
+    it "warns if no --single-version or --rewrite is provided" do
+      run_ruby_next(
+        "nextify #{@target_path} --overwrite",
+        should_fail: true
+      ) do |_status, output, _err|
+        output.should include("--overwrite only works with")
       end
     end
   end
