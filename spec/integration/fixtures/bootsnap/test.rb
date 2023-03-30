@@ -5,7 +5,6 @@ Bootsnap.setup(
   cache_dir: File.join(__dir__, "tmp/cache"),
   development_mode: false,
   load_path_cache: true,
-  autoload_paths_cache: false,
   compile_cache_iseq: true,
   compile_cache_yaml: true
 )
