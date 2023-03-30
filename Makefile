@@ -1,6 +1,9 @@
-default: test
+default: lint test
 
 test:
+	bundle exec mspec/bin/mspec
+
+test-all:
 	bundle exec mspec/bin/mspec
 	CORE_EXT=gem bundle exec mspec/bin/mspec :language :core
 	CORE_EXT=generated bundle exec mspec/bin/mspec :language :core
