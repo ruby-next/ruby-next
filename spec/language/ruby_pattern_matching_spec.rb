@@ -1203,6 +1203,8 @@ END
       end
     end
 
+    # https://github.com/jruby/jruby/issues/7854
+    unless defined?(JRUBY_VERSION)
     assert_block do
       [{a: 0}, C.new({a: 0})].all? do |i|
         case i
@@ -1211,6 +1213,7 @@ END
           true
         end
       end
+    end
     end
 
     assert_syntax_error(%q{
@@ -1357,11 +1360,14 @@ END
       end
     end
 
+    # https://github.com/jruby/jruby/issues/7854
+    unless defined?(JRUBY_VERSION)
     assert_block do
       case {}
       in {}
         C.keys == nil
       end
+    end
     end
 
     assert_block do
@@ -1587,8 +1593,10 @@ END
       {a: 0} => {a: 1}
     end
 
+    unless defined?(JRUBY_VERSION)
     assert_raise_with_message(NoMatchingPatternError, "{:a=>0}: {:a=>0} is not empty") do
       {a: 0} => {}
+    end
     end
 
     assert_raise_with_message(NoMatchingPatternError, "[{:a=>0}]: rest of {:a=>0} is not empty") do

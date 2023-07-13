@@ -33,6 +33,9 @@ describe "Array#intersect?" do
   end
 
   it "determines equivalence between elements in the sense of eql?" do
+    # https://github.com/jruby/jruby/issues/7852
+    next skip if defined?(JRUBY_VERSION)
+
     not_supported_on :opal do
       [5.0, 4.0].intersect?([5, 4]).should == false
     end

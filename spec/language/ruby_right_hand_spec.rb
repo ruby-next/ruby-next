@@ -8,6 +8,8 @@ eval <<~RUBY, binding, __FILE__, __LINE__
 using TestUnitToMspec
 
 class TestRightHandAssignment < Test::Unit::TestCase
+  # https://github.com/jruby/jruby/issues/7855
+  unless defined?(JRUBY_VERSION)
   def test_rightward_assign
     a = b = nil
     eval("1 => a")
@@ -16,6 +18,7 @@ class TestRightHandAssignment < Test::Unit::TestCase
     assert_equal([2,3], [a, b])
     eval("1+2 => a")
     assert_equal(3, a)
+  end
   end
 end
 RUBY
