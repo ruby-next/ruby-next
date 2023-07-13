@@ -93,9 +93,6 @@ jobs:
       with:
         name: ruby-next-transpiled
         path: lib/.rbnext
-    - name: Download MSpec
-      run: |
-        git clone https://github.com/ruby/mspec.git mspec        '
     - name: Run MSpec integration
       run: |
         ruby -e '

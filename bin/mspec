@@ -1,5 +1,10 @@
 #!/usr/bin/env ruby
 
+unless File.directory?('mspec/lib')
+  $stdout.puts "Cloning mspec..."
+  system("git clone https://github.com/ruby/mspec.git mspec")
+end
+
 $:.unshift File.expand_path(File.join(__dir__, '..', 'mspec', 'lib'))
 
 require 'mspec/commands/mspec'
