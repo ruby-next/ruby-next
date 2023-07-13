@@ -349,6 +349,8 @@ describe :kernel_require, shared: true do
         end
 
         it "does not canonicalize the path and stores a path with symlinks" do
+          next skip if defined?(JRUBY_VERSION)
+
           symlink_path = "#{@symlink_to_code_dir}/load_fixture.rb"
           canonical_path = "#{CODE_LOADING_DIR}/load_fixture.rb"
           @object.require(symlink_path).should be_true
@@ -385,6 +387,8 @@ describe :kernel_require, shared: true do
       end
 
       describe "with symlinks in the required feature and $LOAD_PATH" do
+        next skip if defined?(JRUBY_VERSION)
+
         before :each do
           @dir = tmp("realdir")
           mkdir_p @dir
@@ -562,6 +566,7 @@ describe :kernel_require, shared: true do
     end
 
     it "unicode_normalize is part of core and not $LOADED_FEATURES" do
+      next skip if defined?(JRUBY_VERSION)
       features = ruby_exe("puts $LOADED_FEATURES", options: '--disable-gems')
       features.lines.each { |feature|
         feature.should_not include("unicode_normalize")
