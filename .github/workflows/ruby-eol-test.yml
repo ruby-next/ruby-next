@@ -19,7 +19,6 @@ jobs:
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: 2.7
-        bundler: 2.2.15
         bundler-cache: true
     - name: Transpile Ruby Next
       run: |
@@ -58,7 +57,6 @@ jobs:
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
-        bundler: 1.17
         bundler-cache: true
     - name: Restore transpiled files
       uses: actions/download-artifact@v2
@@ -67,17 +65,16 @@ jobs:
         path: lib/.rbnext
     - name: Download MSpec
       run: |
-        git clone --branch v1.7.0 https://github.com/ruby/mspec.git mspec
+        git clone https://github.com/ruby/mspec.git mspec
     - name: Run MSpec
       run: |
-        bundle install --jobs 4 --retry 3
-        bundle exec mspec/bin/mspec
+        bundle exec bin/mspec
       env:
         PRYRC: "spec/integration/fixtures/pry/.pryrc"
     - name: Run language specs with AST mode
       env:
         RUBY_NEXT_TRANSPILE_MODE: "ast"
-      run: bundle exec mspec/bin/mspec :language
+      run: bundle exec bin/mspec :language
   ruby-20-test:
     needs: transpile
     timeout-minutes: 5

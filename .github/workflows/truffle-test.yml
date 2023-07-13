@@ -18,8 +18,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 2.7
-        bundler: 2.2.15
+        ruby-version: 3.1
         bundler-cache: true
     - name: Transpile Ruby Next
       run: |
@@ -49,7 +48,6 @@ jobs:
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: truffleruby-head
-        bundler: 2.2.15
         bundler-cache: true
     - name: Restore transpiled files
       uses: actions/download-artifact@v1
@@ -61,18 +59,18 @@ jobs:
         git clone https://github.com/ruby/mspec.git mspec
     - name: Run MSpec Core
       run: |
-        bundle exec mspec/bin/mspec :core
+        bundle exec bin/mspec :core
     - name: Run MSpec Language
       run: |
         ruby -e '
           Dir.glob("spec/language/**/*_spec.rb").all? do |file|
-            system("bundle", "exec", "mspec/bin/mspec", file)
+            system("bundle", "exec", "bin/mspec", file)
           end || raise("Failures")
         '
     - name: Run MSpec integration
       run: |
         ruby -e '
           Dir.glob("spec/integration/**/*_spec.rb").all? do |file|
-            system("bundle", "exec", "mspec/bin/mspec", file)
+            system("bundle", "exec", "bin/mspec", file)
           end || raise("Failures")
         '
