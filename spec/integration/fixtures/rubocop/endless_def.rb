@@ -5,9 +5,9 @@ class Ende
 
   def greet(val) =
     case val
-      in hello: hello if hello =~ /human/
-        puts "human"
-      in hello: "martian"
-        puts "alien"
-      end
+    in hello: hello if hello =~ /human/
+      puts "human"
+    in hello: "martian"
+      puts "alien"
+    end
 end

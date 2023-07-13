@@ -21,17 +21,8 @@ AllCops:
   DisplayCopNames: true
   TargetRubyVersion: next
 
-Standard/BlockSingleLineBraces:
-  Enabled: false
-
 Style/FrozenStringLiteralComment:
   Enabled: true
-
-Style/TrailingCommaInArrayLiteral:
-  EnforcedStyleForMultiline: no_comma
-
-Style/TrailingCommaInHashLiteral:
-  EnforcedStyleForMultiline: no_comma
 
 Style/Alias:
   Enabled: false
