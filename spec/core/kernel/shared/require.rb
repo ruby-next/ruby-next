@@ -406,6 +406,8 @@ describe :kernel_require, shared: true do
         end
 
         it "canonicalizes the entry in $LOAD_PATH but not the filename passed to #require" do
+          next skip unless RUBY_VERSION >= "2.5.0"
+
           $LOAD_PATH.unshift(@symlink_to_dir)
           @object.require("symfile").should be_true
           loaded_feature = "#{@dir}/symfile.rb"
@@ -566,7 +568,7 @@ describe :kernel_require, shared: true do
     end
 
     it "unicode_normalize is part of core and not $LOADED_FEATURES" do
-      next skip if defined?(JRUBY_VERSION)
+      next skip if defined?(JRUBY_VERSION) || !Process.respond_to?(:last_status)
       features = ruby_exe("puts $LOADED_FEATURES", options: '--disable-gems')
       features.lines.each { |feature|
         feature.should_not include("unicode_normalize")
