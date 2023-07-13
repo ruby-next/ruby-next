@@ -53,7 +53,6 @@ jobs:
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
-        bundler: 2.2.15
         bundler-cache: true
     - name: Restore transpiled files
       uses: actions/download-artifact@v1
@@ -63,16 +62,10 @@ jobs:
     - name: Download MSpec
       run: |
         git clone https://github.com/ruby/mspec.git mspec
-    - name: Bundle install
-      run: |
-        bundle config path /home/runner/bundle
-        bundle install
-        bundle update
     - name: Run MSpec
       run: |
-        bundle install --jobs 4 --retry 3
-        bundle exec mspec/bin/mspec
+        bundle exec bin/mspec
     - name: Run language specs with AST mode
       env:
         RUBY_NEXT_TRANSPILE_MODE: "ast"
-      run: bundle exec mspec/bin/mspec :language
+      run: bundle exec bin/mspec :language
