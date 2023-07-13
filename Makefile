@@ -1,12 +1,12 @@
 default: lint test
 
 test:
-	bundle exec mspec/bin/mspec
+	bundle exec bin/mspec
 
 test-all:
-	bundle exec mspec/bin/mspec
-	CORE_EXT=gem bundle exec mspec/bin/mspec :language :core
-	CORE_EXT=generated bundle exec mspec/bin/mspec :language :core
+	bundle exec bin/mspec
+	CORE_EXT=gem bundle exec bin/mspec :language :core
+	CORE_EXT=generated bundle exec bin/mspec :language :core
 
 lint:
 	bundle exec rubocop
