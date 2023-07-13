@@ -40,11 +40,18 @@ jobs:
 
   ruby-test:
     needs: transpile
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        ruby: [2.2, 2.3, 2.4]
+        ruby: [2.4]
+        os: [ubuntu-latest]
+        include:
+          - ruby: 2.2
+            os: ubuntu-20.04
+          - ruby: 2.3
+            # https://github.com/ruby/setup-ruby/issues/496
+            os: ubuntu-latest
     env:
       CORE_EXT: backports
       RUBY_NEXT_CORE_STRATEGY: backports
