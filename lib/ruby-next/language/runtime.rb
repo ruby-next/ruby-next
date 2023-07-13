@@ -96,7 +96,11 @@ module Kernel
   alias_method :require_without_ruby_next, :require
   def require(path)
     path = path.to_path if path.respond_to?(:to_path)
-    path = path.to_str if !path.is_a?(::String)
+    raise TypeError unless path.respond_to?(:to_str)
+
+    path = path.to_str
+
+    raise TypeError unless path.is_a?(::String)
 
     # if extname == ".rb" => lookup feature -> resolve feature -> load
     # if extname != ".rb" => append ".rb" - lookup feature -> resolve feature -> lookup orig (no ext) -> resolve orig (no ext) -> load
@@ -135,6 +139,8 @@ module Kernel
     raise TypeError unless path.respond_to?(:to_str)
     path = path.to_str
 
+    raise TypeError unless path.is_a?(::String)
+
     return require(path) if Pathname.new(path).absolute?
 
     loc = caller_locations(1..1).first
@@ -152,10 +158,14 @@ module Kernel
   alias_method :load_without_ruby_next, :load
   def load(path, wrap = false)
     path = path.to_path if path.respond_to?(:to_path)
-    path = path.to_str if !path.is_a?(::String)
+    raise TypeError unless path.respond_to?(:to_str)
+
+    path = path.to_str
+
+    raise TypeError unless path.is_a?(::String)
 
     realpath =
-      if Pathname.new(path).relative?
+      if path =~ /^\.\.?\//
         path
       else
         RubyNext::Language::Runtime.feature_path(path, implitic_ext: false)
