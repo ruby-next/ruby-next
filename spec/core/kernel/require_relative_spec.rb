@@ -91,6 +91,7 @@ describe "Kernel#require_relative with a relative path" do
   end
 
   it "raises a LoadError that includes the missing path" do
+    next skip if defined?(JRUBY_VERSION)
     missing_path = "#{@dir}/nonexistent.rb"
     expanded_missing_path = File.expand_path(missing_path, File.dirname(__FILE__))
     -> { require_relative(missing_path) }.should raise_error(LoadError) { |e|
@@ -105,6 +106,8 @@ describe "Kernel#require_relative with a relative path" do
   end
 
   it "stores the missing path in a LoadError object" do
+    next skip if defined?(JRUBY_VERSION)
+
     path = "#{@dir}/nonexistent.rb"
 
     -> {
@@ -221,6 +224,8 @@ describe "Kernel#require_relative with a relative path" do
         end
 
         it "does not canonicalize the path and stores a path with symlinks" do
+          next skip if defined?(JRUBY_VERSION)
+
           symlink_path = "#{@symlink_basename}/load_fixture.rb"
           absolute_path = "#{tmp("")}#{symlink_path}"
           canonical_path = "#{CODE_LOADING_DIR}/load_fixture.rb"
@@ -307,6 +312,8 @@ describe "Kernel#require_relative with an absolute path" do
   end
 
   it "stores the missing path in a LoadError object" do
+    next skip if defined?(JRUBY_VERSION)
+
     path = "#{@dir}/nonexistent.rb"
 
     -> {
