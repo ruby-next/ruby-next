@@ -4,25 +4,33 @@ module RubyNext
   module Utils
     module_function
 
+    def lookup_feature_path(path, implitic_ext: true)
+      if File.file?(relative = File.expand_path(path))
+        path = relative
+      end
+
+      path = "#{path}.rb" if File.extname(path).empty? && implitic_ext
+
+      return path if Pathname.new(path).absolute?
+
+      $LOAD_PATH.find do |lp|
+        lpath = File.join(lp, path)
+        return File.realpath(lpath) if File.file?(lpath)
+      end
+    end
+
     if $LOAD_PATH.respond_to?(:resolve_feature_path)
-      def resolve_feature_path(feature)
-        $LOAD_PATH.resolve_feature_path(feature)&.last
+      def resolve_feature_path(feature, implitic_ext: true)
+        if implitic_ext
+          $LOAD_PATH.resolve_feature_path(feature)&.last
+        else
+          lookup_feature_path(feature, implitic_ext: implitic_ext)
+        end
       rescue LoadError
       end
     else
-      def resolve_feature_path(path)
-        if File.file?(relative = File.expand_path(path))
-          path = relative
-        end
-
-        path = "#{path}.rb" if File.extname(path).empty?
-
-        return path if Pathname.new(path).absolute?
-
-        $LOAD_PATH.find do |lp|
-          lpath = File.join(lp, path)
-          return File.realpath(lpath) if File.file?(lpath)
-        end
+      def resolve_feature_path(feature, implitic_ext: true)
+        lookup_feature_path(feature, implitic_ext: implitic_ext)
       end
     end
 
