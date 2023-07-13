@@ -91,29 +91,31 @@ module TestUnitToMspec
     end
   end
 
-  if RubyNext::Utils.refine_modules?
-    refine Kernel do
-      # TrufflyRuby doesn't support super in imported methods:
-      # https://github.com/oracle/truffleruby/issues/2971
-      if RUBY_VERSION >= "3.1.0" && !defined?(TruffleRuby)
-        import_methods TestUnitToMspec::KernelExt
-      else
-        include TestUnitToMspec::KernelExt
+  unless ENV["DISABLE_REQUIRE_HOOKS"] == "true"
+    if RubyNext::Utils.refine_modules?
+      refine Kernel do
+        # TrufflyRuby doesn't support super in imported methods:
+        # https://github.com/oracle/truffleruby/issues/2971
+        if RUBY_VERSION >= "3.1.0" && !defined?(TruffleRuby)
+          import_methods TestUnitToMspec::KernelExt
+        else
+          include TestUnitToMspec::KernelExt
+        end
       end
-    end
-  else
-    module ::Kernel
-      alias_method :eval_without_transpile, :eval
+    else
+      module ::Kernel
+        alias_method :eval_without_transpile, :eval
 
-      def eval(src, bind = nil, *other)
-        source = src.gsub(/def test_([\w_]+)/, 'it "\1" do')
-        source.gsub!(/class Test(\w+).+$/, 'describe "\1" do')
-        new_source = ::RubyNext::Language::Runtime.transform(
-          source,
-          using: bind&.receiver == TOPLEVEL_BINDING.receiver || bind&.receiver&.is_a?(Module)
-        )
-        RubyNext.debug_source(new_source, "(#{caller_locations(1, 1).first})")
-        eval_without_transpile new_source, bind, *other
+        def eval(src, bind = nil, *other)
+          source = src.gsub(/def test_([\w_]+)/, 'it "\1" do')
+          source.gsub!(/class Test(\w+).+$/, 'describe "\1" do')
+          new_source = ::RubyNext::Language::Runtime.transform(
+            source,
+            using: bind&.receiver == TOPLEVEL_BINDING.receiver || bind&.receiver&.is_a?(Module)
+          )
+          RubyNext.debug_source(new_source, "(#{caller_locations(1, 1).first})")
+          eval_without_transpile new_source, bind, *other
+        end
       end
     end
   end

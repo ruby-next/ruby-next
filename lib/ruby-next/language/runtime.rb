@@ -34,12 +34,36 @@ module RubyNext
           Language.transform(contents, rewriters: Language.current_rewriters, **options)
         end
 
-        def feature_path(path)
-          path = resolve_feature_path(path)
+        def feature_path(path, implitic_ext: true)
+          path = resolve_feature_path(path, implitic_ext: implitic_ext)
           return if path.nil?
-          return if File.extname(path) != ".rb"
+          return if File.extname(path) != ".rb" && implitic_ext
           return unless Language.transformable?(path)
           path
+        end
+
+        # Based on https://github.com/ruby/ruby/blob/b588fd552390c55809719100d803c36bc7430f2f/load.c#L403-L415
+        def feature_loaded?(feature)
+          return true if $LOADED_FEATURES.include?(feature)
+
+          feature = Pathname.new(feature).cleanpath.to_s
+
+          # Check absoulute and relative paths
+          return true if $LOADED_FEATURES.include?(File.expand_path(feature))
+
+          candidates = []
+
+          $LOADED_FEATURES.each do |lf|
+            candidates << lf if lf.end_with?("/#{feature}")
+          end
+
+          return false if candidates.empty?
+
+          $LOAD_PATH.each do |lp|
+            return true if candidates.include?(File.join(lp, feature))
+          end
+
+          false
         end
 
         if defined?(JRUBY_VERSION) || defined?(TruffleRuby)
@@ -71,10 +95,28 @@ module Kernel
 
   alias_method :require_without_ruby_next, :require
   def require(path)
+    path = path.to_path if path.respond_to?(:to_path)
+    path = path.to_str if !path.is_a?(::String)
+
+    # if extname == ".rb" => lookup feature -> resolve feature -> load
+    # if extname != ".rb" => append ".rb" - lookup feature -> resolve feature -> lookup orig (no ext) -> resolve orig (no ext) -> load
+
+    if File.extname(path) != ".rb"
+      return false if RubyNext::Language::Runtime.feature_loaded?(path + ".rb")
+
+      realpath = RubyNext::Language::Runtime.feature_path(path + ".rb")
+
+      if realpath
+        $LOADED_FEATURES << realpath
+        RubyNext::Language::Runtime.load(realpath)
+        return true
+      end
+    end
+
+    return false if RubyNext::Language::Runtime.feature_loaded?(path)
+
     realpath = RubyNext::Language::Runtime.feature_path(path)
     return require_without_ruby_next(path) unless realpath
-
-    return false if $LOADED_FEATURES.include?(realpath)
 
     $LOADED_FEATURES << realpath
 
@@ -89,6 +131,12 @@ module Kernel
 
   alias_method :require_relative_without_ruby_next, :require_relative
   def require_relative(path)
+    path = path.to_path if path.respond_to?(:to_path)
+    raise TypeError unless path.respond_to?(:to_str)
+    path = path.to_str
+
+    return require(path) if Pathname.new(path).absolute?
+
     loc = caller_locations(1..1).first
     from = loc.absolute_path || loc.path || File.join(Dir.pwd, "main")
     realpath = File.absolute_path(
@@ -97,15 +145,21 @@ module Kernel
         path
       )
     )
+
     require(realpath)
-  rescue => e
-    RubyNext.warn "RubyNext failed to require relative '#{path}' from #{from}: #{e.message}"
-    require_relative_without_ruby_next(path)
   end
 
   alias_method :load_without_ruby_next, :load
   def load(path, wrap = false)
-    realpath = RubyNext::Language::Runtime.feature_path(path)
+    path = path.to_path if path.respond_to?(:to_path)
+    path = path.to_str if !path.is_a?(::String)
+
+    realpath =
+      if Pathname.new(path).relative?
+        path
+      else
+        RubyNext::Language::Runtime.feature_path(path, implitic_ext: false)
+      end
 
     return load_without_ruby_next(path, wrap) unless realpath
 

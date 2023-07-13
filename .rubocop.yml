@@ -13,6 +13,7 @@ AllCops:
     - 'vendor/**/*'
     - 'gemfiles/**/*'
     - 'spec/core/**/*'
+    - 'spec/fixtures/**/*'
     - 'spec/language/**/*'
     - 'spec/optional/language/**/*'
     - 'mspec/**/*'

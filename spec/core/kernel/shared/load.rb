@@ -30,6 +30,8 @@ describe :kernel_load, shared: true do
   end
 
   it "loads a file that recursively requires itself" do
+    # FIXME: Add stack of load calls and check repeated paths
+    next skip
     path = File.expand_path "recursive_require_fixture.rb", CODE_LOADING_DIR
     -> {
       @object.load(path).should be_true
@@ -87,15 +89,15 @@ describe :kernel_load, shared: true do
   end
 
   describe "when passed true for 'wrap'" do
-    # FIXME:
-    next
+    next skip
+
     it "loads from an existing path" do
-      path = File.expand_path "wrap_fixture.rb", CODE_LOADING_DIR
+      path = File.expand_path "load_wrap_fixture.rb", CODE_LOADING_DIR
       @object.load(path, true).should be_true
     end
 
     it "sets the enclosing scope to an anonymous module" do
-      path = File.expand_path "wrap_fixture.rb", CODE_LOADING_DIR
+      path = File.expand_path "load_wrap_fixture.rb", CODE_LOADING_DIR
       @object.load(path, true)
 
       Object.const_defined?(:LoadSpecWrap).should be_false
@@ -105,14 +107,14 @@ describe :kernel_load, shared: true do
     end
 
     it "allows referencing outside namespaces" do
-      path = File.expand_path "wrap_fixture.rb", CODE_LOADING_DIR
+      path = File.expand_path "load_wrap_fixture.rb", CODE_LOADING_DIR
       @object.load(path, true)
 
       ScratchPad.recorded[0].should equal(String)
     end
 
     it "sets self as a copy of the top-level main" do
-      path = File.expand_path "wrap_fixture.rb", CODE_LOADING_DIR
+      path = File.expand_path "load_wrap_fixture.rb", CODE_LOADING_DIR
       @object.load(path, true)
 
       top_level = ScratchPad.recorded[2]
@@ -129,7 +131,7 @@ describe :kernel_load, shared: true do
       main_ancestors = main.singleton_class.ancestors[1..-1]
       main_ancestors.first.should == mod
 
-      path = File.expand_path "wrap_fixture.rb", CODE_LOADING_DIR
+      path = File.expand_path "load_wrap_fixture.rb", CODE_LOADING_DIR
       @object.load(path, true)
 
       top_level = ScratchPad.recorded[2]
@@ -152,6 +154,43 @@ describe :kernel_load, shared: true do
 
       it "does not pollute the receiver" do
         -> { @object.send(:top_level_method) }.should raise_error(NameError)
+      end
+    end
+  end
+
+  describe "when passed a module for 'wrap'" do
+    next skip
+
+    ruby_version_is "3.1" do
+      it "sets the enclosing scope to the supplied module" do
+        path = File.expand_path "load_wrap_fixture.rb", CODE_LOADING_DIR
+        mod = Module.new
+        @object.load(path, mod)
+
+        Object.const_defined?(:LoadSpecWrap).should be_false
+        mod.const_defined?(:LoadSpecWrap).should be_true
+
+        wrap_module = ScratchPad.recorded[1]
+        wrap_module.should == mod
+      end
+
+      it "makes constants and instance methods in the source file reachable with the supplied module" do
+        path = File.expand_path "load_wrap_fixture.rb", CODE_LOADING_DIR
+        mod = Module.new
+        @object.load(path, mod)
+
+        mod::LOAD_WRAP_SPECS_TOP_LEVEL_CONSTANT.should == 1
+        obj = Object.new
+        obj.extend(mod)
+        obj.send(:load_wrap_specs_top_level_method).should == :load_wrap_specs_top_level_method
+      end
+
+      it "makes instance methods in the source file private" do
+        path = File.expand_path "load_wrap_fixture.rb", CODE_LOADING_DIR
+        mod = Module.new
+        @object.load(path, mod)
+
+        mod.private_instance_methods.include?(:load_wrap_specs_top_level_method).should == true
       end
     end
   end

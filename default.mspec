@@ -42,7 +42,7 @@ require "backports/2.5" if ENV["CORE_EXT"] == "backports"
 require "ruby-next/language"
 require_relative "spec/support/eval_binding_rewriter"
 
-require "ruby-next/language/runtime"
+require "ruby-next/language/runtime" unless ENV["DISABLE_REQUIRE_HOOKS"] == "true"
 
 if ENV["CORE_EXT"] == "gem"
   require "ruby-next/core_ext"
