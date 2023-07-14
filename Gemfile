@@ -6,7 +6,6 @@ gemspec name: "ruby-next-core"
 gem "benchmark_driver"
 
 gem "pry-byebug", platform: :mri
-gem "dead_end"
 eval_gemfile "gemfiles/rubocop.gemfile"
 
 # For compatibility tests
