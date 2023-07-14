@@ -195,7 +195,8 @@ module RequireHooks
         if $LOAD_PATH.respond_to?(:resolve_feature_path)
           def resolve_feature_path(feature, implitic_ext: true)
             if implitic_ext
-              $LOAD_PATH.resolve_feature_path(feature)&.last
+              path = $LOAD_PATH.resolve_feature_path(feature)
+              path.last if path # rubocop:disable Style/SafeNavigation
             else
               lookup_feature_path(feature, implitic_ext: implitic_ext)
             end
