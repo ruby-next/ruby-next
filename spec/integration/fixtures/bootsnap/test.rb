@@ -9,7 +9,7 @@ Bootsnap.setup(
   compile_cache_yaml: true
 )
 
-require "ruby-next/language/bootsnap"
+require "ruby-next/language/runtime"
 RubyNext::Language.watch_dirs << __dir__
 
 require_relative "pattern"

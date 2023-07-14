@@ -19,6 +19,8 @@ Who might be interested in Ruby Next?
 Ruby Next also aims to help the community to assess new, _experimental_, MRI features by making it easier to play with them.
 That's why Ruby Next implements the `master` features as fast as possible.
 
+Ruby Next also comes with a companion library to provide **code loading hooks** for your needs—[require-hooks](#require-hooks).
+
 Read more about the motivation behind the Ruby Next in this post: [Ruby Next: Make all Rubies quack alike](https://evilmartians.com/chronicles/ruby-next-make-all-rubies-quack-alike).
 
 <table style="border:none;">
@@ -60,16 +62,16 @@ _Please, submit a PR to add your project to the list!_
 ## Table of contents
 
 - [Overview](#overview)
-- [Quick Start](#quick-start)
+- [Quick start](#quick-start)
 - [Polyfills](#using-only-polyfills)
 - [Transpiling](#transpiling)
   - [Modes](#transpiler-modes)
   - [CLI](#cli)
   - [Using in gems](#integrating-into-a-gem-development)
   - [Runtime usage](#runtime-usage)
-  - [Bootsnap integration](#using-with-bootsnap)
   - [`ruby -ruby-next`](#uby-next)
   - [Logging & Debugging](#logging-and-debugging)
+- [Require hooks](#require-hooks)
 - [RuboCop](#rubocop)
 - [Using with IRB](#irb)
 - [Using with Pry](#pry)
@@ -365,9 +367,7 @@ It is also possible to transpile Ruby source code in run-time via Ruby Next.
 All you need is to `require "ruby-next/language/runtime"` as early as possible to hijack `Kernel#require` and friends.
 You can also automatically inject `using RubyNext` to every\* loaded file by also adding `require "ruby-next/core/runtime"`.
 
-Since the runtime mode requires Kernel monkey-patching, it should be used carefully. For example, we use it in Ruby Next tests—works perfectly. But think twice before enabling it in production.
-
-Consider using [Bootsnap](#using-with-bootsnap) integration, 'cause its monkey-patching has been bullet-proofed 😉.
+Runtime mode is backed by [require-hooks](#require-hooks)—a standalone gem which has been extracted from Ruby Next. Depending on the current runtime, it picks an optimal strategy for hijacking the loading mechanism.
 
 \* Ruby Next doesn't hijack every required file but _watches_ only the configured directories: `./app/`, `./lib/`, `./spec/`, `./test/` (relative to the `pwd`). You can configure the watch dirs:
 
@@ -385,19 +385,115 @@ If you want to support transpiling in `eval`-like methods, opt-in explicitly by 
 using RubyNext::Language::Eval
 ```
 
-## Using with Bootsnap
+## Require hooks
 
-[Bootsnap][] is a great tool to speed-up your application load and it's included into the default Rails Gemfile. It patches Ruby mechanism of loading source files to make it possible to cache the intermediate representation (_iseq_).
+Require hooks is a library providing universal interface for injecting custom code into the Ruby's loading mechanism. It works on MRI, JRuby, and TruffleRuby.
 
-Ruby Next provides a specific integration which allows to add a transpiling step to this process, thus making the transpiler overhead as small as possible, because the cached and **already transpiled** version is used if no changes were made.
+Require hooks allows you to interfere with `Kernel#require` (incl. `Kernel#require_relative`) and `Kernel#load`.
 
-To enable this integration, add the following line after the `require "bootsnap/setup"`:
+### Installation
+
+Add to your Gemfile:
 
 ```ruby
-require "ruby-next/language/bootsnap"
+gem "require-hooks"
 ```
 
-**NOTE:** There is no way to invalidate the cache when you upgrade Ruby Next (e.g., due to the bug fixes), so you should do this manually.
+or gemspec:
+
+```ruby
+spec.add_dependency "require-hooks"
+```
+
+### Usage
+
+To enable hooks, you need to load `require-hooks/setup` as early as possible. For example, in your gem's entrypoint:
+
+```ruby
+require "require-hooks/setup"
+```
+
+Then, you can add hooks:
+
+- **around_load:** a hook that wraps code loading operation. Useful for logging and debugging purposes.
+
+```ruby
+# Simple logging
+RequireHooks.around_load do |path, &block|
+  puts "Loading #{path}"
+  block.call.tap { puts "Loaded #{path}" }
+end
+
+# Error enrichment
+RequireHooks.around_load do |path, &block|
+  begin
+    block.call
+  rescue SyntaxError => e
+    raise "Oops, your Ruby is not Ruby: #{e.message}"
+  end
+end
+```
+
+The return value MUST be a result of calling the passed block.
+
+- **source_transform:** peform source-to-source transformations.
+
+```ruby
+
+RequireHooks.source_transform do |path, source|
+  next unless path =~ /my_project\/.*/
+  source ||= File.read(path)
+  "# frozen_string_literal: true\n#{source}"
+end
+```
+
+The return value MUST be either String (new source code) or `nil` (indicating that no transformations were performed). The second argument (`source`) MAY be `nil``, indicating that no transformer tried to transform the source code.
+
+- **hijack_load:** a hook that is used to manually compile a bytecode for VM to load it.
+
+```ruby
+RequireHooks.hijack_load do |path, source|
+  next unless path =~ /my_project\/.*/
+
+  source ||= File.read(path)
+  if defined?(RubyVM::InstructionSequence)
+    RubyVM::InstructionSequence.compile(source)
+  elsif defined?(JRUBY_VERSION)
+    JRuby.compile(source)
+  end
+end
+```
+
+The return value is platform-specific. If there are multiple _hijackers_, the first one that returns a non-`nil` value is used, others are ignored.
+
+### Modes
+
+Depending on the runtime conditions, Require Hooks picks an optimal strategy for injecting the code. You can enforce a particular _mode_ by setting the `REQUIRE_HOOKS_MODE` env variable (`patch`, `load_iseq` or `bootsnap`). In practice, only setting to `patch` may makes sense.
+
+### Via `#load_iseq`
+
+If `RubyVM::InstructionSequence` is available, we use more robust way of hijacking code loading—`RubyVM::InstructionSequence#load_iseq`.
+
+Keep in mind that if there is already a `#load_iseq` callback defined, it will only have an effect if Require Hooks hijackers return `nil`.
+
+### Kernel patching
+
+In this mode, Require Hooks monkey-patches `Kernel#require` and friends. This mode is used in JRuby by default.
+
+### Bootsnap integration
+
+[Bootsnap][] is a great tool to speed-up your application load and it's included into the default Rails Gemfile. And it uses `#load_iseq`. Require Hooks activates a custom Bootsnap-compatible mode, so you can benefit from both tools.
+
+You can use require-hooks with Bootsnap to customize code loading. Just make sure you load `require-hooks/setup` after setting up Bootsnap, for example:
+
+```ruby
+require "bootsnap/setup"
+require "require-hooks/setup"
+```
+
+The _around load_ hooks are executed for all files indepedently of whether they are cached or not. Source transformation and hijacking is only done for non-cached files.
+
+Thus, if you introduce new source transformers or hijackers, you must invalidate the cache. (We plan to implement automatic invalidation in future versions.)
 
 ## `uby-next`
 

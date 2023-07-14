@@ -3,7 +3,7 @@
 require_relative "../support/command_testing"
 
 describe "require-hooks: bootsnap mode" do
-  next skip if defined?(JRUBY_VERSION)
+  next skip if defined?(JRUBY_VERSION) || defined?(TruffleRuby)
   # Bootsnap requires Ruby 2.3+
   next skip unless RUBY_VERSION >= "2.3.0"
 
