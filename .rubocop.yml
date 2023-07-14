@@ -23,6 +23,8 @@ AllCops:
 
 Style/FrozenStringLiteralComment:
   Enabled: true
+  Exclude:
+    - 'spec/require-hooks/fixtures/*.rb'
 
 Style/Alias:
   Enabled: false
@@ -48,5 +50,9 @@ Style/SlicingWithRange:
   Enabled: false
 
 Lint/LiteralAsCondition:
+  Exclude:
+    - 'spec/**/*'
+
+Style/GlobalVars:
   Exclude:
     - 'spec/**/*'

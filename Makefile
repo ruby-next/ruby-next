@@ -3,7 +3,10 @@ default: lint test
 test:
 	bundle exec bin/mspec
 
-test-all:
+test-hooks:
+	bundle exec bin/mspec -B hooks.mspec :require
+
+test-all: test-hooks
 	bundle exec bin/mspec
 	CORE_EXT=gem bundle exec bin/mspec :language :core
 	CORE_EXT=generated bundle exec bin/mspec :language :core
