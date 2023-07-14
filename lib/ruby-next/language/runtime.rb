@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "pathname"
+require "mutex_m"
 
 require "ruby-next"
 require "ruby-next/utils"
@@ -14,6 +15,80 @@ module RubyNext
     # Module responsible for runtime transformations
     module Runtime
       using RubyNext
+
+      class Locker
+        class PathLock
+          def initialize
+            @mu = Mutex.new
+            @resolved = false
+          end
+
+          def owned?
+            @mu.owned?
+          end
+
+          def locked?
+            @mu.locked?
+          end
+
+          def lock!
+            @mu.lock
+          end
+
+          def unlock!
+            @mu.unlock
+          end
+
+          def resolve!
+            @resolved = true
+          end
+
+          def resolved?
+            @resolved
+          end
+        end
+
+        attr_reader :features, :mu
+
+        def initialize
+          @mu = Mutex.new
+          @features = {}
+        end
+
+        def lock_feature(fname)
+          lock = mu.synchronize do
+            features[fname] ||= PathLock.new
+          end
+
+          # Can this even happen?
+          return yield(true) if lock.resolved?
+
+          # Recursive require
+          if lock.owned? && lock.locked?
+            warn "circular require considered harmful: #{fname}"
+            return yield(true)
+          end
+
+          lock.lock!
+          begin
+            yield(lock.resolved?).tap do
+              lock.resolve!
+            end
+          ensure
+            lock.unlock!
+
+            mu.synchronize do
+              features.delete(fname)
+            end
+          end
+        end
+
+        def locked_feature?(fname)
+          mu.synchronize { features.key?(fname) }
+        end
+      end
+
+      LOCK = Locker.new
 
       class << self
         include Utils
@@ -44,12 +119,13 @@ module RubyNext
 
         # Based on https://github.com/ruby/ruby/blob/b588fd552390c55809719100d803c36bc7430f2f/load.c#L403-L415
         def feature_loaded?(feature)
-          return true if $LOADED_FEATURES.include?(feature)
+          return true if $LOADED_FEATURES.include?(feature) && !LOCK.locked_feature?(feature)
 
           feature = Pathname.new(feature).cleanpath.to_s
+          efeature = File.expand_path(feature)
 
           # Check absoulute and relative paths
-          return true if $LOADED_FEATURES.include?(File.expand_path(feature))
+          return true if $LOADED_FEATURES.include?(efeature) && !LOCK.locked_feature?(efeature)
 
           candidates = []
 
@@ -60,7 +136,8 @@ module RubyNext
           return false if candidates.empty?
 
           $LOAD_PATH.each do |lp|
-            return true if candidates.include?(File.join(lp, feature))
+            lp_feature = File.join(lp, feature)
+            return true if candidates.include?(lp_feature) && !LOCK.locked_feature?(lp_feature)
           end
 
           false
@@ -94,6 +171,7 @@ module Kernel
   module_function
 
   alias_method :require_without_ruby_next, :require
+  # See https://github.com/ruby/ruby/blob/d814722fb8299c4baace3e76447a55a3d5478e3a/load.c#L1181
   def require(path)
     path = path.to_path if path.respond_to?(:to_path)
     raise TypeError unless path.respond_to?(:to_str)
@@ -102,35 +180,52 @@ module Kernel
 
     raise TypeError unless path.is_a?(::String)
 
+    realpath = nil
+
     # if extname == ".rb" => lookup feature -> resolve feature -> load
     # if extname != ".rb" => append ".rb" - lookup feature -> resolve feature -> lookup orig (no ext) -> resolve orig (no ext) -> load
-
     if File.extname(path) != ".rb"
       return false if RubyNext::Language::Runtime.feature_loaded?(path + ".rb")
 
-      realpath = RubyNext::Language::Runtime.feature_path(path + ".rb")
+      loaded = RubyNext::Language::Runtime::LOCK.lock_feature(path + ".rb") do |loaded|
+        return false if loaded
 
-      if realpath
-        $LOADED_FEATURES << realpath
-        RubyNext::Language::Runtime.load(realpath)
-        return true
+        realpath = RubyNext::Language::Runtime.feature_path(path + ".rb")
+
+        if realpath
+          $LOADED_FEATURES << realpath
+          RubyNext::Language::Runtime.load(realpath)
+          true
+        end
       end
+
+      return true if loaded
     end
 
     return false if RubyNext::Language::Runtime.feature_loaded?(path)
 
-    realpath = RubyNext::Language::Runtime.feature_path(path)
-    return require_without_ruby_next(path) unless realpath
+    loaded = RubyNext::Language::Runtime::LOCK.lock_feature(path) do |loaded|
+      return false if loaded
 
-    $LOADED_FEATURES << realpath
+      realpath = RubyNext::Language::Runtime.feature_path(path)
 
-    RubyNext::Language::Runtime.load(realpath)
+      if realpath
+        $LOADED_FEATURES << realpath
+        RubyNext::Language::Runtime.load(realpath)
+        true
+      end
+    end
 
-    true
-  rescue => e
-    $LOADED_FEATURES.delete realpath
+    return true if loaded
+
+    require_without_ruby_next(path)
+  rescue LoadError => e
+    $LOADED_FEATURES.delete(realpath) if realpath
     RubyNext.warn "RubyNext failed to require '#{path}': #{e.message}"
     require_without_ruby_next(path)
+  rescue
+    $LOADED_FEATURES.delete(realpath) if realpath
+    raise
   end
 
   alias_method :require_relative_without_ruby_next, :require_relative
@@ -174,7 +269,9 @@ module Kernel
     return load_without_ruby_next(path, wrap) unless realpath
 
     RubyNext::Language::Runtime.load(realpath, wrap: wrap)
-  rescue => e
+  rescue Errno::ENOENT
+    raise LoadError, "cannot load such file -- #{path}"
+  rescue LoadError => e
     RubyNext.warn "RubyNext failed to load '#{path}': #{e.message}"
     load_without_ruby_next(path)
   end
