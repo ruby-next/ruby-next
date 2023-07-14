@@ -91,7 +91,7 @@ module TestUnitToMspec
     end
   end
 
-  unless ENV["DISABLE_REQUIRE_HOOKS"] == "true"
+  if ENV["DISABLE_REQUIRE_HOOKS"] != "true" && defined?(RubyNext::Language)
     if RubyNext::Utils.refine_modules?
       refine Kernel do
         # TrufflyRuby doesn't support super in imported methods:

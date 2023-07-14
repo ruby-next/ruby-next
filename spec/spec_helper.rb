@@ -21,6 +21,8 @@ unless defined?(MSpecEnv)
   end
 end
 
+require "ruby-next/utils"
+
 if !defined?(MSpecEnv) || !RubyNext::Utils.refine_modules?
   require_relative "test_unit_to_mspec"
 end

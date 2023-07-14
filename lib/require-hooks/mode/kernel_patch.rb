@@ -1,23 +1,42 @@
 # frozen_string_literal: true
 
-require "pathname"
 require "mutex_m"
+require "pathname"
 
-require "require-hooks/setup"
+module RequireHooks
+  module KernelPatch
+    class << self
+      def load(path)
+        RequireHooks.run_around_load_callbacks(path) do
+          new_contents = RequireHooks.perform_source_transform(path) || File.read(path)
+          RequireHooks.try_hijack_load(path, new_contents) || evaluate(new_contents, path)
+          true
+        end
+      end
 
-require "ruby-next"
-require "ruby-next/utils"
-require "ruby-next/language"
-require "ruby-next/language/eval"
+      private
 
-module RubyNext
-  module Language
-    runtime!
+      if defined?(JRUBY_VERSION) || defined?(TruffleRuby)
+        def evaluate(code, filepath)
+          new_toplevel.eval(code, filepath)
+        end
 
-    # Module responsible for runtime transformations
-    module Runtime
-      using RubyNext
+        def new_toplevel
+          # Create new "toplevel" binding to avoid lexical scope re-use
+          # (aka "leaking refinements")
+          eval "proc{binding}.call", TOPLEVEL_BINDING, __FILE__, __LINE__
+        end
+      else
+        def evaluate(code, filepath)
+          # This is workaround to solve the "leaking refinements" problem in MRI
+          RubyVM::InstructionSequence.compile(code, filepath).tap do |iseq|
+            iseq.eval
+          end
+        end
+      end
+    end
 
+    module Features
       class Locker
         class PathLock
           def initialize
@@ -93,29 +112,10 @@ module RubyNext
       LOCK = Locker.new
 
       class << self
-        include Utils
-
-        def load(path, wrap: false)
-          raise "RubyNext cannot handle `load(smth, wrap: true)`" if wrap
-
-          contents = File.read(path)
-          new_contents = transform contents
-
-          RubyNext.debug_source new_contents, path
-
-          evaluate(new_contents, path)
-          true
-        end
-
-        def transform(contents, **options)
-          Language.transform(contents, rewriters: Language.current_rewriters, **options)
-        end
-
         def feature_path(path, implitic_ext: true)
           path = resolve_feature_path(path, implitic_ext: implitic_ext)
           return if path.nil?
           return if File.extname(path) != ".rb" && implitic_ext
-          return unless Language.transformable?(path)
           path
         end
 
@@ -145,22 +145,47 @@ module RubyNext
           false
         end
 
-        if defined?(JRUBY_VERSION) || defined?(TruffleRuby)
-          def evaluate(code, filepath)
-            new_toplevel.eval(code, filepath)
+        private
+
+        def lookup_feature_path(path, implitic_ext: true)
+          path = "#{path}.rb" if File.extname(path).empty? && implitic_ext
+
+          # Resolve relative paths only against current directory
+          if path.match?(/^\.\.?\//)
+            path = File.expand_path(path)
+            return path if File.file?(path)
+            return nil
           end
 
-          def new_toplevel
-            # Create new "toplevel" binding to avoid lexical scope re-use
-            # (aka "leaking refinements")
-            eval "proc{binding}.call", TOPLEVEL_BINDING, __FILE__, __LINE__
+          if Pathname.new(path).absolute?
+            path = File.expand_path(path)
+            return File.file?(path) ? path : nil
+          end
+
+          # not a relative, not an absolute path — bare path; try looking relative to current dir,
+          # if it's in the $LOAD_PATH
+          if $LOAD_PATH.include?(Dir.pwd) && File.file?(path)
+            return File.expand_path(path)
+          end
+
+          $LOAD_PATH.find do |lp|
+            lpath = File.join(lp, path)
+            return File.expand_path(lpath) if File.file?(lpath)
+          end
+        end
+
+        if $LOAD_PATH.respond_to?(:resolve_feature_path)
+          def resolve_feature_path(feature, implitic_ext: true)
+            if implitic_ext
+              $LOAD_PATH.resolve_feature_path(feature)&.last
+            else
+              lookup_feature_path(feature, implitic_ext: implitic_ext)
+            end
+          rescue LoadError
           end
         else
-          def evaluate(code, filepath)
-            # This is workaround to solve the "leaking refinements" problem in MRI
-            RubyVM::InstructionSequence.compile(code, filepath).then do |iseq|
-              iseq.eval
-            end
+          def resolve_feature_path(feature, implitic_ext: true)
+            lookup_feature_path(feature, implitic_ext: implitic_ext)
           end
         end
       end
@@ -168,11 +193,11 @@ module RubyNext
   end
 end
 
-# Patch Kernel to hijack require/require_relative/load/eval
+# Patch Kernel to hijack require/require_relative/load
 module Kernel
   module_function
 
-  alias_method :require_without_ruby_next, :require
+  alias_method :require_without_require_hooks, :require
   # See https://github.com/ruby/ruby/blob/d814722fb8299c4baace3e76447a55a3d5478e3a/load.c#L1181
   def require(path)
     path = path.to_path if path.respond_to?(:to_path)
@@ -187,16 +212,16 @@ module Kernel
     # if extname == ".rb" => lookup feature -> resolve feature -> load
     # if extname != ".rb" => append ".rb" - lookup feature -> resolve feature -> lookup orig (no ext) -> resolve orig (no ext) -> load
     if File.extname(path) != ".rb"
-      return false if RubyNext::Language::Runtime.feature_loaded?(path + ".rb")
+      return false if RequireHooks::KernelPatch::Features.feature_loaded?(path + ".rb")
 
-      loaded = RubyNext::Language::Runtime::LOCK.lock_feature(path + ".rb") do |loaded|
+      loaded = RequireHooks::KernelPatch::Features::LOCK.lock_feature(path + ".rb") do |loaded|
         return false if loaded
 
-        realpath = RubyNext::Language::Runtime.feature_path(path + ".rb")
+        realpath = RequireHooks::KernelPatch::Features.feature_path(path + ".rb")
 
         if realpath
           $LOADED_FEATURES << realpath
-          RubyNext::Language::Runtime.load(realpath)
+          RequireHooks::KernelPatch.load(realpath)
           true
         end
       end
@@ -204,33 +229,35 @@ module Kernel
       return true if loaded
     end
 
-    return false if RubyNext::Language::Runtime.feature_loaded?(path)
+    return false if RequireHooks::KernelPatch::Features.feature_loaded?(path)
 
-    loaded = RubyNext::Language::Runtime::LOCK.lock_feature(path) do |loaded|
+    loaded = RequireHooks::KernelPatch::Features::LOCK.lock_feature(path) do |loaded|
       return false if loaded
 
-      realpath = RubyNext::Language::Runtime.feature_path(path)
+      realpath = RequireHooks::KernelPatch::Features.feature_path(path)
 
       if realpath
         $LOADED_FEATURES << realpath
-        RubyNext::Language::Runtime.load(realpath)
+        RequireHooks::KernelPatch.load(realpath)
         true
       end
     end
 
     return true if loaded
 
-    require_without_ruby_next(path)
+    require_without_require_hooks(path)
   rescue LoadError => e
     $LOADED_FEATURES.delete(realpath) if realpath
-    RubyNext.warn "RubyNext failed to require '#{path}': #{e.message}"
-    require_without_ruby_next(path)
+    warn "RequireHooks failed to require '#{path}': #{e.message}"
+    require_without_require_hooks(path)
+  rescue Errno::ENOENT, Errno::EACCES
+    raise LoadError, "cannot load such file -- #{path}"
   rescue
     $LOADED_FEATURES.delete(realpath) if realpath
     raise
   end
 
-  alias_method :require_relative_without_ruby_next, :require_relative
+  alias_method :require_relative_without_require_hooks, :require_relative
   def require_relative(path)
     path = path.to_path if path.respond_to?(:to_path)
     raise TypeError unless path.respond_to?(:to_str)
@@ -252,8 +279,13 @@ module Kernel
     require(realpath)
   end
 
-  alias_method :load_without_ruby_next, :load
+  alias_method :load_without_require_hooks, :load
   def load(path, wrap = false)
+    if wrap
+      warn "RequireHooks does not support `load(smth, wrap: ...)`. Falling back to original `Kernel#load`"
+      return load_without_require_hooks(path, wrap)
+    end
+
     path = path.to_path if path.respond_to?(:to_path)
     raise TypeError unless path.respond_to?(:to_str)
 
@@ -265,16 +297,16 @@ module Kernel
       if path =~ /^\.\.?\//
         path
       else
-        RubyNext::Language::Runtime.feature_path(path, implitic_ext: false)
+        RequireHooks::KernelPatch::Features.feature_path(path, implitic_ext: false)
       end
 
-    return load_without_ruby_next(path, wrap) unless realpath
+    return load_without_require_hooks(path, wrap) unless realpath
 
-    RubyNext::Language::Runtime.load(realpath, wrap: wrap)
-  rescue Errno::ENOENT
+    RequireHooks::KernelPatch.load(realpath)
+  rescue Errno::ENOENT, Errno::EACCES
     raise LoadError, "cannot load such file -- #{path}"
   rescue LoadError => e
-    RubyNext.warn "RubyNext failed to load '#{path}': #{e.message}"
-    load_without_ruby_next(path)
+    warn "RuquireHooks failed to load '#{path}': #{e.message}"
+    load_without_require_hooks(path)
   end
 end

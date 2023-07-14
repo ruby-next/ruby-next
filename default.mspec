@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+# Ignore loading default.mspec for require-hooks specs
+# NOTE: cannot use return here, since we still support Ruby <=2.4
+unless ARGV.join.match?(/hooks\.mspec/)
+
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
@@ -61,3 +65,5 @@ end
 $stdout.puts "Module refinements support: #{RubyNext::Utils.refine_modules?}"
 $stdout.puts "Ruby Next core strategy: #{RubyNext::Core.strategy}"
 $stdout.puts "Ruby Next transpile mode: #{RubyNext::Language.mode}"
+
+end

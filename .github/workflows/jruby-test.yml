@@ -60,3 +60,25 @@ jobs:
       env:
         RUBY_NEXT_TRANSPILE_MODE: "ast"
       run: bundle exec bin/mspec :language
+
+  jruby-require-hooks-test:
+    needs: transpile
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    env:
+      BUNDLE_JOBS: 4
+      BUNDLE_RETRY: 3
+      CI: true
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: jruby
+        bundler-cache: true
+    - name: Restore transpiled files
+      uses: actions/download-artifact@v1
+      with:
+        name: ruby-next-transpiled
+        path: lib/.rbnext
+    - name: Run require-hooks tests
+      run: make test-hooks

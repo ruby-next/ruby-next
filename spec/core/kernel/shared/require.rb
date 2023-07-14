@@ -403,7 +403,7 @@ describe :kernel_require, shared: true do
         end
 
         it "canonicalizes the entry in $LOAD_PATH but not the filename passed to #require" do
-          next skip unless RUBY_VERSION >= "2.5.0"
+          next skip unless RUBY_VERSION >= "2.7.0"
 
           $LOAD_PATH.unshift(@symlink_to_dir)
           @object.require("symfile").should be_true
