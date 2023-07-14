@@ -14,7 +14,7 @@ module RequireHooks
           return RubyVM::InstructionSequence.compile(new_contents, path, path, 1)
         end
 
-        defined?(super) ? super : nil
+        defined?(super) ? super : RubyVM::InstructionSequence.compile_file(path)
       end
     end
   end

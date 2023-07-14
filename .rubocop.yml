@@ -18,6 +18,7 @@ AllCops:
     - 'spec/optional/language/**/*'
     - 'mspec/**/*'
     - 'benchmarks/**/*'
+    - '**/*/syntax_error.rb'
   DisplayCopNames: true
   TargetRubyVersion: next
 
