@@ -10,5 +10,5 @@ eval_gemfile "gemfiles/rubocop.gemfile"
 
 # For compatibility tests
 gem "zeitwerk", platform: [:mri, :truffleruby]
-gem "bootsnap", platform: :mri
+gem "bootsnap", platform: [:mri, :truffleruby]
 gem "pry", "> 0.13.1"

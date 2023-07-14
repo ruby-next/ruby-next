@@ -12,7 +12,7 @@ when "load_iseq"
 when "bootsnap"
   require "require-hooks/mode/bootsnap"
 else
-  if defined?(::RubyVM::InstructionSequence) && RUBY_VERSION >= "2.3.0"
+  if defined?(::RubyVM::InstructionSequence)
     # Check if Bootsnap has been loaded.
     # Based on https://github.com/kddeisz/preval/blob/master/lib/preval.rb
     if RubyVM::InstructionSequence.respond_to?(:load_iseq) &&
