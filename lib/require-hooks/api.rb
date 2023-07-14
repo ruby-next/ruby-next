@@ -21,6 +21,8 @@ module RequireHooks
     # Define hooks to perform source-to-source transformations.
     # The return value MUST be either String (new source code) or nil (indicating that no transformations were performed).
     #
+    # NOTE: The second argument (`source`) MAY be nil, indicating that no transformer tried to transform the source code.
+    #
     # For example, you can prepend each file with `# frozen_string_literal: true` pragma:
     #
     #    RequireHooks.source_transform do |path, source|
@@ -30,12 +32,11 @@ module RequireHooks
       @@source_transform << block
     end
 
-    # This hook should be used to manually compile and load into the VM the source code.
+    # This hook should be used to manually compile byte code to be loaded by the VM.
     # The arguments are (path, source = nil), where source is only defined if transformations took place.
     # Otherwise, you MUST read the source code from the file yourself.
     #
-    # The return value MUST be either nil (continue to the next hook or default behavior), platform-specific bytecode object (e.g., RubyVM::InstructionSequence)
-    # or true (if you've already loaded the bytecode into the VM).
+    # The return value MUST be either nil (continue to the next hook or default behavior) or a platform-specific bytecode object (e.g., RubyVM::InstructionSequence).
     #
     #   RequireHooks.hijack_load do |path, source|
     #     source ||= File.read(path)
@@ -62,10 +63,12 @@ module RequireHooks
     def perform_source_transform(path)
       return unless @@source_transform.any?
 
-      source = File.read(path)
+      source = nil
+
       @@source_transform.each do |transform|
         source = transform.call(path, source) || source
       end
+
       source
     end
 
@@ -74,23 +77,9 @@ module RequireHooks
 
       @@hijack_load.each do |hijack|
         result = hijack.call(path, source)
-        return result if result == true
-
-        return try_evaluate(path, result) if result
+        return result if result
       end
       nil
-    end
-
-    private
-
-    def try_evaluate(path, result)
-      if defined?(RubyVM::InstructionSequence) && result.is_a?(RubyVM::InstructionSequence)
-        result.eval
-      else
-        raise "Unknown bytecode format for #{path}: #{result.inspect}"
-      end
-
-      true
     end
   end
 end

@@ -2,7 +2,8 @@
 
 # Ignore loading default.mspec for require-hooks specs
 # NOTE: cannot use return here, since we still support Ruby <=2.4
-unless ARGV.join.match?(/hooks\.mspec/)
+# rubocop:disable Layout/IndentationWidth
+unless ARGV.join =~ /hooks\.mspec/
 
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
@@ -67,3 +68,4 @@ $stdout.puts "Ruby Next core strategy: #{RubyNext::Core.strategy}"
 $stdout.puts "Ruby Next transpile mode: #{RubyNext::Language.mode}"
 
 end
+# rubocop:enable Layout/IndentationWidth

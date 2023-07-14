@@ -10,6 +10,8 @@ RequireHooks.source_transform do |path, source|
   next unless $source_transform_enabled
   next unless path =~ /fixtures\/freeze\.rb$/
 
+  source ||= File.read(path)
+
   source.gsub(/cold/, "hot")
 end
 
@@ -24,8 +26,7 @@ RequireHooks.hijack_load do |path, source|
       RubyVM::InstructionSequence.compile_file(path, {frozen_string_literal: true})
     end
 
-  iseq.eval
-  true
+  iseq
 end
 
 RequireHooks.hijack_load do |path, source|
@@ -34,6 +35,7 @@ RequireHooks.hijack_load do |path, source|
   RubyVM::InstructionSequence.compile_file(path)
 end
 
+# rubocop:disable Lint/Void
 describe "require-hooks hijack_load" do
   # TODO: add support for other Rubies
   next skip unless defined?(RubyVM::InstructionSequence)
@@ -57,7 +59,7 @@ describe "require-hooks hijack_load" do
   it "fallbacks to the next hijack if the first one skipped" do
     load File.join(__dir__, "fixtures/hi_jack.rb")
 
-    HiJack.say.should
+    HiJack.say.should == "yo"
     HiJack.say.sub!("yo", "hi").should == "hi"
   end
 
@@ -67,7 +69,7 @@ describe "require-hooks hijack_load" do
 
     load File.join(__dir__, "fixtures/freeze.rb")
 
-    Freezy.weather.should
+    Freezy.weather.should == "cold"
 
     load File.join(__dir__, "fixtures/hi_jack.rb")
 
@@ -78,8 +80,9 @@ describe "require-hooks hijack_load" do
     $source_transform_enabled = false
     load File.join(__dir__, "fixtures/freeze.rb")
 
-    Freezy.weather.should
+    Freezy.weather.should == "cold"
 
     -> { Freezy.weather.sub!("c", "h") }.should raise_error(FrozenError)
   end
 end
+# rubocop:enable Lint/Void

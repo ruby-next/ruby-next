@@ -7,12 +7,15 @@ $source_transform_enabled = false
 RequireHooks.source_transform do |path, source|
   next unless $source_transform_enabled
 
+  source ||= File.read(path)
   source.gsub(/cold/, "hot")
 end
 
 RequireHooks.source_transform do |path, source|
   next unless $source_transform_enabled
   next unless path =~ /fixtures\/freeze\.rb$/
+
+  source ||= File.read(path)
 
   "# frozen_string_literal: true\n#{source}"
 end

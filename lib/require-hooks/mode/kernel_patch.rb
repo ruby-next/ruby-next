@@ -8,13 +8,31 @@ module RequireHooks
     class << self
       def load(path)
         RequireHooks.run_around_load_callbacks(path) do
-          new_contents = RequireHooks.perform_source_transform(path) || File.read(path)
-          RequireHooks.try_hijack_load(path, new_contents) || evaluate(new_contents, path)
-          true
+          new_contents = RequireHooks.perform_source_transform(path)
+          hijacked = RequireHooks.try_hijack_load(path, new_contents)
+
+          return try_evaluate(path, hijacked) if hijacked
+
+          if new_contents
+            evaluate(new_contents, path)
+            true
+          else
+            load_without_require_hooks(path)
+          end
         end
       end
 
       private
+
+      def try_evaluate(path, bytecode)
+        if defined?(::RubyVM::InstructionSequence) && bytecode.is_a?(::RubyVM::InstructionSequence)
+          bytecode.eval
+        else
+          raise TypeError, "Unknown bytecode format for #{path}: #{bytecode.inspect}"
+        end
+
+        true
+      end
 
       if defined?(JRUBY_VERSION) || defined?(TruffleRuby)
         def evaluate(code, filepath)
