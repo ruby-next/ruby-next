@@ -231,9 +231,6 @@ describe :kernel_require, shared: true do
     end
 
     it "loads a file that recursively requires itself" do
-      # FIXME: add require paths stack to track duplicates
-      next skip
-
       path = File.expand_path "recursive_require_fixture.rb", CODE_LOADING_DIR
       -> {
         @object.require(path).should be_true
@@ -619,8 +616,6 @@ describe :kernel_require, shared: true do
   end
 
   describe "(concurrently)" do
-    # FIXME
-    next
     before :each do
       ScratchPad.record []
       @path = File.expand_path "concurrent.rb", CODE_LOADING_DIR
