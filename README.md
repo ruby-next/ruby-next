@@ -426,11 +426,9 @@ end
 
 # Error enrichment
 RequireHooks.around_load do |path, &block|
-  begin
-    block.call
-  rescue SyntaxError => e
-    raise "Oops, your Ruby is not Ruby: #{e.message}"
-  end
+  block.call
+rescue SyntaxError => e
+  raise "Oops, your Ruby is not Ruby: #{e.message}"
 end
 ```
 
