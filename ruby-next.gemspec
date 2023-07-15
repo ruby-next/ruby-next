@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.version = RubyNext::VERSION
   s.authors = ["Vladimir Dementyev"]
   s.email = ["dementiev.vm@gmail.com"]
-  s.homepage = "http://github.com/palkan/ruby-next"
+  s.homepage = "https://github.com/ruby-next/ruby-next"
   s.summary = "Make older Rubies quack like edge Ruby"
   s.description = %(
     Ruby Next is a collection of polyfills and a transpiler for supporting latest and upcoming edge CRuby features
@@ -15,11 +15,11 @@ Gem::Specification.new do |s|
   )
 
   s.metadata = {
-    "bug_tracker_uri" => "http://github.com/ruby-next/ruby-next/issues",
+    "bug_tracker_uri" => "https://github.com/ruby-next/ruby-next/issues",
     "changelog_uri" => "https://github.com/ruby-next/ruby-next/blob/master/CHANGELOG.md",
-    "documentation_uri" => "http://github.com/ruby-next/ruby-next/blob/master/README.md",
-    "homepage_uri" => "http://github.com/ruby-next/ruby-next",
-    "source_code_uri" => "http://github.com/ruby-next/ruby-next"
+    "documentation_uri" => "https://github.com/ruby-next/ruby-next/blob/master/README.md",
+    "homepage_uri" => "https://github.com/ruby-next/ruby-next",
+    "source_code_uri" => "https://github.com/ruby-next/ruby-next"
   }
 
   s.license = "MIT"
@@ -31,5 +31,6 @@ Gem::Specification.new do |s|
 
   s.add_dependency "ruby-next-core", RubyNext::VERSION
   s.add_dependency "ruby-next-parser", ">= 3.1.1.0"
+  s.add_dependency "require-hooks", "~> 0.1"
   s.add_dependency "unparser", "~> 0.6.0"
 end

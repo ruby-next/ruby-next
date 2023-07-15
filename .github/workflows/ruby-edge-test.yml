@@ -27,5 +27,3 @@ jobs:
       env:
         RUBY_NEXT_TRANSPILE_MODE: "ast"
       run: bundle exec bin/mspec :language
-    - name: Run require-hooks tests
-      run: make test-hooks
