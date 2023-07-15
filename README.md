@@ -434,7 +434,7 @@ end
 
 The return value MUST be a result of calling the passed block.
 
-- **source_transform:** peform source-to-source transformations.
+- **source_transform:** perform source-to-source transformations.
 
 ```ruby
 
@@ -447,7 +447,7 @@ end
 
 The return value MUST be either String (new source code) or `nil` (indicating that no transformations were performed). The second argument (`source`) MAY be `nil``, indicating that no transformer tried to transform the source code.
 
-- **hijack_load:** a hook that is used to manually compile a bytecode for VM to load it.
+- **hijack_load:** a hook that is used to manually compile byte code for VM to load it.
 
 ```ruby
 RequireHooks.hijack_load do |path, source|
@@ -489,7 +489,7 @@ require "bootsnap/setup"
 require "require-hooks/setup"
 ```
 
-The _around load_ hooks are executed for all files indepedently of whether they are cached or not. Source transformation and hijacking is only done for non-cached files.
+The _around load_ hooks are executed for all files independently of whether they are cached or not. Source transformation and hijacking is only done for non-cached files.
 
 Thus, if you introduce new source transformers or hijackers, you must invalidate the cache. (We plan to implement automatic invalidation in future versions.)
 
