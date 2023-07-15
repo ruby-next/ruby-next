@@ -15,57 +15,9 @@ on:
     - ".github/workflows/docs-lint.yml"
 
 jobs:
-  markdownlint:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: 3.1
-    - name: Run Markdown linter
-      run: |
-        gem install mdl
-        mdl *.md
-  rubocop:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: 3.2
-        bundler-cache: true
-    - name: Lint Markdown files with RuboCop
-      run: |
-        bundle exec rubocop -c .rubocop-md.yml
-
-  forspell:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Install Hunspell
-      run: |
-        sudo apt-get install hunspell
-    - uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: 3.1
-    - name: Cache installed gems
-      uses: actions/cache@v1
-      with:
-        path: /home/runner/.rubies/ruby-3.1.0/lib/ruby/gems/3.1.0
-        key: gems-cache-${{ runner.os }}
-    - name: Install Forspell
-      run: gem install forspell
-    - name: Run Forspell
-      run: forspell *.md .github/**/*.md
-
-  lychee:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Link Checker
-      id: lychee
-      uses: lycheeverse/lychee-action@v1.5.1
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      with:
-        args: README.md CHANGELOG.md -v
+  docs-lint:
+    uses: anycable/github-actions/.github/workflows/docs-lint.yml@master
+    with:
+      mdl-path: README.md CHANGELOG.md
+      forspell-args: "*.md"
+      rubocop-gemfile: Gemfile
