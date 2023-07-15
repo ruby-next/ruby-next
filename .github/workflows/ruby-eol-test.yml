@@ -40,18 +40,11 @@ jobs:
 
   ruby-test:
     needs: transpile
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        ruby: [2.4]
-        os: [ubuntu-latest]
-        include:
-          - ruby: 2.2
-            os: ubuntu-20.04
-          - ruby: 2.3
-            # https://github.com/ruby/setup-ruby/issues/496
-            os: ubuntu-latest
+        ruby: [2.3, 2.4]
     env:
       CORE_EXT: backports
       RUBY_NEXT_CORE_STRATEGY: backports
@@ -79,6 +72,45 @@ jobs:
       env:
         RUBY_NEXT_TRANSPILE_MODE: "ast"
       run: bundle exec bin/mspec :language
+
+  ruby-22-test:
+    needs: transpile
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: [2.2]
+    env:
+      CORE_EXT: backports
+      RUBY_NEXT_CORE_STRATEGY: backports
+      BUNDLE_JOBS: 4
+      BUNDLE_RETRY: 3
+      BUNDLE_GEMFILE: "gemfiles/eol.gemfile"
+      CI: true
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby }}
+        bundler-cache: true
+    - name: Restore transpiled files
+      uses: actions/download-artifact@v2
+      with:
+        name: ruby-next-transpiled
+        path: lib/.rbnext
+    - name: Download older MSpec
+      run: |
+        git clone --branch v1.7.0 https://github.com/ruby/mspec.git mspec
+    - name: Run MSpec
+      run: |
+        bundle exec bin/mspec
+      env:
+        PRYRC: "spec/integration/fixtures/pry/.pryrc"
+    - name: Run language specs with AST mode
+      env:
+        RUBY_NEXT_TRANSPILE_MODE: "ast"
+      run: bundle exec bin/mspec :language
+
   ruby-20-test:
     needs: transpile
     timeout-minutes: 5
