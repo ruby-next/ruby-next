@@ -88,7 +88,7 @@ Core provides **polyfills** for Ruby core classes APIs via Refinements (default 
 Language is responsible for **transpiling** edge Ruby syntax into older versions. It could be done
 programmatically or via CLI. It also could be done in runtime.
 
-Currently, Ruby Next supports Ruby versions 2.2+, including JRuby 9.2.8+ and TruffleRuby 20.1+ (with some limitations). Support for EOL versions (<2.5) slightly differs though ([see below](#using-with-eol-rubies)).
+Currently, Ruby Next supports Ruby versions 2.3+, including JRuby 9.2.8+ and TruffleRuby 20.1+ (with some limitations). Support for older versions (<2.5) slightly differs though ([see below](#using-with-eol-rubies)). Version between 2.0 and 2.3 may work but we no longer test against them.
 
 Please, [open an issue](https://github.com/ruby-next/ruby-next/issues/new/choose) or join the discussion in the existing ones if you would like us to support older Ruby versions.
 
@@ -585,7 +585,7 @@ pry -ruby-next/pry
 
 ## Using with EOL Rubies
 
-We currently provide support for Ruby 2.2, 2.3 and 2.4.
+We currently provide support for Ruby 2.3+.
 
 **NOTE:** By "support" here we mean using `ruby-next` CLI and runtime transpiling. Transpiled code may run on Ruby 2.0+.
 
