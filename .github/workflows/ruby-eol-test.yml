@@ -18,7 +18,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 2.7
+        ruby-version: 3.2
         bundler-cache: true
     - name: Transpile Ruby Next
       run: |
@@ -31,12 +31,6 @@ jobs:
     - name: Transpile language specs
       run: |
         make transpile-language-specs
-    - name: Transpile Ruby 2.0 fixtures
-      uses: actions/upload-artifact@v2
-      with:
-        name: language-specs-transpiled
-        path: spec/language/ruby20/.rbnext
-        if-no-files-found: ignore
 
   ruby-test:
     needs: transpile
@@ -44,10 +38,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: [2.3, 2.4]
+        ruby: [2.5, 2.6]
+        core_ext: ["false", gem, generated]
+        core_strategy: [refine]
+        include:
+          - ruby: 2.3
+            core_ext: backports
+            core_strategy: backports
+          - ruby: 2.4
+            core_ext: backports
+            core_strategy: backports
     env:
-      CORE_EXT: backports
-      RUBY_NEXT_CORE_STRATEGY: backports
+      CORE_EXT: ${{ matrix.core_ext }}
+      RUBY_NEXT_CORE_STRATEGY: ${{ matrix.core_strategy }}
       BUNDLE_JOBS: 4
       BUNDLE_RETRY: 3
       BUNDLE_GEMFILE: "gemfiles/eol.gemfile"
@@ -72,69 +75,3 @@ jobs:
       env:
         RUBY_NEXT_TRANSPILE_MODE: "ast"
       run: bundle exec bin/mspec :language
-
-  ruby-22-test:
-    needs: transpile
-    runs-on: ubuntu-20.04
-    strategy:
-      fail-fast: false
-      matrix:
-        ruby: [2.2]
-    env:
-      CORE_EXT: backports
-      RUBY_NEXT_CORE_STRATEGY: backports
-      BUNDLE_JOBS: 4
-      BUNDLE_RETRY: 3
-      BUNDLE_GEMFILE: "gemfiles/eol.gemfile"
-      CI: true
-    steps:
-    - uses: actions/checkout@v2
-    - uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: ${{ matrix.ruby }}
-        bundler-cache: true
-    - name: Restore transpiled files
-      uses: actions/download-artifact@v2
-      with:
-        name: ruby-next-transpiled
-        path: lib/.rbnext
-    - name: Download older MSpec
-      run: |
-        git clone --branch v1.7.0 https://github.com/ruby/mspec.git mspec
-    - name: Run MSpec
-      run: |
-        bundle exec bin/mspec
-      env:
-        PRYRC: "spec/integration/fixtures/pry/.pryrc"
-    - name: Run language specs with AST mode
-      env:
-        RUBY_NEXT_TRANSPILE_MODE: "ast"
-      run: bundle exec bin/mspec :language
-
-  ruby-20-test:
-    needs: transpile
-    timeout-minutes: 5
-    runs-on: ubuntu-latest
-    container:
-       image: ruby:2.0
-    steps:
-    - uses: actions/checkout@v2
-    - name: Restore transpiled files
-      uses: actions/download-artifact@v2
-      with:
-        name: ruby-next-transpiled
-        path: lib/.rbnext
-    - name: Restore transpiled specs
-      uses: actions/download-artifact@v2
-      with:
-        name: language-specs-transpiled
-        path: spec/language/ruby20/.rbnext
-    - name: Download MSpec
-      run: |
-        git clone --branch v1.7.0 https://github.com/ruby/mspec.git mspec
-    - name: Install backports
-      run: |
-        gem install backports
-    - name: Run language specs for Ruby 2.0
-      run: |
-        (cd spec/language/ruby20 && ../../../mspec/bin/mspec *.rb)

@@ -2,6 +2,8 @@
 
 ## master
 
+- Stop testing Ruby <2.3. ([@palkan][])
+
 - Extract `require-hooks`. ([@palkan][])
 
 - Support passing --overwrite to CLI. ([@prog-supdex][])
