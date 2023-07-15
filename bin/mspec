@@ -9,4 +9,8 @@ $:.unshift File.expand_path(File.join(__dir__, '..', 'mspec', 'lib'))
 
 require 'mspec/commands/mspec'
 
-MSpecMain.main(false)
+begin
+  MSpecMain.main(false)
+rescue ArgumentError => e
+  MSpecMain.main
+end
