@@ -11,3 +11,4 @@ Gemfile.lock
 
 mspec/
 .rbnext/
+rubyspec_temp/

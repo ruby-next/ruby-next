@@ -19,7 +19,7 @@ Who might be interested in Ruby Next?
 Ruby Next also aims to help the community to assess new, _experimental_, MRI features by making it easier to play with them.
 That's why Ruby Next implements the `master` features as fast as possible.
 
-Ruby Next also comes with a companion library to provide **code loading hooks** for your needs—[require-hooks](#require-hooks).
+See also a companion library (extracted from Ruby Next) that provides **code loading hooks** for your needs—[require-hooks][require-hooks].
 
 Read more about the motivation behind the Ruby Next in this post: [Ruby Next: Make all Rubies quack alike](https://evilmartians.com/chronicles/ruby-next-make-all-rubies-quack-alike).
 
@@ -71,7 +71,6 @@ _Please, submit a PR to add your project to the list!_
   - [Runtime usage](#runtime-usage)
   - [`ruby -ruby-next`](#uby-next)
   - [Logging & Debugging](#logging-and-debugging)
-- [Require hooks](#require-hooks)
 - [RuboCop](#rubocop)
 - [Using with IRB](#irb)
 - [Using with Pry](#pry)
@@ -367,7 +366,7 @@ It is also possible to transpile Ruby source code in run-time via Ruby Next.
 All you need is to `require "ruby-next/language/runtime"` as early as possible to hijack `Kernel#require` and friends.
 You can also automatically inject `using RubyNext` to every\* loaded file by also adding `require "ruby-next/core/runtime"`.
 
-Runtime mode is backed by [require-hooks](#require-hooks)—a standalone gem which has been extracted from Ruby Next. Depending on the current runtime, it picks an optimal strategy for hijacking the loading mechanism.
+Runtime mode is backed by [require-hooks][require-hooks]—a standalone gem which has been extracted from Ruby Next. Depending on the current runtime, it picks an optimal strategy for hijacking the loading mechanism. Please, refer to its documentation for more details.
 
 \* Ruby Next doesn't hijack every required file but _watches_ only the configured directories: `./app/`, `./lib/`, `./spec/`, `./test/` (relative to the `pwd`). You can configure the watch dirs:
 
@@ -384,114 +383,6 @@ If you want to support transpiling in `eval`-like methods, opt-in explicitly by 
 ```ruby
 using RubyNext::Language::Eval
 ```
-
-## Require hooks
-
-Require hooks is a library providing universal interface for injecting custom code into the Ruby's loading mechanism. It works on MRI, JRuby, and TruffleRuby.
-
-Require hooks allows you to interfere with `Kernel#require` (incl. `Kernel#require_relative`) and `Kernel#load`.
-
-### Installation
-
-Add to your Gemfile:
-
-```ruby
-gem "require-hooks"
-```
-
-or gemspec:
-
-```ruby
-spec.add_dependency "require-hooks"
-```
-
-### Usage
-
-To enable hooks, you need to load `require-hooks/setup` as early as possible. For example, in your gem's entrypoint:
-
-```ruby
-require "require-hooks/setup"
-```
-
-Then, you can add hooks:
-
-- **around_load:** a hook that wraps code loading operation. Useful for logging and debugging purposes.
-
-```ruby
-# Simple logging
-RequireHooks.around_load do |path, &block|
-  puts "Loading #{path}"
-  block.call.tap { puts "Loaded #{path}" }
-end
-
-# Error enrichment
-RequireHooks.around_load do |path, &block|
-  block.call
-rescue SyntaxError => e
-  raise "Oops, your Ruby is not Ruby: #{e.message}"
-end
-```
-
-The return value MUST be a result of calling the passed block.
-
-- **source_transform:** perform source-to-source transformations.
-
-```ruby
-
-RequireHooks.source_transform do |path, source|
-  next unless path =~ /my_project\/.*/
-  source ||= File.read(path)
-  "# frozen_string_literal: true\n#{source}"
-end
-```
-
-The return value MUST be either String (new source code) or `nil` (indicating that no transformations were performed). The second argument (`source`) MAY be `nil``, indicating that no transformer tried to transform the source code.
-
-- **hijack_load:** a hook that is used to manually compile byte code for VM to load it.
-
-```ruby
-RequireHooks.hijack_load do |path, source|
-  next unless path =~ /my_project\/.*/
-
-  source ||= File.read(path)
-  if defined?(RubyVM::InstructionSequence)
-    RubyVM::InstructionSequence.compile(source)
-  elsif defined?(JRUBY_VERSION)
-    JRuby.compile(source)
-  end
-end
-```
-
-The return value is platform-specific. If there are multiple _hijackers_, the first one that returns a non-`nil` value is used, others are ignored.
-
-### Modes
-
-Depending on the runtime conditions, Require Hooks picks an optimal strategy for injecting the code. You can enforce a particular _mode_ by setting the `REQUIRE_HOOKS_MODE` env variable (`patch`, `load_iseq` or `bootsnap`). In practice, only setting to `patch` may makes sense.
-
-### Via `#load_iseq`
-
-If `RubyVM::InstructionSequence` is available, we use more robust way of hijacking code loading—`RubyVM::InstructionSequence#load_iseq`.
-
-Keep in mind that if there is already a `#load_iseq` callback defined, it will only have an effect if Require Hooks hijackers return `nil`.
-
-### Kernel patching
-
-In this mode, Require Hooks monkey-patches `Kernel#require` and friends. This mode is used in JRuby by default.
-
-### Bootsnap integration
-
-[Bootsnap][] is a great tool to speed-up your application load and it's included into the default Rails Gemfile. And it uses `#load_iseq`. Require Hooks activates a custom Bootsnap-compatible mode, so you can benefit from both tools.
-
-You can use require-hooks with Bootsnap to customize code loading. Just make sure you load `require-hooks/setup` after setting up Bootsnap, for example:
-
-```ruby
-require "bootsnap/setup"
-require "require-hooks/setup"
-```
-
-The _around load_ hooks are executed for all files independently of whether they are cached or not. Source transformation and hijacking is only done for non-cached files.
-
-Thus, if you introduce new source transformers or hijackers, you must invalidate the cache. (We plan to implement automatic invalidation in future versions.)
 
 ## `uby-next`
 
@@ -708,6 +599,6 @@ The gem is available as open source under the terms of the [MIT License](https:/
 [parser]: https://github.com/whitequark/parser
 [unparser]: https://github.com/mbj/unparser
 [next_parser]: https://github.com/ruby-next/parser
-[Bootsnap]: https://github.com/Shopify/bootsnap
 [rubocop]: https://github.com/rubocop-hq/rubocop
 [backports]: https://github.com/marcandre/backports
+[require-hooks]: https://github.com/ruby-next/require-hooks

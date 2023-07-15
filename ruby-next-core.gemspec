@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.version = RubyNext::VERSION
   s.authors = ["Vladimir Dementyev"]
   s.email = ["dementiev.vm@gmail.com"]
-  s.homepage = "http://github.com/palkan/ruby-next"
+  s.homepage = "https://github.com/ruby-next/ruby-next"
   s.summary = "Ruby Next core functionality"
   s.description = %(
     Ruby Next Core is a zero deps version of Ruby Next meant to be used
@@ -18,22 +18,30 @@ Gem::Specification.new do |s|
   )
 
   s.metadata = {
-    "bug_tracker_uri" => "http://github.com/ruby-next/ruby-next/issues",
+    "bug_tracker_uri" => "https://github.com/ruby-next/ruby-next/issues",
     "changelog_uri" => "https://github.com/ruby-next/ruby-next/blob/master/CHANGELOG.md",
-    "documentation_uri" => "http://github.com/ruby-next/ruby-next/blob/master/README.md",
-    "homepage_uri" => "http://github.com/ruby-next/ruby-next",
-    "source_code_uri" => "http://github.com/ruby-next/ruby-next"
+    "documentation_uri" => "https://github.com/ruby-next/ruby-next/blob/master/README.md",
+    "homepage_uri" => "https://github.com/ruby-next/ruby-next",
+    "source_code_uri" => "https://github.com/ruby-next/ruby-next",
+    "funding_uri" => "https://github.com/sponsors/palkan"
   }
 
   s.license = "MIT"
 
-  s.files = Dir.glob("lib/**/*") + Dir.glob("lib/.rbnext/**/*") + Dir.glob("bin/**/*") + %w[README.md LICENSE.txt CHANGELOG.md]
+  s.files = Dir.glob("lib/ruby-next/**/*") +
+    Dir.glob("lib/uby-next/**/*") +
+    Dir.glob("lib/.rbnext/**/*") +
+    Dir.glob("bin/**/*") +
+    %w[lib/ruby-next.rb lib/uby-next.rb] +
+    %w[README.md LICENSE.txt CHANGELOG.md]
+
   s.required_ruby_version = ">= 2.2.0"
 
   s.require_paths = ["lib"]
 
   s.executables = ["ruby-next"]
 
+  s.add_development_dependency "require-hooks", "~> 0.1"
   s.add_development_dependency "ruby-next-parser", ">= 3.1.1.0"
   s.add_development_dependency "unparser", "~> 0.6.0"
 end
