@@ -9,7 +9,7 @@ require "ruby-next/core/runtime"
 
 using RubyNext
 
-RubyNext::Language.watch_dirs << Dir.pwd
+RubyNext::Language.include_patterns << File.join(Dir.pwd, ".rb")
 
 require "stringio"
 

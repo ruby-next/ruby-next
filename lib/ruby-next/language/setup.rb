@@ -43,7 +43,7 @@ module RubyNext
 
         dirname = File.realpath(dirname)
 
-        return if Language.runtime? && Language.watch_dirs.include?(dirname)
+        return if Language.runtime? && Language.target_dir?(dirname)
 
         next_dirname = File.join(dirname, rbnext_dir)
 

@@ -30,8 +30,6 @@ describe :kernel_load, shared: true do
   end
 
   it "loads a file that recursively requires itself" do
-    # FIXME: Add stack of load calls and check repeated paths
-    next skip
     path = File.expand_path "recursive_require_fixture.rb", CODE_LOADING_DIR
     -> {
       @object.load(path).should be_true

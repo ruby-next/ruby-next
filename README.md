@@ -363,16 +363,20 @@ This feature, _auto-transpiling_, is **disabled** by default (will likely be ena
 
 It is also possible to transpile Ruby source code in run-time via Ruby Next.
 
-All you need is to `require "ruby-next/language/runtime"` as early as possible to hijack `Kernel#require` and friends.
-You can also automatically inject `using RubyNext` to every\* loaded file by also adding `require "ruby-next/core/runtime"`.
+All you need is to `require "ruby-next/language/runtime"` to hijack `Kernel#require` and friends before loading the files you want to transpile. You can also automatically inject `using RubyNext` to every\* loaded file by also adding `require "ruby-next/core/runtime"`.
 
 Runtime mode is backed by [require-hooks][require-hooks]—a standalone gem which has been extracted from Ruby Next. Depending on the current runtime, it picks an optimal strategy for hijacking the loading mechanism. Please, refer to its documentation for more details.
 
-\* Ruby Next doesn't hijack every required file but _watches_ only the configured directories: `./app/`, `./lib/`, `./spec/`, `./test/` (relative to the `pwd`). You can configure the watch dirs:
+\* Ruby Next doesn't hijack every required file but only the configured directories: `./app/`, `./lib/`, `./spec/`, `./test/` (relative to the `pwd`). It also excludes the `./vendor/bundle` directory by default.
+
+You can customize target files via the `include_patterns` and `exclude_patterns` configuration options:
 
 ```ruby
-RubyNext::Language.watch_dirs << "path/to/other/dir"
+RubyNext::Language.include_patterns << "path/to/other/dir/*.rb"
+RubyNext::Language.exclude_patterns << "path/to/other/dir/subdir/*"
 ```
+
+**NOTE:** Directories MUST be configured before requiring `ruby-next/language/runtime`.
 
 ### Eval & similar
 
