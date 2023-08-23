@@ -57,3 +57,6 @@ Lint/LiteralAsCondition:
 Style/GlobalVars:
   Exclude:
     - 'spec/**/*'
+
+Style/ArgumentsForwarding:
+  Enabled: false
