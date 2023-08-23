@@ -36,6 +36,7 @@ module RubyNext
 
     # Returns true if modules refinement is supported in current version
     def refine_modules?
+      save_verbose, $VERBOSE = $VERBOSE, nil
       @refine_modules ||=
         begin
           # Make sure that including modules within refinements works
@@ -61,6 +62,8 @@ module RubyNext
           true
         rescue TypeError, NoMethodError
           false
+        ensure
+          $VERBOSE = save_verbose
         end
     end
   end

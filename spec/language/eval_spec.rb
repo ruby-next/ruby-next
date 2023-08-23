@@ -21,7 +21,8 @@ describe "transforming eval contents" do
 
   it "Kernel.eval without binding" do
     next skip unless RubyNext::Language::Rewriters::PatternMatching.unsupported_syntax?
-    next skip if RubyNext::Core.core_ext?
+    # Here we rely on the fact that Hash#deconstruct_keys is not defined
+    next skip if {}.respond_to?(:deconstruct_keys)
 
     eval(%q{
       case {status: :ok}

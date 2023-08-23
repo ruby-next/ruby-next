@@ -20,6 +20,8 @@ module RubyNext
 
   class << self
     # TruffleRuby claims its RUBY_VERSION to be X.Y while not supporting all the features
+    # Currently (23.0.1), it still doesn't support pattern matching, although claims to be "like 3.1".
+    # So, we fallback to 2.6.5 (since we cannot use 2.7).
     if defined?(TruffleRuby)
       def current_ruby_version
         "2.6.5"

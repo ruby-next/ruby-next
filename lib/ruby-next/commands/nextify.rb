@@ -98,7 +98,7 @@ module RubyNext
 
         if print_rewriters
           Language.rewriters.each do |rewriter|
-            $stdout.puts "#{rewriter::NAME} (\"#{rewriter::SYNTAX_PROBE}\")"
+            $stdout.puts "#{rewriter::NAME} (\"#{rewriter::SYNTAX_PROBE}\")#{rewriter.unsupported_syntax? ? " (unsupported)" : ""}"
           end
           exit 0
         end
