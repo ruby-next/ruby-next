@@ -70,7 +70,7 @@ module RubyNext
         @watch_dirs
       end
 
-      attr_accessor :rewriters, :text_rewriters
+      attr_accessor :rewriters
 
       attr_accessor :strategy
 
@@ -186,7 +186,7 @@ module RubyNext
 
       def text_rewrite(source, rewriters:, using:, context:)
         rewriters.inject(source) do |src, rewriter|
-          rewriter.new(context).safe_rewrite(src)
+          rewriter.new(context).rewrite(src)
         end.then do |new_source|
           next source unless context.dirty?
 

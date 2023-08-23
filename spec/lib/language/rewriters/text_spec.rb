@@ -4,7 +4,7 @@ require_relative "../../../spec_helper"
 
 module RewritersSpecs
   class TextRewriter < RubyNext::Language::Rewriters::Text
-    def rewrite(source)
+    def safe_rewrite(source)
       source.gsub(":=", "=")
     end
   end
@@ -16,7 +16,7 @@ describe "Text rewriters" do
   end
 
   it "rewrites code" do
-    new_source = @rewriter.safe_rewrite(<<~RUBY)
+    new_source = @rewriter.rewrite(<<~RUBY)
       a := "Hello, 世界"
       
       b:=42
@@ -30,7 +30,7 @@ describe "Text rewriters" do
   end
 
   it "doesn't rewrite comments" do
-    new_source = @rewriter.safe_rewrite(<<~RUBY)
+    new_source = @rewriter.rewrite(<<~RUBY)
       # This is a comment := about assignment
       a := "Hello, 世界"
     RUBY
@@ -42,7 +42,7 @@ describe "Text rewriters" do
   end
 
   it "doesn't rewrite string literals" do
-    new_source = @rewriter.safe_rewrite(<<~RUBY)
+    new_source = @rewriter.rewrite(<<~RUBY)
       a := "Hello, LANG := RUBY"
     RUBY
 
