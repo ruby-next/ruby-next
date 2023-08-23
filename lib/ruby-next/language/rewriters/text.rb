@@ -65,15 +65,15 @@ module RubyNext
           true
         end
 
+        # Rewrite source code by ignoring string literals and comments
         def rewrite(source)
-          source
+          Parser.new.normalizing(source) do |normalized|
+            safe_rewrite(normalized)
+          end
         end
 
-        # Rewrite source code by ignoring string literals and comments
         def safe_rewrite(source)
-          Parser.new.normalizing(source) do |normalized|
-            rewrite(normalized)
-          end
+          source
         end
       end
     end

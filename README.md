@@ -15,6 +15,7 @@ Who might be interested in Ruby Next?
 - **Ruby gems maintainers** who want to write code using the latest Ruby version but still support older ones.
 - **Application developers** who want to give new features a try without waiting for the final release (or, more often, for the first patch).
 - **Users of non-MRI implementations** such as [mruby][], [JRuby][], [TruffleRuby][], [Natalie][], [Opal][], [RubyMotion][], [Artichoke][], [Prism][].
+- **Ruby syntax enthusiasts** who want to experiment with [custom syntax extensions](#custom-syntax-rewriters) 👩‍🔬👨‍🔬.
 
 Ruby Next also aims to help the community to assess new, _experimental_, MRI features by making it easier to play with them.
 That's why Ruby Next implements the `master` features as fast as possible.
@@ -76,6 +77,7 @@ _Please, submit a PR to add your project to the list!_
 - [Using with Pry](#pry)
 - [Using with EOL Rubies](#using-with-eol-rubies)
 - [Proposed & edge features](#proposed-and-edge-features)
+- [Custom syntax rewriters](#custom-syntax-rewriters)
 - [Known limitations](#known-limitations)
 
 ## Overview
@@ -557,6 +559,35 @@ It's too early, Ruby 3.1 has just been released. See its features in the [suppor
 - _Method reference_ operator (`.:`) ([#13581](https://bugs.ruby-lang.org/issues/13581)).
 - Binding non-local variables in pattern matching (`42 => @v`) ([#18408](https://bugs.ruby-lang.org/issues/18408)).
 
+## Custom syntax rewriters
+
+Wonder what would happen if Ruby get a null coallescing operator (`??=`) or some other syntactic feature you want to try out? Ruby Next is here to help you!
+
+Ruby Next allows you to write your own syntax rewriters. Full-featured rewriters (used by Ruby Next itself) operate on AST and usually require parser modifications. However, we also support text-based rewriters which can be used to experiment with new syntax much quicker without dealing with grammars, parsers and syntax trees.
+
+To implement a text-based rewriter, you need to create a new class inherited from `RubyNext::Language::Rewriters::Text` and implementing either `#rewrite` or `#safe_rewrite` method. For example, the method reference operator (`.:`) could be implemented as follows:
+
+```ruby
+class MethodReferenceRewriter < RubyNext::Language::Rewriters::Text
+  def safe_rewrite(source)
+    source.gsub(/\.:([\w_]+)/) do |match|
+      context.track! self
+
+      ".method(:#{$1})"
+    end
+  end
+end
+
+# Add the rewriter to the list of rewriters
+RubyNext::Language.rewriters << MethodReferenceRewriter
+```
+
+The `context` object is responsible for tracking if the rewriter was used for the current file. You must call the `context.track!` method to mark the file as _dirty_ (i.e., it should be transpiled). The input parameter (`source`) is the Ruby source code of the file being transpiled and the output must be the transpiled source code.
+
+The `#safe_rewrite` method operates on the normalized source code (i.e., without comments and string literals). It's useful when you want to avoid transpiling inside strings or comments. If you want to transpile the original contents, you can use the `#rewrite` method instead.
+
+Under the hood, `#safe_rewrite` uses [Paco][] to parse the source and separate string literals from the rest of the code. You can also leverage [Paco][] in your text rewriters, if you want more control on the parsing process.
+
 ## Known limitations
 
 Ruby Next aims to be _reasonably compatible_ with MRI. That means, some edge cases could be uncovered. Below is the list of known limitations.
@@ -610,3 +641,4 @@ The gem is available as open source under the terms of the [MIT License](https:/
 [backports]: https://github.com/marcandre/backports
 [require-hooks]: https://github.com/ruby-next/require-hooks
 [Natalie]: https://natalie-lang.org
+[Paco]: https://github.com/ruby-next/paco

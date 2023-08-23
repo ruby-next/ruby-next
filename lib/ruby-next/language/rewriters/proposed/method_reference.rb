@@ -11,7 +11,7 @@ module RubyNext
         SYNTAX_PROBE = "Language.:transform"
         MIN_SUPPORTED_VERSION = Gem::Version.new(RubyNext::NEXT_VERSION)
 
-        def rewrite(source)
+        def safe_rewrite(source)
           source.gsub(/\.:([\w_]+)/) do |match|
             context.track! self
 
