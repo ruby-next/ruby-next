@@ -63,7 +63,13 @@ module RubyNext
 
     class << self
       attr_accessor :rewriters
-      attr_reader :watch_dirs
+      attr_reader :include_patterns
+      attr_reader :exclude_patterns
+
+      def watch_dirs
+        warn "[DEPRECATED] Use `RubyNext::Language.include_patterns` instead of `RubyNext::Language.watch_dirs`"
+        @watch_dirs
+      end
 
       attr_accessor :strategy
 
@@ -119,8 +125,17 @@ module RubyNext
         Core.inject! new_source.dup
       end
 
+      def target_dir?(dirname)
+        # fnmatch? requires a file name, not a folder
+        fname = File.join(dirname, "x.rb")
+
+        include_patterns.any? { |pattern| File.fnmatch?(pattern, fname) } &&
+          exclude_patterns.none? { |pattern| File.fnmatch?(pattern, fname) }
+      end
+
       def transformable?(path)
-        watch_dirs.any? { |dir| path.start_with?(dir) }
+        include_patterns.any? { |pattern| File.fnmatch?(pattern, path) } &&
+          exclude_patterns.none? { |pattern| File.fnmatch?(pattern, path) }
       end
 
       # Rewriters required for the current version
@@ -166,10 +181,13 @@ module RubyNext
       end
 
       attr_writer :watch_dirs
+      attr_writer :include_patterns, :exclude_patterns
     end
 
     self.rewriters = []
-    self.watch_dirs = %w[app lib spec test].map { |path| File.join(Dir.pwd, path) }
+    self.watch_dirs = []
+    self.include_patterns = %w[app lib spec test].map { |path| File.join(Dir.pwd, path, "*.rb") }
+    self.exclude_patterns = %w[vendor/bundle].map { |path| File.join(Dir.pwd, path, "*") }
     self.mode = ENV.fetch("RUBY_NEXT_TRANSPILE_MODE", "rewrite").to_sym
 
     require "ruby-next/language/rewriters/base"

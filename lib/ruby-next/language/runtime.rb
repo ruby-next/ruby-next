@@ -16,8 +16,6 @@ module RubyNext
 
       class << self
         def load(path, contents)
-          return unless Language.transformable?(path)
-
           contents ||= File.read(path)
           new_contents = transform contents
 
@@ -34,6 +32,9 @@ module RubyNext
   end
 end
 
-RequireHooks.source_transform do |path, contents|
+RequireHooks.source_transform(
+  patterns: RubyNext::Language.include_patterns,
+  exclude_patterns: RubyNext::Language.exclude_patterns
+) do |path, contents|
   RubyNext::Language::Runtime.load(path, contents)
 end

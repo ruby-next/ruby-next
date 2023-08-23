@@ -10,7 +10,7 @@ Bootsnap.setup(
 )
 
 require "ruby-next/language/runtime"
-RubyNext::Language.watch_dirs << __dir__
+RubyNext::Language.include_patterns << File.join(__dir__, ".rb")
 
 require_relative "pattern"
 
