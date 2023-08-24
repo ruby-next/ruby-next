@@ -33,6 +33,7 @@ module RubyNext
         print_help = false
         print_rewriters = false
         rewriter_names = []
+        custom_rewriters = []
         @single_version = false
         @overwrite = false
 
@@ -84,6 +85,10 @@ module RubyNext
             rewriter_names << val
           end
 
+          opts.on("--import-rewriter=REWRITERS...", "Specify paths to load custom rewritiers") do |val|
+            custom_rewriters << val
+          end
+
           opts.on("-h", "--help", "Print help") do
             print_help = true
           end
@@ -96,6 +101,11 @@ module RubyNext
         if print_help
           $stdout.puts optparser.help
           exit 0
+        end
+
+        # Load custom rewriters
+        custom_rewriters.each do |path|
+          Kernel.load path
         end
 
         if print_rewriters
