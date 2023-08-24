@@ -19,6 +19,7 @@ AllCops:
     - 'mspec/**/*'
     - 'benchmarks/**/*'
     - '**/*/syntax_error.rb'
+    - 'spec/cli/fixtures/custom/a.rb'
   DisplayCopNames: true
   TargetRubyVersion: next
 

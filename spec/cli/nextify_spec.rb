@@ -384,4 +384,34 @@ describe "ruby-next nextify" do
       end
     end
   end
+
+  context "with --import-rewriter" do
+    after do
+      FileUtils.rm_rf(File.join(__dir__, "fixtures", ".rbnext"))
+    end
+
+    it "imports custom rewriters" do
+      run_ruby_next(
+        "nextify #{File.join(__dir__, "fixtures", "custom", "a.rb")} " \
+        "--import-rewriter=#{File.join(__dir__, "fixtures", "custom", "assignment_rewriter.rb")} " \
+        "--import-rewriter=#{File.join(__dir__, "fixtures", "custom", "comment_rewriter.rb")} " \
+        "--output=#{File.join(__dir__, "fixtures", ".rbnext", "a.rb")} " \
+        "--min-version=2.6 --single-version"
+      ) do |_status, _output, err|
+        File.exist?(File.join(__dir__, "fixtures", ".rbnext", "a.rb")).should equal true
+
+        require "date"
+        today = Date.today
+
+        contents = File.read(File.join(__dir__, "fixtures", ".rbnext", "a.rb"))
+        contents.should include("# NOTE (#{today}):")
+
+        run_ruby(
+          File.join(__dir__, "fixtures", ".rbnext", "a.rb")
+        ) do |_status, output, _err|
+          output.should include("Sum: 3")
+        end
+      end
+    end
+  end
 end

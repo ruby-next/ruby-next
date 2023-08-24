@@ -2,7 +2,7 @@
 
 ## master
 
-- Add text rewriters. ([@palkan][])
+- Add text rewriters and `--import-rewriter` option to `nextify`. ([@palkan][])
 
 - Use `.rbnextrc` arguments for runtime transpiling and auto-transpiling gems. ([@palkan][])
 

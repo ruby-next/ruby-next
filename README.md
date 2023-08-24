@@ -230,6 +230,7 @@ Usage: ruby-next nextify DIRECTORY_OR_FILE [options]
         --[no-]refine                Do not inject `using RubyNext`
         --list-rewriters             List available rewriters
         --rewrite=REWRITERS...       Specify particular Ruby features to rewrite
+        --import-rewriter=PATHS...   Specify the paths to custom rewriters to load
     -h, --help                       Print help
     -V                               Turn on verbose mode
         --dry-run                    Print verbose output without generating files
@@ -561,7 +562,7 @@ It's too early, Ruby 3.1 has just been released. See its features in the [suppor
 
 ## Custom syntax rewriters
 
-Wonder what would happen if Ruby get a null coallescing operator (`??=`) or some other syntactic feature you want to try out? Ruby Next is here to help you!
+Wonder what would happen if Ruby get a null coalescing operator (`??=`) or some other syntactic feature you want to try out? Ruby Next is here to help you!
 
 Ruby Next allows you to write your own syntax rewriters. Full-featured rewriters (used by Ruby Next itself) operate on AST and usually require parser modifications. However, we also support text-based rewriters which can be used to experiment with new syntax much quicker without dealing with grammars, parsers and syntax trees.
 
@@ -569,6 +570,12 @@ To implement a text-based rewriter, you need to create a new class inherited fro
 
 ```ruby
 class MethodReferenceRewriter < RubyNext::Language::Rewriters::Text
+  # Rewriter configuration includes its name, a syntax probe and a minimum supported Ruby version.
+  # The latter two are used to determine whether the rewriter should be activated for the current file in runtime or when running `ruby-next nextify`.
+  NAME = "method-reference"
+  SYNTAX_PROBE = "Language.:transform"
+  MIN_SUPPORTED_VERSION = Gem::Version.new(RubyNext::NEXT_VERSION)
+
   def safe_rewrite(source)
     source.gsub(/\.:([\w_]+)/) do |match|
       context.track! self
@@ -587,6 +594,8 @@ The `context` object is responsible for tracking if the rewriter was used for th
 The `#safe_rewrite` method operates on the normalized source code (i.e., without comments and string literals). It's useful when you want to avoid transpiling inside strings or comments. If you want to transpile the original contents, you can use the `#rewrite` method instead.
 
 Under the hood, `#safe_rewrite` uses [Paco][] to parse the source and separate string literals from the rest of the code. You can also leverage [Paco][] in your text rewriters, if you want more control on the parsing process.
+
+When using the `ruby-next nextify` command, you can load custom rewriters via the `--import-rewriter` option.
 
 ## Known limitations
 
