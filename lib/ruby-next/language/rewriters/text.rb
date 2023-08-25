@@ -6,6 +6,8 @@ module RubyNext
   module Language
     module Rewriters
       class Text < Abstract
+        using RubyNext
+
         class Parser
           include Paco
 
@@ -37,16 +39,23 @@ module RubyNext
           end
 
           def ruby_comment
-            PacoParsers::Comments.new.default.fmap do |result|
+            parse_comments.fmap do |result|
               store << result
               "# A#{store.size}Я\n"
             end
           end
 
           def ruby_string
-            PacoParsers::StringLiterals.new.default.fmap do |result|
-              store << result
-              "%|A#{store.size}Я|"
+            parse_strings.fmap do |result|
+              result.each_with_object([]) do |(type, str), acc|
+                if type == :literal
+                  store << str
+                  acc << "_A#{store.size}Я_"
+                else
+                  acc << str
+                end
+                acc
+              end.join
             end
           end
 
@@ -55,9 +64,17 @@ module RubyNext
           end
 
           def restore(source)
-            source.gsub(/(?:\# |%\|)A(\d+)Я(?:\||\n)/m) do |*args|
+            source.gsub(/(?:\# |_)A(\d+)Я(?:_|\n)/m) do |*args|
               store[$1.to_i - 1]
             end
+          end
+
+          def parse_comments
+            memoize { PacoParsers::Comments.new.default }
+          end
+
+          def parse_strings
+            memoize { PacoParsers::StringLiterals.new.default }
           end
         end
 
