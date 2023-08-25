@@ -50,4 +50,24 @@ describe "Text rewriters" do
       a = "Hello, LANG := RUBY"
     RUBY
   end
+
+  it "supports interpolation" do
+    new_source = @rewriter.rewrite(<<~'RUBY')
+      a := "Hello, LANG := #{ x := %Q{RUBY := #{ a := 2 }} }"
+    RUBY
+
+    new_source.should == <<~'RUBY'
+      a = "Hello, LANG := #{ x = %Q{RUBY := #{ a = 2 }} }"
+    RUBY
+  end
+
+  it "does not interpolate non-interpolatable strings" do
+    new_source = @rewriter.rewrite(<<~'RUBY')
+      a := 'Hello, LANG := #{ x := "RUBY" }'
+    RUBY
+
+    new_source.should == <<~'RUBY'
+      a = 'Hello, LANG := #{ x := "RUBY" }'
+    RUBY
+  end
 end
