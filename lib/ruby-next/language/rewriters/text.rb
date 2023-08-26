@@ -8,9 +8,7 @@ module RubyNext
       class Text < Abstract
         using RubyNext
 
-        class Parser
-          include Paco
-
+        class Normalizer < PacoParsers::Base
           attr_reader :store
 
           def initialize
@@ -78,19 +76,55 @@ module RubyNext
           end
         end
 
-        def self.text?
-          true
+        # Base class for rewriting parsers which adds the #track! method
+        class PacoParser < PacoParsers::Base
+          attr_reader :rewriter, :context
+
+          def initialize(rewriter, context)
+            @rewriter = rewriter
+            @context = context
+          end
+
+          def track!
+            context.track!(rewriter)
+          end
+        end
+
+        class << self
+          def parser(&block)
+            @paco_parser = Class.new(PacoParser, &block)
+          end
+
+          def paco_parser
+            return @paco_parser if @paco_parser
+
+            superclass.paco_parser if superclass.respond_to?(:paco_parser)
+          end
+
+          def text?
+            true
+          end
         end
 
         # Rewrite source code by ignoring string literals and comments
         def rewrite(source)
-          Parser.new.normalizing(source) do |normalized|
+          Normalizer.new.normalizing(source) do |normalized|
             safe_rewrite(normalized)
           end
         end
 
         def safe_rewrite(source)
           source
+        end
+
+        private
+
+        def parse(source)
+          parser_class = self.class.paco_parser
+          raise "No parser defined for #{self.class}" unless parser_class
+
+          paco_parser = self.class.paco_parser.new(self, context)
+          paco_parser.parse(source)
         end
       end
     end
