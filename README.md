@@ -593,7 +593,42 @@ The `context` object is responsible for tracking if the rewriter was used for th
 
 The `#safe_rewrite` method operates on the normalized source code (i.e., without comments and string literals). It's useful when you want to avoid transpiling inside strings or comments. If you want to transpile the original contents, you can use the `#rewrite` method instead.
 
-Under the hood, `#safe_rewrite` uses [Paco][] to parse the source and separate string literals from the rest of the code. You can also leverage [Paco][] in your text rewriters, if you want more control on the parsing process.
+Under the hood, `#safe_rewrite` uses [Paco][] to parse the source and separate string literals from the rest of the code. You can also leverage [Paco][] in your text rewriters, if you want more control on the parsing process. For better experience, we provide a DSL to define a custom parser and the `#parse` method to use it. Here is an example of implementing the `.:` operator using a Paco parser:
+
+```ruby
+class MethodReferenceRewriter < RubyNext::Language::Rewriters::Text
+  NAME = "method-reference"
+  SYNTAX_PROBE = "Language.:transform"
+
+  parser do
+    def default
+      many(
+        alt(
+          method_ref,
+          any_char
+        )
+      )
+    end
+
+    def method_ref
+      seq(
+        string(".:").result(""),
+        method_name
+      # IMPORTANT: Use `#track!` method to mark the file as dirty
+      ).fmap { track! }.fmap { ".method(:#{_1})" }
+    end
+
+    def method_name = regexp(/[\w_]+/)
+  end
+
+  def safe_rewrite(source)
+    parse(source).join
+  end
+end
+
+# Add the rewriter to the list of rewriters
+RubyNext::Language.rewriters << MethodReferenceRewriter
+```
 
 When using the `ruby-next nextify` command, you can load custom rewriters via the `--import-rewriter` option.
 

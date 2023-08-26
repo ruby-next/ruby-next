@@ -25,6 +25,22 @@ module RubyNext
             (index.column > 1) ? failed("1 column") : string(str)
           end
         end
+
+        def balanced(l, r, inner)
+          left = string(l)
+          right = string(r)
+
+          many(
+            alt(
+              seq(
+                left,
+                lazy { balanced(l, r, inner) },
+                right
+              ),
+              not_followed_by(right).bind { inner }
+            )
+          )
+        end
       end
     end
   end

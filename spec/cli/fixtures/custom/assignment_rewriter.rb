@@ -1,15 +1,23 @@
 # frozen_string_literal: true
 
 class AssignmentRewriter < RubyNext::Language::Rewriters::Text
-  NAME = "assignment-operator"
-  MIN_SUPPORTED_VERSION = Gem::Version.new(RubyNext::NEXT_VERSION)
+  parser do
+    def default
+      many(
+        alt(
+          c_assignment,
+          any_char
+        )
+      )
+    end
+
+    def c_assignment
+      string(":=").fmap { track! }.fmap { "=" }
+    end
+  end
 
   def safe_rewrite(source)
-    source.gsub(":=") do |match|
-      context.track! self
-
-      "="
-    end
+    parse(source).join
   end
 end
 

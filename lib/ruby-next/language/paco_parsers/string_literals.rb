@@ -66,7 +66,7 @@ module RubyNext
                   seq(string("\\"), right).fmap { [:literal, _1] },
                   interpolate ? seq(
                     string('#{'),
-                    lazy { alt(balanced("{", "}"), many(none_of("}"))) },
+                    lazy { alt(balanced("{", "}", alt(all_strings, any_char)), many(none_of("}"))) },
                     string("}")
                   ) : nil,
                   not_followed_by(right).bind { any_char }.fmap { [:literal, _1] }
@@ -78,22 +78,6 @@ module RubyNext
         end
 
         private
-
-        def balanced(l, r)
-          left = string(l)
-          right = string(r)
-
-          many(
-            alt(
-              seq(
-                left,
-                lazy { balanced(l, r) },
-                right
-              ),
-              not_followed_by(right).bind { alt(all_strings, any_char) }
-            )
-          )
-        end
 
         def reduce_tokens(tokens)
           state = :literal

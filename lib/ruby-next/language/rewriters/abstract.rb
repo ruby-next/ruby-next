@@ -5,8 +5,8 @@ module RubyNext
     module Rewriters
       class Abstract < ::Parser::TreeRewriter
         NAME = "custom-rewriter"
-        SYNTAX_PROBE = "1"
-        MIN_SUPPORTED_VERSION = Gem::Version.new("2.2.0")
+        SYNTAX_PROBE = "1 = [}"
+        MIN_SUPPORTED_VERSION = Gem::Version.new(RubyNext::NEXT_VERSION)
 
         class << self
           # Returns true if the syntax is not supported

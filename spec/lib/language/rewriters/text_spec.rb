@@ -8,13 +8,30 @@ module RewritersSpecs
       source.gsub(":=", "=")
     end
   end
+
+  class PacoRewriter < RubyNext::Language::Rewriters::Text
+    parser do
+      def default
+        many(
+          alt(
+            c_assignment,
+            any_char
+          )
+        )
+      end
+
+      def c_assignment
+        string(":=").fmap { track! }.fmap { "=" }
+      end
+    end
+
+    def safe_rewrite(source)
+      parse(source).join
+    end
+  end
 end
 
-describe "Text rewriters" do
-  before(:each) do
-    @rewriter = RewritersSpecs::TextRewriter.new(RubyNext::Language::TransformContext.new)
-  end
-
+describe :text_rewriter, shared: true do
   it "rewrites code" do
     new_source = @rewriter.rewrite(<<~RUBY)
       a := "Hello, 世界"
@@ -70,4 +87,20 @@ describe "Text rewriters" do
       a = 'Hello, LANG := #{ x := "RUBY" }'
     RUBY
   end
+end
+
+describe "text rewriter" do
+  before(:each) do
+    @rewriter = RewritersSpecs::TextRewriter.new(RubyNext::Language::TransformContext.new)
+  end
+
+  it_behaves_like :text_rewriter, :rewrite
+end
+
+describe "paco rewriter" do
+  before(:each) do
+    @rewriter = RewritersSpecs::PacoRewriter.new(RubyNext::Language::TransformContext.new)
+  end
+
+  it_behaves_like :text_rewriter, :rewrite
 end
