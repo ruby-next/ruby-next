@@ -36,8 +36,10 @@ module Kernel
     run_command("#{RUBY_RUNNER} #{File.join(__dir__, "../../bin/ruby-next")} #{command}", **options, &block)
   end
 
-  def run_irb(flags = nil, input: [], **options, &block)
+  def run_irb(flags = nil, input: [], env: {}, **options, &block)
     input << "exit"
-    run_command("bundle exec irb --noecho -rbundler/setup -I#{File.expand_path(File.join(__dir__, "../../lib"))} #{flags}", input: input, **options, &block)
+    # Override HOME to make sure we're not loading default ~/.irbrc
+    env["HOME"] = File.join(__dir__)
+    run_command("bundle exec irb --noecho -rbundler/setup -I#{File.expand_path(File.join(__dir__, "../../lib"))} #{flags}", input: input, env: env, **options, &block)
   end
 end
