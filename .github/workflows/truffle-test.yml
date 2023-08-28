@@ -56,12 +56,35 @@ jobs:
       with:
         name: ruby-next-transpiled
         path: lib/.rbnext
-    - name: Download MSpec
-      run: |
-        git clone https://github.com/ruby/mspec.git mspec
     - name: Run MSpec Core
       run: |
         bundle exec bin/mspec :core
+
+  truffle-test-language:
+    needs: transpile
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    env:
+      CORE_EXT: gem
+      RUBY_NEXT_CORE_STRATEGY: core_ext
+      BUNDLE_JOBS: 4
+      BUNDLE_RETRY: 3
+      BUNDLE_PATH: /home/runner/bundle
+      TRUFFLERUBYOPT: "--engine.Mode=latency"
+      CI: true
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: truffleruby-head
+        bundler-cache: true
+    - name: Restore transpiled files
+      uses: actions/download-artifact@v1
+      with:
+        name: ruby-next-transpiled
+        path: lib/.rbnext
     - name: Run MSpec Language
       run: |
         ruby -e '
