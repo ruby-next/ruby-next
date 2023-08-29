@@ -38,18 +38,15 @@ jobs:
     strategy:
       fail-fast: false
     env:
-      CORE_EXT: gem
-      RUBY_NEXT_CORE_STRATEGY: core_ext
       BUNDLE_JOBS: 4
       BUNDLE_RETRY: 3
       BUNDLE_PATH: /home/runner/bundle
-      TRUFFLERUBYOPT: "--engine.Mode=latency"
       CI: true
     steps:
     - uses: actions/checkout@v2
     - uses: ruby/setup-ruby@v1
       with:
-        ruby-version: truffleruby-head
+        ruby-version: truffleruby
         bundler-cache: true
     - name: Restore transpiled files
       uses: actions/download-artifact@v1
@@ -62,23 +59,20 @@ jobs:
 
   truffle-test-language:
     needs: transpile
-    timeout-minutes: 20
+    timeout-minutes: 30
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
     env:
-      CORE_EXT: gem
-      RUBY_NEXT_CORE_STRATEGY: core_ext
       BUNDLE_JOBS: 4
       BUNDLE_RETRY: 3
       BUNDLE_PATH: /home/runner/bundle
-      TRUFFLERUBYOPT: "--engine.Mode=latency"
       CI: true
     steps:
     - uses: actions/checkout@v2
     - uses: ruby/setup-ruby@v1
       with:
-        ruby-version: truffleruby-head
+        ruby-version: truffleruby
         bundler-cache: true
     - name: Restore transpiled files
       uses: actions/download-artifact@v1
@@ -87,11 +81,7 @@ jobs:
         path: lib/.rbnext
     - name: Run MSpec Language
       run: |
-        ruby -e '
-          Dir.glob("spec/language/**/*_spec.rb").all? do |file|
-            system("bundle", "exec", "bin/mspec", file)
-          end || raise("Failures")
-        '
+        bundle exec bin/mspec :language
 
   truffle-test-integration:
     needs: transpile
@@ -100,18 +90,15 @@ jobs:
     strategy:
       fail-fast: false
     env:
-      CORE_EXT: gem
-      RUBY_NEXT_CORE_STRATEGY: core_ext
       BUNDLE_JOBS: 4
       BUNDLE_RETRY: 3
       BUNDLE_PATH: /home/runner/bundle
-      TRUFFLERUBYOPT: "--engine.Mode=latency"
       CI: true
     steps:
     - uses: actions/checkout@v2
     - uses: ruby/setup-ruby@v1
       with:
-        ruby-version: truffleruby-head
+        ruby-version: truffleruby
         bundler-cache: true
     - name: Restore transpiled files
       uses: actions/download-artifact@v1
@@ -120,8 +107,4 @@ jobs:
         path: lib/.rbnext
     - name: Run MSpec integration
       run: |
-        ruby -e '
-          Dir.glob("spec/integration/**/*_spec.rb").all? do |file|
-            system("bundle", "exec", "bin/mspec", file)
-          end || raise("Failures")
-        '
+        bundle exec bin/mspec :integration
