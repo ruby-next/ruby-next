@@ -87,9 +87,9 @@ Core provides **polyfills** for Ruby core classes APIs via Refinements (default 
 Language is responsible for **transpiling** edge Ruby syntax into older versions. It could be done
 programmatically or via CLI. It also could be done in runtime.
 
-Currently, Ruby Next supports Ruby versions 2.3+, including JRuby 9.2.8+ and TruffleRuby 20.1+ (with some limitations). Support for older versions (<2.5) slightly differs though ([see below](#using-with-eol-rubies)). Version between 2.0 and 2.3 may work but we no longer test against them.
+Currently, Ruby Next supports Ruby versions 2.3+, including JRuby 9.2.8+ and TruffleRuby 20.1+ (with some limitations). Support for older versions (<2.5) slightly differs though ([see below](#using-with-eol-rubies)). Versions between 2.0 and 2.3 may work but we no longer test against them.
 
-Please, [open an issue](https://github.com/ruby-next/ruby-next/issues/new/choose) or join the discussion in the existing ones if you would like us to support older Ruby versions.
+Please [open an issue](https://github.com/ruby-next/ruby-next/issues/new/choose) or join the discussion in the existing issues if you would like us to support older Ruby versions.
 
 ## Quick start
 
@@ -127,9 +127,9 @@ gem "ruby-next-core"
 spec.add_dependency "ruby-next-core"
 ```
 
-**NOTE:** we use the different _distribution_ gem, `ruby-next-core`, to provide zero-dependency, polyfills-only version.
+**NOTE:** we use a different gem for _distribution_, `ruby-next-core`, to provide a zero-dependency, polyfills-only version.
 
-Then, all you need is to load the Ruby Next:
+Then, all you need is to load Ruby Next:
 
 ```ruby
 require "ruby-next"
@@ -141,9 +141,9 @@ And activate the refinement in every file where you want to use it\*:
 using RubyNext
 ```
 
-Ruby Next only refines core classes if necessary; thus, this line wouldn't have any effect in the edge Ruby.
+Ruby Next only refines core classes if necessary; thus, this line wouldn't have any effect in edge Ruby.
 
-**NOTE:** Even if the runtime already contains a monkey-patch with the backported functionality, we consider the method as _dirty_ and activate the refinement for it. Thus, you always have predictable behaviour. That's why we recommend using refinements for gems development.
+**NOTE:** Even if the runtime already contains a monkey-patch with the backported functionality, we consider the method as _dirty_ and activate the refinement for it. Thus, you always have predictable behaviour. That's why we recommend using refinements for gem development.
 
 Alternatively, you can go with monkey-patches. Just add this line:
 
@@ -153,7 +153,7 @@ require "ruby-next/core_ext"
 
 The following _rule of thumb_ is recommended when choosing between refinements and monkey-patches:
 
-- Use refinements for libraries development (to avoid conflicts with others code)
+- Use refinements for library development (to avoid conflicts with others' code)
 - Using core extensions could be considered for application development (no need to think about `using RubyNext`); this approach could potentially lead to conflicts with dependencies (if these dependencies are not using refinements 🙂)
 - Use core extensions if refinements are not supported by your platform
 
@@ -190,13 +190,13 @@ gem install ruby-next
 
 Ruby Next currently provides two different modes of generating transpiled code: _AST_ and _rewrite_.
 
-In the AST mode, we parse the source code into AST, modifies this AST and **generate a new code from AST** (using [unparser][unparser]). Thus, the transpiled code being identical in terms of functionality has different formatting.
+In the AST mode, we parse the source code into an AST, modify this AST and **generate new code from the AST** (using [unparser][unparser]). Thus, the transpiled code is identical in terms of functionality but has different formatting.
 
 In the rewrite mode, we apply changes to the source code itself, thus, keeping the original formatting of the unaffected code (in a similar way to RuboCop's autocorrect feature).
 
 The main benefit of the rewrite mode is that it preserves the original code line numbers and layout, which is especially useful in debugging.
 
-By default, we use the rewrite mode. If you found a bug with rewrite mode which is not reproducible in the AST mode, please, let us know.
+By default, we use the rewrite mode. If you find a bug in the rewrite mode which is not reproducible in the AST mode, please let us know.
 
 You can change the transpiler mode:
 
