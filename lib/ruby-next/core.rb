@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "set"
+require "set" # rubocop:disable Lint/RedundantRequireStatement
 
 require "ruby-next/config"
 require "ruby-next/utils"

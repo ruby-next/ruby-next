@@ -3,7 +3,7 @@
 gem "ruby-next-parser", ">= 2.8.0.3"
 gem "unparser", ">= 0.4.7"
 
-require "set"
+require "set" # rubocop:disable Lint/RedundantRequireStatement
 
 require "ruby-next"
 
