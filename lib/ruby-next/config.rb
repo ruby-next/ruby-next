@@ -32,6 +32,15 @@ module RubyNext
       end
     end
 
+    # Returns true if we want to use edge syntax
+    def edge_syntax?
+      %w[y true 1].include?(ENV["RUBY_NEXT_EDGE"])
+    end
+
+    def proposed_syntax?
+      %w[y true 1].include?(ENV["RUBY_NEXT_PROPOSED"])
+    end
+
     def next_ruby_version(version = current_ruby_version)
       return if version == Gem::Version.new(NEXT_VERSION)
 

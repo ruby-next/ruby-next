@@ -14,6 +14,8 @@ jobs:
       BUNDLE_RETRY: 3
       CI: true
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
+      # Use Next parser to ignore _1 is reserved errors when transpiling
+      RUBY_NEXT_EDGE: true
     steps:
     - uses: actions/checkout@v2
     - uses: ruby/setup-ruby@v1
@@ -64,4 +66,8 @@ jobs:
     - name: Run language specs with AST mode
       env:
         RUBY_NEXT_TRANSPILE_MODE: "ast"
+      run: bundle exec bin/mspec :language
+    - name: Run language specs using a default parser
+      env:
+        STABLE_RUBY: "true"
       run: bundle exec bin/mspec :language

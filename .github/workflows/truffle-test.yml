@@ -13,6 +13,8 @@ jobs:
     env:
       BUNDLE_JOBS: 4
       BUNDLE_RETRY: 3
+      # Use Next parser to ignore _1 is reserved errors when transpiling
+      RUBY_NEXT_EDGE: true
       CI: true
     steps:
     - uses: actions/checkout@v2

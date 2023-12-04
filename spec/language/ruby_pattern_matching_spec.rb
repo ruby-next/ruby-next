@@ -207,26 +207,6 @@ class TestPatternMatching < Test::Unit::TestCase
       in a | 0
       end
     }, /illegal variable in alternative pattern/)
-
-
-    assert_syntax_error(%q{
-      case 0
-      in @a | 0
-      end
-    }, /illegal variable in alternative pattern/)
-
-    # WONTFIX(cvar)
-    # assert_syntax_error(%q{
-    #   case 0
-    #   in @@a | 0
-    #   end
-    # }, /illegal variable in alternative pattern/)
-
-    assert_syntax_error(%q{
-      case 0
-      in $a | 0
-      end
-    }, /illegal variable in alternative pattern/)
   end
 
   def test_var_pattern
@@ -254,34 +234,6 @@ class TestPatternMatching < Test::Unit::TestCase
     else
       flunk
     end
-
-    # NODE_IASGN
-    case 0
-    in @a
-      assert_equal(0, @a)
-    else
-      flunk
-    end
-
-    # NODE_GASGN
-    case 0
-    in $a
-      assert_equal(0, $a)
-    else
-      flunk
-    end
-
-    # NODE_CVASGN
-    # WONTFIX(cvar)
-    # assert_block do
-    #   @@a = -1
-    #   case 0
-    #   in Integer => @@a
-    #     assert_equal(0, @@a)
-    #   else
-    #     flunk
-    #   end
-    # end
 
     assert_syntax_error(%q{
       case 0
@@ -465,31 +417,6 @@ END
       case [0, 0]
       in a, ^a
         a == 0
-      end
-    end
-
-    assert_block do
-      @a = /a/
-      case 'abc'
-      in ^@a
-        true
-      end
-    end
-
-    # WONTFIX: fails in 3.0 with class variable access from toplevel
-    # assert_block do
-    #   @@TestPatternMatching = /a/
-    #   case 'abc'
-    #   in ^@@TestPatternMatching
-    #     true
-    #   end
-    # end
-
-    assert_block do
-      $TestPatternMatching = /a/
-      case 'abc'
-      in ^$TestPatternMatching
-        true
       end
     end
   end
@@ -847,13 +774,6 @@ END
       case [0, 1]
       in [0, *, 1]
         true
-      end
-    end
-
-    assert_block do
-      case [0]
-      in Array[0, *@a]
-        @a == []
       end
     end
   end
@@ -1466,17 +1386,6 @@ END
 
     {a: 1} => a:
     assert_equal 1, a
-
-    42 => @a
-    assert_equal 42, @a
-
-    [1, 2, 3] => [*$foo, 2, *$bar]
-    assert_equal [1], $foo
-    assert_equal [3], $bar
-
-    {a: 1, b: 2, c: 3} => {a: $a, b: 2, **$b}
-    assert_equal 1, $a
-    assert_equal({c: 3}, $b)
 
     assert_equal true, (1 in 1)
     assert_equal false, (1 in 2)

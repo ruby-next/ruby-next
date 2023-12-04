@@ -255,11 +255,11 @@ module RubyNext
     require "ruby-next/language/rewriters/2.6/endless_range"
     rewriters << Rewriters::EndlessRange
 
-    if ENV["RUBY_NEXT_EDGE"] == "1"
+    if RubyNext.edge_syntax?
       require "ruby-next/language/rewriters/edge"
     end
 
-    if ENV["RUBY_NEXT_PROPOSED"] == "1"
+    if RubyNext.proposed_syntax?
       require "ruby-next/language/rewriters/proposed"
     end
   end
