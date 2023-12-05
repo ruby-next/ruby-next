@@ -8,13 +8,14 @@ on:
   workflow_dispatch:
 
 jobs:
-  ruby-edge-test:
+  prism-test:
     runs-on: ubuntu-latest
     env:
       BUNDLE_JOBS: 4
       BUNDLE_RETRY: 3
       CI: true
       PRISM: true
+      STABLE_RUBY: true
     steps:
     - uses: actions/checkout@v2
     - uses: ruby/setup-ruby@v1
@@ -22,6 +23,6 @@ jobs:
         ruby-version: 3.2
         bundler-cache: true
     - name: Run MSpec
-      continue-on-failure: true
+      continue-on-error: true
       run: |
         bundle exec bin/mspec

@@ -60,3 +60,4 @@ RequireHooks.print_warnings = true
 $stdout.puts "Module refinements support: #{RubyNext::Utils.refine_modules?}"
 $stdout.puts "Ruby Next core strategy: #{RubyNext::Core.strategy}"
 $stdout.puts "Ruby Next transpile mode: #{RubyNext::Language.mode}"
+$stdout.puts "Parser class: #{RubyNext::Language.parser_class}"
