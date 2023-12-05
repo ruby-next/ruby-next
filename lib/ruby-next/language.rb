@@ -199,7 +199,6 @@ module RubyNext
     end
 
     self.rewriters = []
-    self.text_rewriters = []
     self.watch_dirs = [].tap do |dirs|
       # For backward compatibility
       dirs.define_singleton_method(:<<) do |dir|
