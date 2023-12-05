@@ -10,10 +10,45 @@ module RubyNext
     class Nextify < Base
       using RubyNext
 
+      class Stats
+        def initialize
+          @started_at = ::Process.clock_gettime(Process::CLOCK_MONOTONIC)
+          @files = 0
+          @scans = 0
+          @transpiled_files = 0
+        end
+
+        def file!
+          @files += 1
+        end
+
+        def scan!
+          @scans += 1
+        end
+
+        def transpiled!
+          @transpiled_files += 1
+        end
+
+        def report
+          <<~TXT
+
+            Files processed: #{@files}
+            Total scans: #{@scans}
+            Files transpiled: #{@transpiled_files}
+
+            Completed in #{::Process.clock_gettime(Process::CLOCK_MONOTONIC) - @started_at}s
+          TXT
+        end
+      end
+
       attr_reader :lib_path, :paths, :out_path, :min_version, :single_version, :specified_rewriters, :overwrite
       alias_method :overwrite?, :overwrite
+      attr_reader :stats
 
       def run
+        @stats = Stats.new
+
         log "RubyNext core strategy: #{RubyNext::Core.strategy}"
         log "RubyNext transpile mode: #{RubyNext::Language.mode}"
 
@@ -22,11 +57,15 @@ module RubyNext
         @min_version ||= MIN_SUPPORTED_VERSION
 
         paths.each do |path|
+          stats.file!
+
           contents = File.read(path)
           transpile path, contents
         end
 
         ensure_rbnext!
+
+        log stats.report
       end
 
       def parse!(args)
@@ -155,6 +194,8 @@ module RubyNext
       private
 
       def transpile(path, contents, version: min_version)
+        stats.scan!
+
         rewriters = specified_rewriters || Language.rewriters.select { |rw| rw.unsupported_version?(version) }
 
         context = Language::TransformContext.new
@@ -180,6 +221,8 @@ module RubyNext
       end
 
       def save(contents, path, version)
+        stats.transpiled!
+
         return $stdout.puts(contents) if stdout?
 
         paths = [Pathname.new(path).relative_path_from(Pathname.new(lib_path))]
