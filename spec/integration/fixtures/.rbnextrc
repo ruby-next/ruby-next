@@ -1,2 +1,3 @@
 nextify: |
   --transpile-mode=rewrite
+  --proposed

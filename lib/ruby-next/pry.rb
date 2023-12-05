@@ -64,7 +64,7 @@ end)
 Pry::Code.singleton_class.prepend(Module.new do
   def complete_expression?(str)
     silence_stderr do
-      ::Parser::RubyNext.parse(str)
+      ::RubyNext::Language.parser_class.parse(str)
     end
 
     true

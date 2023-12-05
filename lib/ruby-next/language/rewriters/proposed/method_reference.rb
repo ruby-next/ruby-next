@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require "parser/rubynext"
+RubyNext::Language.parser_class = ::Parser::RubyNext
+
 module RubyNext
   module Language
     module Rewriters

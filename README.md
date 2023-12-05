@@ -14,7 +14,7 @@ Who might be interested in Ruby Next?
 
 - **Ruby gems maintainers** who want to write code using the latest Ruby version but still support older ones.
 - **Application developers** who want to give new features a try without waiting for the final release (or, more often, for the first patch).
-- **Users of non-MRI implementations** such as [mruby][], [JRuby][], [TruffleRuby][], [Opal][], [RubyMotion][], [Artichoke][], [Prism][].
+- **Users of non-MRI implementations** such as [mruby][], [JRuby][], [TruffleRuby][], [Natalie][], [Opal][], [RubyMotion][], [Artichoke][], [Prism][].
 
 Ruby Next also aims to help the community to assess new, _experimental_, MRI features by making it easier to play with them.
 That's why Ruby Next implements the `master` features as fast as possible.
@@ -203,6 +203,7 @@ You can change the transpiler mode:
 - From code by setting `RubyNext::Language.mode = :ast` or `RubyNext::Language.mode = :rewrite`.
 - Via environmental variable `RUBY_NEXT_TRANSPILE_MODE=ast`.
 - Via CLI option ([see below](#cli)).
+- Via the `.rbnextrc` configuration file ([see blow](#cli-configuration-file)).
 
 ## CLI
 
@@ -303,6 +304,8 @@ nextify: |
   --transpiler-mode=rewrite
   --edge
 ```
+
+**NOTE:** The `nextify` section is also used by auto-transpiling when installing the gem from source and by runtime transpiling.
 
 ## Integrating into a gem development
 
@@ -606,3 +609,4 @@ The gem is available as open source under the terms of the [MIT License](https:/
 [rubocop]: https://github.com/rubocop-hq/rubocop
 [backports]: https://github.com/marcandre/backports
 [require-hooks]: https://github.com/ruby-next/require-hooks
+[Natalie]: https://natalie-lang.org

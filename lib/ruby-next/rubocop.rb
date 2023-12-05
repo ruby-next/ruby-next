@@ -4,6 +4,7 @@
 # edge features and fix some bugs with 2.7+ syntax
 
 require "parser/ruby-next/version"
+require "ruby-next/config"
 require "ruby-next/language/parser"
 
 module RuboCop

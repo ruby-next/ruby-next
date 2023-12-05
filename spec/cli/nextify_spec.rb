@@ -64,7 +64,7 @@ describe "ruby-next nextify" do
 
   it "generates one version if --single-version is provided" do
     run_ruby_next(
-      "nextify #{File.join(__dir__, "dummy")} " \
+      "nextify #{File.join(__dir__, "dummy")} --proposed " \
       "--single-version"
     ) do |_status, _output, err|
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "transpile_me.rb")).should equal true
@@ -74,7 +74,7 @@ describe "ruby-next nextify" do
 
   it "generates .rbnext/custom folder with versions" do
     run_ruby_next(
-      "nextify #{File.join(__dir__, "dummy")} " \
+      "nextify #{File.join(__dir__, "dummy")} --proposed " \
       "--output=#{File.join(__dir__, "dummy", ".rbnext", "custom")}"
     ) do |_status, _output, err|
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "custom", "2.7", "transpile_me.rb")).should equal true
@@ -83,7 +83,7 @@ describe "ruby-next nextify" do
   end
 
   it "generates two version for mixed files (both 2.6 and 2.7 features)" do
-    run_ruby_next "nextify #{File.join(__dir__, "dummy")}" do |_status, _output, err|
+    run_ruby_next "nextify #{File.join(__dir__, "dummy")} --proposed" do |_status, _output, err|
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.7", "endless_pattern.rb")).should equal true
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "2.6", "endless_pattern.rb")).should equal true
     end
@@ -131,7 +131,7 @@ describe "ruby-next nextify" do
 
   it "generates one version if --rewrite is provided" do
     run_ruby_next(
-      "nextify #{File.join(__dir__, "dummy")} " \
+      "nextify #{File.join(__dir__, "dummy")} --proposed " \
       "--rewrite=endless-range --rewrite=pattern-matching"
     ) do |_status, _output, err|
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "match_pattern.rb")).should equal true
@@ -158,7 +158,7 @@ describe "ruby-next nextify" do
     run_ruby_next(
       "nextify #{File.join(__dir__, "dummy")} " \
       "--rewrite=endless-method --edge",
-      env: {"RUBY_NEXT_EDGE" => "0", "RUBY_NEXT_PROPOSED" => "0"}
+      env: {"RUBY_NEXT_EDGE" => "0", "RUBY_NEXT_PROPOSED" => "1"}
     ) do |_status, _output, err|
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "namespaced", "pattern_matching.rb")).should equal true
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "match_pattern.rb")).should equal false
@@ -231,7 +231,8 @@ describe "ruby-next nextify" do
     run_ruby_next(
       "nextify #{File.join(__dir__, "..", "integration", "fixtures", "method_reference.rb")} " \
       "-o #{File.join(__dir__, "dummy", ".rbnext", "method_reference_old.rb")}",
-      env: {"RUBY_NEXT_PROPOSED" => "0"}
+      env: {"RUBY_NEXT_PROPOSED" => "0"},
+      should_fail: true
     ) do |_status, _output, err|
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "method_reference_old.rb")).should equal false
     end
@@ -266,7 +267,7 @@ describe "ruby-next nextify" do
   # rubocop:enable  Lint/UnreachableCode
 
   it "--dry-run" do
-    run_ruby_next "nextify #{File.join(__dir__, "dummy")} --dry-run" do |_status, output, err|
+    run_ruby_next "nextify #{File.join(__dir__, "dummy")} --proposed --dry-run" do |_status, output, err|
       out_path = File.join(__dir__, "dummy", ".rbnext", "2.7", "transpile_me.rb")
       output.should include("[DRY RUN] Generated: #{out_path}")
       File.directory?(File.join(__dir__, "dummy", ".rbnext", "2.7")).should equal false
@@ -281,6 +282,7 @@ describe "ruby-next nextify" do
           nextify: |
             --min-version=2.6
             --transpile-mode=rewrite
+            --proposed
         YML
       )
 

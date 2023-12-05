@@ -56,10 +56,12 @@ module RubyNext
           end
 
           opts.on("--edge", "Enable edge (master) Ruby features") do |val|
+            ENV["RUBY_NEXT_EDGE"] = val.to_s
             require "ruby-next/language/rewriters/edge"
           end
 
           opts.on("--proposed", "Enable proposed/experimental Ruby features") do |val|
+            ENV["RUBY_NEXT_PROPOSED"] = val.to_s
             require "ruby-next/language/rewriters/proposed"
           end
 

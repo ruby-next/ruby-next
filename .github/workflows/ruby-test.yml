@@ -70,4 +70,4 @@ jobs:
     - name: Run language specs using a default parser
       env:
         STABLE_RUBY: "true"
-      run: bundle exec bin/mspec :language
+      run: bundle exec bin/mspec :language :integration :cli

@@ -2,6 +2,8 @@
 
 ## master
 
+- Use `.rbnextrc` arguments for runtime transpiling and auto-transpiling gems. ([@palkan][])
+
 - Stop testing Ruby <2.3. ([@palkan][])
 
 - Extract `require-hooks`. ([@palkan][])

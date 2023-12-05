@@ -32,9 +32,10 @@ describe "setup load path" do
 
   it "ignores transpiled files if runtime mode is enabled for lib" do
     run_ruby(
-      "-I#{File.join(__dir__, "fixtures", "lib")} " \
+      "-I. " \
       "-r txen_runtime " \
-      "-e 'puts [Txen.call(\"ace\", \"ace\"), Txen.call(\"ace\", \"4\", \"5\")].join(\";\")'"
+      "-e 'puts [Txen.call(\"ace\", \"ace\"), Txen.call(\"ace\", \"4\", \"5\")].join(\";\")'",
+      chdir: File.join(__dir__, "fixtures", "lib")
     ) do |_status, output, _err|
       output.should include("ok;ok")
     end

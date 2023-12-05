@@ -57,5 +57,21 @@ module RubyNext
 
       Gem::Version.new(nxt)
     end
+
+    # Load transpile settings from the RC file (nextify command flags)
+    def load_from_rc(path = ".rbnextrc")
+      return unless File.exist?(path)
+
+      require "yaml"
+
+      args = YAML.load_file(path)&.fetch("nextify", "").lines.flat_map { |line| line.chomp.split(/\s+/) }
+
+      ENV["RUBY_NEXT_EDGE"] ||= "true" if args.delete("--edge")
+      ENV["RUBY_NEXT_PROPOSED"] ||= "true" if args.delete("--proposed")
+      ENV["RUBY_NEXT_TRANSPILE_MODE"] ||= "rewrite" if args.delete("--transpile-mode=rewrite")
+      ENV["RUBY_NEXT_TRANSPILE_MODE"] ||= "ast" if args.delete("--transpile-mode=ast")
+    end
   end
+
+  load_from_rc
 end

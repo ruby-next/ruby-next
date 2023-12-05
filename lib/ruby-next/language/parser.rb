@@ -1,14 +1,9 @@
 # frozen_string_literal: true
 
-if RubyNext.edge_syntax? || RubyNext.proposed_syntax?
-  require "parser/rubynext"
-else
-  # First, try loading Prism
-  begin
-    require "parser/prism"
-  rescue LoadError
-    require "parser/ruby33"
-  end
+begin
+  require "parser/prism"
+rescue LoadError
+  require "parser/ruby33"
 end
 
 module RubyNext
@@ -34,19 +29,7 @@ module RubyNext
     end
 
     class << self
-      if defined?(::Parser::RubyNext)
-        def parser_class
-          ::Parser::RubyNext
-        end
-      elsif defined?(::Parser::Prism)
-        def parser_class
-          ::Parser::Prism
-        end
-      else
-        def parser_class
-          ::Parser::Ruby33
-        end
-      end
+      attr_accessor :parser_class
 
       def parser
         parser_class.new(Builder.new).tap do |prs|
@@ -74,6 +57,17 @@ module RubyNext
         parser.parse_with_comments(buffer)
       rescue ::Parser::SyntaxError => e
         raise ::SyntaxError, e.message
+      end
+    end
+
+    # Set up default parser
+    unless self.parser_class
+      if defined?(::Parser::RubyNext)
+        self.parser_class = ::Parser::RubyNext
+      elsif defined?(::Parser::Prism)
+        self.parser_class = ::Parser::Prism
+      else
+        self.parser_class = ::Parser::Ruby33
       end
     end
   end
