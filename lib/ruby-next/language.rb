@@ -185,7 +185,14 @@ module RubyNext
     end
 
     self.rewriters = []
-    self.watch_dirs = []
+    self.watch_dirs = [].tap do |dirs|
+      # For backward compatibility
+      dirs.define_singleton_method(:<<) do |dir|
+        super(dir)
+        RubyNext::Language.include_patterns << File.join(dir, "*.rb")
+      end
+    end
+
     self.include_patterns = %w[app lib spec test].map { |path| File.join(Dir.pwd, path, "*.rb") }
     self.exclude_patterns = %w[vendor/bundle].map { |path| File.join(Dir.pwd, path, "*") }
     self.mode = ENV.fetch("RUBY_NEXT_TRANSPILE_MODE", "rewrite").to_sym

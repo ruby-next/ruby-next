@@ -39,7 +39,7 @@ module RuboCop
       def parser_class(version)
         return super unless version == RUBY_NEXT_VERSION
 
-        require "parser/ruby-next"
+        require "parser/rubynext"
         Parser::RubyNext
       end
     end
