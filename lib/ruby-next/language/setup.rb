@@ -12,8 +12,8 @@ module RubyNext
         return if File.directory?(target_dir)
 
         Dir.chdir(root_dir) do
-          command = "bundle exec ruby-next nextify " +
-                    "./#{lib_dir} -o #{target_dir} --min-version=#{RubyNext.current_ruby_version}"
+          command = "bundle exec ruby-next nextify " \
+            "./#{lib_dir} -o #{target_dir} --min-version=#{RubyNext.current_ruby_version}"
 
           unless system("#{command} > /dev/null 2>&1")
             RubyNext.warn "Traspiled files are missing in: #{target_dir}. \n" \

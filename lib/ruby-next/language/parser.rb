@@ -66,13 +66,13 @@ module RubyNext
     end
 
     # Set up default parser
-    unless self.parser_class
-      if defined?(::Parser::RubyNext)
-        self.parser_class = ::Parser::RubyNext
+    unless parser_class
+      self.parser_class = if defined?(::Parser::RubyNext)
+        ::Parser::RubyNext
       elsif defined?(::Parser::Prism)
-        self.parser_class = ::Parser::Prism
+        ::Parser::Prism
       else
-        self.parser_class = ::Parser::Ruby33
+        ::Parser::Ruby33
       end
     end
   end

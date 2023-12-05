@@ -64,7 +64,7 @@ module RubyNext
 
       require "yaml"
 
-      args = YAML.load_file(path)&.fetch("nextify", "").lines.flat_map { |line| line.chomp.split(/\s+/) }
+      args = YAML.load_file(path)&.fetch("nextify", "")&.lines&.flat_map { |line| line.chomp.split(/\s+/) }
 
       ENV["RUBY_NEXT_EDGE"] ||= "true" if args.delete("--edge")
       ENV["RUBY_NEXT_PROPOSED"] ||= "true" if args.delete("--proposed")
