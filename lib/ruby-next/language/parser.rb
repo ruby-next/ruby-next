@@ -26,6 +26,11 @@ module RubyNext
       unless method_defined?(:match_pattern_p)
         include BuilderExt
       end
+
+      def check_reserved_for_numparam(name, loc)
+        # We don't want to raise SyntaxError, 'cause we want to use _x vars for older Rubies.
+        # The exception should be raised by Ruby itself for versions supporting numbered parameters
+      end
     end
 
     class << self
