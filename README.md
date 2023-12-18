@@ -127,7 +127,7 @@ First, install a gem:
 gem "ruby-next-core"
 
 # gemspec
-spec.add_dependency "ruby-next-core"
+spec.add_dependency "ruby-next-core", "~> 1.0"
 ```
 
 **NOTE:** we use a different gem for _distribution_, `ruby-next-core`, to provide a zero-dependency, polyfills-only version.
@@ -182,10 +182,10 @@ Installation:
 
 ```ruby
 # Gemfile
-gem "ruby-next"
+gem "ruby-next", "~> 1.0"
 
 # gemspec
-spec.add_dependency "ruby-next"
+spec.add_dependency "ruby-next", "~> 1.0"
 ```
 
 ```sh
@@ -222,7 +222,6 @@ Usage: ruby-next nextify DIRECTORY_OR_FILE [options]
         --overwrite                  Overwrites the original file with one version of --single-version (works only with --single-version or --rewrite)
         --edge                       Enable edge (master) Ruby features
         --proposed                   Enable proposed/experimental Ruby features
-        --transpile-mode=MODE        Transpiler mode (ast or rewrite). Default: ast
         --[no-]refine                Do not inject `using RubyNext`
         --list-rewriters             List available rewriters
         --rewrite=REWRITERS...       Specify particular Ruby features to rewrite
@@ -234,7 +233,7 @@ Usage: ruby-next nextify DIRECTORY_OR_FILE [options]
 
 The behaviour depends on whether you transpile a single file or a directory:
 
-- When transpiling a directory, the `.rbnext` subfolder is created within the target folder with subfolders for each supported Ruby versions (e.g., `.rbnext/2.6`, `.rbnext/2.7`, `.rbnext/3.0`, etc.). If you want to create only a single version (the smallest), you can also pass `--single-version` flag. In that case, no version directory is created (i.e., transpiled files go into `.rbnext`).
+- When transpiling a directory, the `.rbnext` subfolder is created within the target folder with subfolders for each supported Ruby versions (e.g., `.rbnext/2.7`, `.rbnext/3.1`, `.rbnext/3.4`, etc.). If you want to create only a single version (the smallest), you can also pass `--single-version` flag. In that case, no version directory is created (i.e., transpiled files go into `.rbnext`).
 
 - When transpiling a file and providing the output path as a _file_ path, only a single version is created. For example:
 
@@ -300,7 +299,7 @@ Configuration file is a YAML with commands as keys and options as multiline stri
 # ./.rbnextrc
 
 nextify: |
-  --transpiler-mode=rewrite
+  --min-version=2.7
   --edge
 ```
 

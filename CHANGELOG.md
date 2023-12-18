@@ -2,6 +2,8 @@
 
 ## master
 
+## 1.0.0 🎄
+
 - Add `it` block parameter support. ([@palkan][])
 
 - Deprecate AST transpiling mode. ([@palkan][])
@@ -20,7 +22,7 @@
 
 - Use `.rbnextrc` arguments for runtime transpiling and auto-transpiling gems. ([@palkan][])
 
-- Stop testing Ruby <2.3. ([@palkan][])
+- Stop testing Ruby <2.4. ([@palkan][])
 
 - Extract `require-hooks`. ([@palkan][])
 
