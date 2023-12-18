@@ -273,6 +273,9 @@ module RubyNext
     require "ruby-next/language/rewriters/3.1/shorthand_hash"
     rewriters << RubyNext::Language::Rewriters::ShorthandHash
 
+    require "ruby-next/language/rewriters/3.2/anonymous_restargs"
+    rewriters << RubyNext::Language::Rewriters::AnonymousRestArgs
+
     # Put endless range in the end, 'cause Parser fails to parse it in
     # pattern matching
     require "ruby-next/language/rewriters/2.6/endless_range"
