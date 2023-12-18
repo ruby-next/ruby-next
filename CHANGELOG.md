@@ -2,6 +2,8 @@
 
 ## master
 
+- Add `Data` backport. ([@palkan][], [@saturnflyer][])
+
 - Add `Time#deconstruct_keys` support. ([@palkan][])
 
 - Add anonymous rest and keyword rest arguments forwarding support (`def foo(*, **); bar(*, **) end`). ([@palkan][])
@@ -385,3 +387,4 @@ p a #=> 1
 [@sl4vr]: https://github.com/sl4vr
 [@skryukov]: https://github.com/skryukov
 [@prog-supdex]: https://github.com/prog-supdex
+[@saturnflyer]: https://github.com/saturnflyer

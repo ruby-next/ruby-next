@@ -60,6 +60,8 @@ The possible translation depends on the _end_ type which could hardly be inferre
 
 ### 3.2
 
+- `Data` class. ([#16122](https://bugs.ruby-lang.org/issues/16122))
+
 - `MatchData#{deconstruct,deconstruct_keys}` ([#18821](https://bugs.ruby-lang.org/issues/18821))
 
 - `Time#deconstruct_keys` ([#19071](https://bugs.ruby-lang.org/issues/19071))

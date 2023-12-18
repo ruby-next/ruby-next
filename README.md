@@ -163,6 +163,12 @@ The following _rule of thumb_ is recommended when choosing between refinements a
 
 [**The list of supported APIs.**][features_core]
 
+### Data backport
+
+Ruby 3.2 has introduced a new core class—[Data](https://bugs.ruby-lang.org/issues/16122). Ruby Next provides a backport functionality which is automatically activated when you `require "ruby-next"` **if and only if the constant is undefined**. If you want to use a custom backport, make sure you loaded it first.
+
+If you want to opt-out from loading Data backport, you must set the `RUBY_NEXT_DISABLE_DATA` env variable to `true`.
+
 ## Transpiling
 
 Ruby Next allows you to transpile\* edge Ruby syntax to older versions.
@@ -663,6 +669,10 @@ See [Parser's known issues](https://github.com/whitequark/parser#known-issues).
 Bug reports and pull requests are welcome on GitHub at [https://github.com/ruby-next/ruby-next](ttps://github.com/ruby-next/ruby-next).
 
 See also the [development guide](./DEVELOPMENT.md).
+
+## Acknowledgments
+
+- Thanks to [Jim Gay](https://github.com/saturnflyer) for the original Data polyfill implementation ([polyfill-data](https://github.com/saturnflyer/polyfill-data))
 
 ## License
 

@@ -215,3 +215,6 @@ RubyNext.module_eval do
     end
   end
 end
+
+# Load backports
+require "ruby-next/core/data" unless ENV["RUBY_NEXT_DISABLE_DATA"] == "true"
