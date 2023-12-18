@@ -2,6 +2,8 @@
 
 ## master
 
+- Add `Time#deconstruct_keys` support. ([@palkan][])
+
 - Add anonymous rest and keyword rest arguments forwarding support (`def foo(*, **); bar(*, **) end`). ([@palkan][])
 
 - Add `MatchData#{deconstruct,deconstruct_keys}` and `#named_captures(symbolize_names: true)` support. ([@palkan][])

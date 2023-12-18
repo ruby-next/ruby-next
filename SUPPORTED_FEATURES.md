@@ -62,6 +62,8 @@ The possible translation depends on the _end_ type which could hardly be inferre
 
 - `MatchData#{deconstruct,deconstruct_keys}` ([#18821](https://bugs.ruby-lang.org/issues/18821))
 
+- `Time#deconstruct_keys` ([#19071](https://bugs.ruby-lang.org/issues/19071))
+
 ### 3.1
 
 - `Array#intersect?` ([#15198](https://bugs.ruby-lang.org/issues/15198))

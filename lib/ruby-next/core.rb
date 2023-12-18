@@ -200,6 +200,7 @@ require "ruby-next/core/integer/try_convert"
 require "ruby-next/core/matchdata/deconstruct"
 require "ruby-next/core/matchdata/deconstruct_keys"
 require "ruby-next/core/matchdata/named_captures"
+require "ruby-next/core/time/deconstruct_keys"
 
 # Generate refinements
 RubyNext.module_eval do
