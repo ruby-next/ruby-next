@@ -553,7 +553,7 @@ require "ruby-next/language/runtime"
 
 ### Supported edge features
 
-It's too early, Ruby 3.1 has just been released. See its features in the [supported features list](./SUPPORTED_FEATURES.md).
+Ruby 3.4 features are coming soon, stay tuned!
 
 ### Supported proposed features
 
