@@ -44,6 +44,9 @@ jobs:
         core_ext: ["false", gem, generated]
         core_strategy: [refine]
         include:
+          - ruby: 2.7
+            core_ext: false
+            core_strategy: refine
           - ruby: 2.4
             core_ext: backports
             core_strategy: backports
