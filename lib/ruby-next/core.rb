@@ -197,6 +197,10 @@ require "ruby-next/core/matchdata/match"
 require "ruby-next/core/enumerable/compact"
 require "ruby-next/core/integer/try_convert"
 
+require "ruby-next/core/matchdata/deconstruct"
+require "ruby-next/core/matchdata/deconstruct_keys"
+require "ruby-next/core/matchdata/named_captures"
+
 # Generate refinements
 RubyNext.module_eval do
   RubyNext::Core.patches.refined.each do |mod, patches|

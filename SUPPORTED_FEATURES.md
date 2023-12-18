@@ -50,6 +50,14 @@ The possible translation depends on the _end_ type which could hardly be inferre
 
 ## Core APIs
 
+### 3.3
+
+- `MatchData#named_captures(symbolize_names: true)` ([#19591](https://bugs.ruby-lang.org/issues/19591))
+
+### 3.2
+
+- `MatchData#{deconstruct,deconstruct_keys}` ([#18821](https://bugs.ruby-lang.org/issues/18821))
+
 ### 3.1
 
 - `Array#intersect?` ([#15198](https://bugs.ruby-lang.org/issues/15198))

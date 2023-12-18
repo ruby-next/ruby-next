@@ -2,6 +2,8 @@
 
 ## master
 
+- Add `MatchData#{deconstruct,deconstruct_keys}` and `#named_captures(symbolize_names: true)` support. ([@palkan][])
+
 - Add stats to `nextify`. ([@palkan][])
 
 - Add text rewriters and `--import-rewriter` option to `nextify`. ([@palkan][])

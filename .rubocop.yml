@@ -61,3 +61,6 @@ Style/GlobalVars:
 
 Style/ArgumentsForwarding:
   Enabled: false
+
+Style/RedundantHeredocDelimiterQuotes:
+  Enabled: false

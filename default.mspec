@@ -55,7 +55,7 @@ else
   require "ruby-next/core/runtime"
 end
 
-RequireHooks.print_warnings = true
+RequireHooks.print_warnings = true if defined?(RequireHooks)
 
 $stdout.puts "Module refinements support: #{RubyNext::Utils.refine_modules?}"
 $stdout.puts "Ruby Next core strategy: #{RubyNext::Core.strategy}"
