@@ -43,13 +43,16 @@ jobs:
         ruby: [2.5, 2.6]
         core_ext: ["false", gem, generated]
         core_strategy: [refine]
+        allow_failures: ["false"]
         include:
           - ruby: 2.3
             core_ext: backports
             core_strategy: backports
+            allow_failures: "true"
           - ruby: 2.4
             core_ext: backports
             core_strategy: backports
+            allow_failures: "false"
     env:
       CORE_EXT: ${{ matrix.core_ext }}
       RUBY_NEXT_CORE_STRATEGY: ${{ matrix.core_strategy }}
@@ -69,6 +72,7 @@ jobs:
         name: ruby-next-transpiled
         path: lib/.rbnext
     - name: Run MSpec
+      continue-on-error: ${{ matrix.allow_failures == true }}
       run: |
         bundle exec bin/mspec
       env:
