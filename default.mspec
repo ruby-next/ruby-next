@@ -29,8 +29,9 @@ class MSpecScript
   set :stable, get(:cli) + get(:language) + get(:core) + get(:integration)
 end
 
+ENV["RUBY_NEXT_EDGE"] = "1"
+
 unless ENV["STABLE_RUBY"] == "true"
-  ENV["RUBY_NEXT_EDGE"] = "1"
   ENV["RUBY_NEXT_PROPOSED"] = "1"
 end
 
