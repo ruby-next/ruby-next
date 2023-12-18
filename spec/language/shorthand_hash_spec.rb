@@ -38,5 +38,16 @@ ruby_version_is "3.1" do
 
       a.new.foo(1).should == {bar: "baz", val: 1}
     end
+
+    it "handles multiline values" do
+      h = eval('
+        {
+          a: {
+            id: 1
+          }
+        }
+      ')
+      {a: {id: 1}}.should == h
+    end
   end
 end
