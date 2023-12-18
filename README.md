@@ -103,15 +103,16 @@ $ gem install ruby-next
 
 # Call ruby with -ruby-next flag
 $ ruby -ruby-next -e "
-def greet(val) =
-  case val
+greet = proc do
+  case it
     in hello: hello if hello =~ /human/i
       '🙂'
     in hello: 'martian'
       '👽'
     end
+end
 
-puts greet(hello: 'martian')
+puts greet.call(hello: 'martian')
 "
 
 => 👽

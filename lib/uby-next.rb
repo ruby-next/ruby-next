@@ -36,7 +36,7 @@ end
 at_exit do
   $stderr = orig_stderr
 
-  if NoMethodError === $! || SyntaxError === $!
+  if NoMethodError === $! || SyntaxError === $! || NameError === $!
     if $0 && File.exist?($0)
       load($0)
       exit!(0)
