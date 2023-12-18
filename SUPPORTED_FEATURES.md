@@ -8,6 +8,10 @@
 
 - Binding instance, class, global variables in pattern matching (`42 => @v`) ([#18408](https://bugs.ruby-lang.org/issues/18408)) (**REJECTED**, [see comment](https://bugs.ruby-lang.org/issues/18408#note-19)).
 
+### 3.4
+
+- Implicit `it` block parameter ([#19890](https://bugs.ruby-lang.org/issues/18980)).
+
 ### 3.2
 
 - Anonymous rest and keyword rest arguments forwarding (`def foo(*, **); bar(*, **) end`) ([#5148](https://github.com/ruby/ruby/pull/5148))

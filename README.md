@@ -548,7 +548,7 @@ require "ruby-next/language/runtime"
 
 ### Supported edge features
 
-Ruby 3.4 features are coming soon, stay tuned!
+- Implicit `it` block parameter ([#19890](https://bugs.ruby-lang.org/issues/18980)).
 
 ### Supported proposed features
 

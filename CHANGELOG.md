@@ -2,6 +2,8 @@
 
 ## master
 
+- Add `it` block parameter support. ([@palkan][])
+
 - Deprecate AST transpiling mode. ([@palkan][])
 
 - Add `Data` backport. ([@palkan][], [@saturnflyer][])
