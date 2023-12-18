@@ -23,7 +23,3 @@ jobs:
     - name: Run MSpec
       run: |
         bundle exec bin/mspec
-    - name: Run language specs with AST mode
-      env:
-        RUBY_NEXT_TRANSPILE_MODE: "ast"
-      run: bundle exec bin/mspec :language

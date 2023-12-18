@@ -73,7 +73,3 @@ jobs:
         bundle exec bin/mspec
       env:
         PRYRC: "spec/integration/fixtures/pry/.pryrc"
-    - name: Run language specs with AST mode
-      env:
-        RUBY_NEXT_TRANSPILE_MODE: "ast"
-      run: bundle exec bin/mspec :language

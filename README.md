@@ -196,22 +196,11 @@ gem install ruby-next
 
 ### Transpiler modes
 
-Ruby Next currently provides two different modes of generating transpiled code: _AST_ and _rewrite_.
-
-In the AST mode, we parse the source code into an AST, modify this AST and **generate new code from the AST** (using [unparser][unparser]). Thus, the transpiled code is identical in terms of functionality but has different formatting.
-
-In the rewrite mode, we apply changes to the source code itself, thus, keeping the original formatting of the unaffected code (in a similar way to RuboCop's autocorrect feature).
+Since v1.0, Ruby Next only support the _rewrite_ mode, i.e., the code transformations are applied directly to the original source code. This allows us to keep formatting as close as possible to the original code.
 
 The main benefit of the rewrite mode is that it preserves the original code line numbers and layout, which is especially useful in debugging.
 
-By default, we use the rewrite mode. If you find a bug in the rewrite mode which is not reproducible in the AST mode, please let us know.
-
-You can change the transpiler mode:
-
-- From code by setting `RubyNext::Language.mode = :ast` or `RubyNext::Language.mode = :rewrite`.
-- Via environmental variable `RUBY_NEXT_TRANSPILE_MODE=ast`.
-- Via CLI option ([see below](#cli)).
-- Via the `.rbnextrc` configuration file ([see blow](#cli-configuration-file)).
+The legacy AST mode (regenerating source code from the modified abstract syntax tree) is deprecated (though still supported).
 
 ## CLI
 

@@ -2,6 +2,8 @@
 
 ## master
 
+- Deprecate AST transpiling mode. ([@palkan][])
+
 - Add `Data` backport. ([@palkan][], [@saturnflyer][])
 
 - Add `Time#deconstruct_keys` support. ([@palkan][])
