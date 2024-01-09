@@ -66,6 +66,10 @@ if !Object.const_defined?(:Data) || !Data.respond_to?(:define)
       klass
     end
 
+    def self.inherited(subclass)
+      subclass.instance_variable_set(:@members, members)
+    end
+
     def members
       self.class.members
     end

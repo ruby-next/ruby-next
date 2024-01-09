@@ -2,6 +2,8 @@
 
 ## master
 
+- Fix using Data with inheritance (`class X < Data.define(...)`). ([@palkan][])
+
 ## 1.0.0 🎄
 
 - Add `it` block parameter support. ([@palkan][])

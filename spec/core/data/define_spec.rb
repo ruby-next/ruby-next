@@ -32,5 +32,13 @@ ruby_version_is "3.2" do
       movie.members.should == [:title, :year]
       movie.new("Matrix", 1999).title_with_year.should == "Matrix (1999)"
     end
+
+    it "allows inheritance" do
+      movie = Class.new(Data.define(:title, :year))
+      movie.members.should == [:title, :year]
+
+      another_movie = Class.new(movie)
+      another_movie.members.should == [:title, :year]
+    end
   end
 end
