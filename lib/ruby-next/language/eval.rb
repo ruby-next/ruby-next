@@ -11,7 +11,7 @@ module RubyNext
               using: bind&.receiver == TOPLEVEL_BINDING.receiver || bind&.receiver&.is_a?(Module)
             )
             RubyNext.debug_source(new_source, "(#{caller_locations(1, 1).first})")
-            super new_source, bind, *args
+            super(new_source, bind, *args)
           end
         end
       end
@@ -25,7 +25,7 @@ module RubyNext
           source = args.shift
           new_source = ::RubyNext::Language::Runtime.transform(source, using: false)
           RubyNext.debug_source(new_source, "(#{caller_locations(1, 1).first})")
-          super new_source, *args
+          super(new_source, *args)
         end
       end
     end
@@ -39,7 +39,7 @@ module RubyNext
           new_source = ::RubyNext::Language::Runtime.transform(source, using: false)
 
           RubyNext.debug_source(new_source, "(#{caller_locations(1, 1).first})")
-          super new_source, *args
+          super(new_source, *args)
         end
 
         def class_eval(*args, &block)
@@ -48,7 +48,7 @@ module RubyNext
           source = args.shift
           new_source = ::RubyNext::Language::Runtime.transform(source, using: false)
           RubyNext.debug_source(new_source, "(#{caller_locations(1, 1).first})")
-          super new_source, *args
+          super(new_source, *args)
         end
       end
     end

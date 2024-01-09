@@ -282,7 +282,7 @@ module RubyNext
       end
 
       def next_dir_path
-        @next_dir_path ||= (out_path || File.join(lib_path, RUBY_NEXT_DIR))
+        @next_dir_path ||= out_path || File.join(lib_path, RUBY_NEXT_DIR)
       end
 
       def stdout?

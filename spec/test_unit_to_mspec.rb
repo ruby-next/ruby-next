@@ -87,7 +87,7 @@ module TestUnitToMspec
         using: bind&.receiver == TOPLEVEL_BINDING.receiver || bind&.receiver&.is_a?(Module)
       )
       RubyNext.debug_source(new_source, "(#{caller_locations(1, 1).first})")
-      super new_source, bind, *other
+      super(new_source, bind, *other)
     end
   end
 
