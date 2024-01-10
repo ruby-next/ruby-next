@@ -170,6 +170,10 @@ Ruby 3.2 has introduced a new core class—[Data](https://bugs.ruby-lang.org/iss
 
 If you want to opt-out from loading Data backport, you must set the `RUBY_NEXT_DISABLE_DATA` env variable to `true`.
 
+#### Known limitations
+
+Currently, passing Hash as a last positional argument to `Data.new` is not supported in Ruby <3.0 (due to the difference in keyword arguments handling). We recommend always using keyword arguments when initializing Data objects.
+
 ## Transpiling
 
 Ruby Next allows you to transpile\* edge Ruby syntax to older versions.
