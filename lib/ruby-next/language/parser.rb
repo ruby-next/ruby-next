@@ -34,7 +34,7 @@ module RubyNext
     end
 
     class << self
-      attr_accessor :parser_class
+      attr_accessor :parser_class, :parser_syntax_errors
 
       def parser
         parser_class.new(Builder.new).tap do |prs|
@@ -50,8 +50,8 @@ module RubyNext
         end
 
         parser.parse(buffer)
-      rescue ::Parser::SyntaxError => e
-        raise ::SyntaxError, e.message
+      rescue *parser_syntax_errors => e
+        raise ::SyntaxError, e.message, e.backtrace
       end
 
       def parse_with_comments(source, file = "(string)")
@@ -60,16 +60,19 @@ module RubyNext
         end
 
         parser.parse_with_comments(buffer)
-      rescue ::Parser::SyntaxError => e
-        raise ::SyntaxError, e.message
+      rescue *parser_syntax_errors => e
+        raise ::SyntaxError, e.message, e.backtrace
       end
     end
+
+    self.parser_syntax_errors = [::Parser::SyntaxError]
 
     # Set up default parser
     unless parser_class
       self.parser_class = if defined?(::Parser::RubyNext)
         ::Parser::RubyNext
       elsif defined?(::Parser::Prism)
+        parser_syntax_errors << ::Prism::ParserCompiler::CompilationError
         ::Parser::Prism
       else
         ::Parser::Ruby33

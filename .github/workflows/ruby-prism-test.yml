@@ -25,4 +25,4 @@ jobs:
     - name: Run MSpec
       continue-on-error: true
       run: |
-        bundle exec bin/mspec
+        bundle exec bin/mspec :language

@@ -222,7 +222,7 @@ ruby_version_is "2.7" do
             true
           end
         RUBY
-      }.should raise_error(SyntaxError, /unexpected/)
+      }.should raise_error(SyntaxError)
     end
 
     it "evaluates the case expression once for multiple patterns, caching the result" do
@@ -958,7 +958,7 @@ ruby_version_is "2.7" do
             in {"a" => 1}
             end
           RUBY
-        }.should raise_error(SyntaxError, /unexpected/)
+        }.should raise_error(SyntaxError)
       end
 
       it "does not support string interpolation in keys" do

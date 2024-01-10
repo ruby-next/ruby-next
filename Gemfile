@@ -18,6 +18,6 @@ if ENV["PRISM"] == "true"
   if File.directory?("../parser-prism")
     gem "parser-prism", path: "../parser-prism"
   else
-    gem "parser-prism", github: "ruby-next/parser-prism"
+    gem "parser-prism", github: "kddnewton/parser-prism"
   end
 end
