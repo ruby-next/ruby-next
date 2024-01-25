@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
-gem "ruby-next-parser", ">= 2.8.0.3"
-gem "unparser", ">= 0.4.7"
+# Checking gem specs doesn't work in ruby.wasm
+unless RUBY_PLATFORM.match?(/wasm/)
+  gem "ruby-next-parser", ">= 2.8.0.3"
+  gem "unparser", ">= 0.4.7"
+end
 
 require "set" # rubocop:disable Lint/RedundantRequireStatement
 
