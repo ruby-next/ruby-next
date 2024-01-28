@@ -2,6 +2,8 @@
 
 ## master
 
+## 1.0.1 (2024-01-28)
+
 - Fix using Data with inheritance (`class X < Data.define(...)`). ([@palkan][])
 
 ## 1.0.0 🎄
