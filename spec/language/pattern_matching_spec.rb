@@ -970,7 +970,7 @@ ruby_version_is "2.7" do
             in {"#{x}": 1}
             end
           RUBY
-        }.should raise_error(SyntaxError, /symbol literal with interpolation is not allowed/)
+        }.should raise_error(SyntaxError, /(symbol literal with interpolation is not allowed|expected a label as the key in the hash pattern)/)
       end
 
       it "raise SyntaxError when keys duplicate in pattern" do

@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 begin
-  require "parser/prism"
+  require "prism"
+  require "prism/translation/parser"
 rescue LoadError
   require "parser/ruby33"
 end
@@ -71,9 +72,16 @@ module RubyNext
     unless parser_class
       self.parser_class = if defined?(::Parser::RubyNext)
         ::Parser::RubyNext
-      elsif defined?(::Parser::Prism)
-        parser_syntax_errors << ::Prism::ParserCompiler::CompilationError
-        ::Parser::Prism
+      elsif defined?(::Prism::Translation::Parser)
+        Class.new(::Prism::Translation::Parser) do
+          # Use this callback to ignore some parse-level errors, such as parsing numbered parameters
+          # when transpiling for older Ruby versions
+          def valid_error?(error)
+            !error.message.include?("is reserved for numbered parameters")
+          end
+        end.tap do |clazz|
+          Language.const_set(:PrismParser, clazz)
+        end
       else
         ::Parser::Ruby33
       end

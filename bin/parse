@@ -17,3 +17,4 @@ contents =
 
 ast = RubyNext::Language.parse(contents)
 puts ast
+puts "\n // Parsed with #{RubyNext::Language.parser_class}"

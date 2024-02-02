@@ -15,9 +15,9 @@ gem "pry", "> 0.13.1"
 
 # Using next-gen Ruby parser
 if ENV["PRISM"] == "true"
-  if File.directory?("../parser-prism")
-    gem "parser-prism", path: "../parser-prism"
+  if File.directory?("../prism")
+    gem "prism", path: "../prism"
   else
-    gem "parser-prism", github: "kddnewton/parser-prism"
+    gem "prism", github: "ruby/prism"
   end
 end

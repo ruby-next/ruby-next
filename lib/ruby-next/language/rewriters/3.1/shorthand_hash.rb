@@ -41,7 +41,7 @@ module RubyNext
           when :lvar
             node.children[0]
           else
-            raise ArgumentError, "Unsupport ipair node: #{node}"
+            raise SyntaxError, "#{node} is not allowed as a local variable name"
           end
         end
       end
