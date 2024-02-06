@@ -23,6 +23,5 @@ jobs:
         ruby-version: 3.2
         bundler-cache: true
     - name: Run MSpec
-      continue-on-error: true
       run: |
         bundle exec bin/mspec :language
