@@ -68,7 +68,7 @@ module RubyNext
       def build_location(trace_locations)
         # The caller_locations behaviour depends on implementaion,
         # e.g. in JRuby https://github.com/jruby/jruby/issues/6055
-        while trace_locations.first.label != "patch"
+        while trace_locations.first.base_label != "patch"
           trace_locations.shift
         end
 
