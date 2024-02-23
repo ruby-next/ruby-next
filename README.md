@@ -565,6 +565,9 @@ Wonder what would happen if Ruby get a null coalescing operator (`??=`) or some 
 
 Ruby Next allows you to write your own syntax rewriters. Full-featured rewriters (used by Ruby Next itself) operate on AST and usually require parser modifications. However, we also support text-based rewriters which can be used to experiment with new syntax much quicker without dealing with grammars, parsers and syntax trees.
 
+> [!TIP]
+> You can experiment with Ruby Next rewriters at our [online playground][playground]!
+
 To implement a text-based rewriter, you need to create a new class inherited from `RubyNext::Language::Rewriters::Text` and implementing either `#rewrite` or `#safe_rewrite` method. For example, the method reference operator (`.:`) could be implemented as follows:
 
 ```ruby
@@ -704,3 +707,4 @@ The gem is available as open source under the terms of the [MIT License](https:/
 [require-hooks]: https://github.com/ruby-next/require-hooks
 [Natalie]: https://natalie-lang.org
 [Paco]: https://github.com/ruby-next/paco
+[playground]: https://ruby-next.github.io
