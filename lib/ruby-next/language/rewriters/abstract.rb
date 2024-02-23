@@ -36,10 +36,8 @@ module RubyNext
             false
           end
 
-          private
-
-          def transform(source)
-            Language.transform(source, rewriters: [self], using: false)
+          def transform(source, **opts)
+            Language.transform(source, rewriters: [self], using: false, **opts)
           end
         end
 

@@ -29,9 +29,10 @@ module RubyNext
     RewriterNotFoundError = Class.new(StandardError)
 
     class TransformContext
-      attr_reader :versions, :use_ruby_next
+      attr_reader :versions, :use_ruby_next, :path
 
-      def initialize
+      def initialize(path: nil)
+        @path = path
         # Minimum supported RubyNext version
         @min_version = MIN_SUPPORTED_VERSION
         @dirty = false
@@ -104,7 +105,7 @@ module RubyNext
         @runtime
       end
 
-      def transform(source, rewriters: self.rewriters, using: RubyNext::Core.refine?, context: TransformContext.new)
+      def transform(source, rewriters: self.rewriters, using: RubyNext::Core.refine?, path: nil, context: TransformContext.new(path: path))
         text_rewriters, ast_rewriters = rewriters.partition(&:text?)
 
         retried = 0

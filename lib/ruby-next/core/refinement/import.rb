@@ -36,7 +36,7 @@ RubyNext::Core.singleton_class.module_eval do
 
           begin
             if defined?(::RubyNext::Language) && ::RubyNext::Language.runtime?
-              new_source = ::RubyNext::Language.transform(buffer.join, rewriters: RubyNext::Language.current_rewriters, using: false)
+              new_source = ::RubyNext::Language.transform(buffer.join, rewriters: RubyNext::Language.current_rewriters, using: false, path: source_file)
               # Transformed successfully => valid method => evaluate transpiled code
               import << [new_source, source_file, lineno]
               buffer.clear

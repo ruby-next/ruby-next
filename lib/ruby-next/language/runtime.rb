@@ -17,7 +17,7 @@ module RubyNext
       class << self
         def load(path, contents)
           contents ||= File.read(path)
-          new_contents = transform contents
+          new_contents = transform contents, path: path
 
           RubyNext.debug_source new_contents, path
 

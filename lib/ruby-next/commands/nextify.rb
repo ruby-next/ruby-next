@@ -198,7 +198,7 @@ module RubyNext
 
         rewriters = specified_rewriters || Language.rewriters.select { |rw| rw.unsupported_version?(version) }
 
-        context = Language::TransformContext.new
+        context = Language::TransformContext.new(path: path)
 
         new_contents = Language.transform contents, context: context, rewriters: rewriters
 

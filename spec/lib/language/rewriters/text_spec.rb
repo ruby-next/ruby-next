@@ -5,6 +5,9 @@ require_relative "../../../spec_helper"
 module RewritersSpecs
   class TextRewriter < RubyNext::Language::Rewriters::Text
     def safe_rewrite(source)
+      return source if context.path&.end_with?(".go")
+
+      context.track!(self)
       source.gsub(":=", "=")
     end
   end
@@ -95,6 +98,11 @@ describe "text rewriter" do
   end
 
   it_behaves_like :text_rewriter, :rewrite
+
+  it "has access to the source path via context" do
+    RewritersSpecs::TextRewriter.transform("a := 1", path: "foo.rb").should == "a = 1" # rubocop:disable Lint/Void
+    RewritersSpecs::TextRewriter.transform("a := 1", path: "foo.go").should == "a := 1"
+  end
 end
 
 describe "paco rewriter" do

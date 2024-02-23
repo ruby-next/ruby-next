@@ -2,6 +2,8 @@
 
 ## master
 
+- Add `context.path` to rewriters to access the current file path (if any). ([@palkan][])
+
 ## 1.0.1 (2024-01-28)
 
 - Fix using Data with inheritance (`class X < Data.define(...)`). ([@palkan][])
