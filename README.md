@@ -170,7 +170,7 @@ Ruby 3.2 has introduced a new core class—[Data](https://bugs.ruby-lang.org/iss
 
 If you want to opt-out from loading Data backport, you must set the `RUBY_NEXT_DISABLE_DATA` env variable to `true`.
 
-#### Known limitations
+#### Known limitations when using Data
 
 Currently, passing Hash as a last positional argument to `Data.new` is not supported in Ruby <3.0 (due to the difference in keyword arguments handling). We recommend always using keyword arguments when initializing Data objects.
 
@@ -576,11 +576,7 @@ class MethodReferenceRewriter < RubyNext::Language::Rewriters::Text
   MIN_SUPPORTED_VERSION = Gem::Version.new(RubyNext::NEXT_VERSION)
 
   def safe_rewrite(source)
-    source.gsub(/\.:([\w_]+)/) do |match|
-      context.track! self
-
-      ".method(:#{$1})"
-    end
+    source.gsub(/\.:([\w_]+)/, '.method(:\1)')
   end
 end
 
@@ -588,9 +584,28 @@ end
 RubyNext::Language.rewriters << MethodReferenceRewriter
 ```
 
-The `context` object is responsible for tracking if the rewriter was used for the current file. You must call the `context.track!` method to mark the file as _dirty_ (i.e., it should be transpiled). The input parameter (`source`) is the Ruby source code of the file being transpiled and the output must be the transpiled source code.
+The `#safe_rewrite` method operates on the normalized source code (i.e., without comments and string literals). It's useful when you want to avoid transpiling inside strings or comments. If you want to transpile the original contents, you can use the `#rewrite` method instead. For example, if you want to rewrite comments:
 
-The `#safe_rewrite` method operates on the normalized source code (i.e., without comments and string literals). It's useful when you want to avoid transpiling inside strings or comments. If you want to transpile the original contents, you can use the `#rewrite` method instead.
+```ruby
+
+class NoteDateRewriter < RubyNext::Language::Rewriters::Text
+  NAME = "note-comment-date"
+  MIN_SUPPORTED_VERSION = Gem::Version.new(RubyNext::NEXT_VERSION)
+
+  def rewrite(source)
+    source.gsub("# NOTE:") do |_match|
+      context.track!(self)
+      "# NOTE (#{Date.today}):"
+    end
+  end
+end
+
+RubyNext::Language.rewriters << NoteDateRewriter
+```
+
+Note that we use the `context` object in the example above. It is responsible for tracking if the rewriter was used for the current file. You must call the `context.track!` method to mark the file as _dirty_ (i.e., it should be transpiled). The input parameter (`source`) is the Ruby source code of the file being transpiled and the output must be the transpiled source code. When using `#safe_rewrite`, marking content as dirty explicitly is not necessary.
+
+### Using parser combinators (Paco)
 
 Under the hood, `#safe_rewrite` uses [Paco][] to parse the source and separate string literals from the rest of the code. You can also leverage [Paco][] in your text rewriters, if you want more control on the parsing process. For better experience, we provide a DSL to define a custom parser and the `#parse` method to use it. Here is an example of implementing the `.:` operator using a Paco parser:
 

@@ -7,7 +7,6 @@ module RewritersSpecs
     def safe_rewrite(source)
       return source if context.path&.end_with?(".go")
 
-      context.track!(self)
       source.gsub(":=", "=")
     end
   end

@@ -12,11 +12,7 @@ module RubyNext
         MIN_SUPPORTED_VERSION = Gem::Version.new(RubyNext::NEXT_VERSION)
 
         def safe_rewrite(source)
-          source.gsub(/\.:([\w_]+)/) do |match|
-            context.track! self
-
-            ".method(:#{$1})"
-          end
+          source.gsub(/\.:([\w_]+)/, '.method(:\1)')
         end
       end
     end

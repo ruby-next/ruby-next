@@ -109,7 +109,9 @@ module RubyNext
         # Rewrite source code by ignoring string literals and comments
         def rewrite(source)
           Normalizer.new.normalizing(source) do |normalized|
-            safe_rewrite(normalized)
+            safe_rewrite(normalized).tap do |rewritten|
+              context.track!(self) if rewritten != normalized
+            end
           end
         end
 
