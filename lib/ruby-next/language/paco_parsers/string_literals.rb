@@ -40,7 +40,7 @@ module RubyNext
 
         def quoted_expanded
           seq(
-            alt(string("%Q"), string("%")),
+            alt(string("%Q"), string("%").not_followed_by(string("i"))),
             any_char.bind do |char|
               end_symbol = string(PAIRS[char] || char)
               escapable_string(succeed(char), end_symbol, interpolate: true)
