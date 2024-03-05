@@ -4,7 +4,7 @@ module RubyNext
   module Language
     module PacoParsers
       class StringLiterals < Base
-        PAIRS = {"[" => "]", "{" => "}", "<" => ">"}.freeze
+        PAIRS = {"[" => "]", "{" => "}", "(" => ")"}.freeze
 
         def default
           all_strings.fmap do |result|
@@ -24,11 +24,15 @@ module RubyNext
           # heredoc_expanded
         end
 
+        def literal_start
+          alt(string("{"), string("("), string("["))
+        end
+
         def quoted
           seq(
-            string("%q"),
-            any_char.bind do |char|
-              end_symbol = string(PAIRS[char] || char)
+            alt(string("%q"), string("%s"), string("%r"), string("%i"), string("%w")),
+            literal_start.bind do |char|
+              end_symbol = string(PAIRS.fetch(char))
               escapable_string(succeed(char), end_symbol)
             end
           )
@@ -40,9 +44,9 @@ module RubyNext
 
         def quoted_expanded
           seq(
-            alt(string("%Q"), string("%")),
-            any_char.bind do |char|
-              end_symbol = string(PAIRS[char] || char)
+            alt(string("%Q"), string("%"), string("%W"), string("%I")),
+            literal_start.bind do |char|
+              end_symbol = string(PAIRS.fetch(char))
               escapable_string(succeed(char), end_symbol, interpolate: true)
             end
           )

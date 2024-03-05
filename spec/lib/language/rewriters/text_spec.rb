@@ -89,6 +89,18 @@ describe :text_rewriter, shared: true do
       a = 'Hello, LANG := #{ x := "RUBY" }'
     RUBY
   end
+
+  it "handles non-string literals" do
+    new_source = @rewriter.rewrite(<<~RUBY)
+      a := %i[foo bar]
+      r := %r{x:=1}
+    RUBY
+
+    new_source.should == <<~RUBY
+      a = %i[foo bar]
+      r = %r{x:=1}
+    RUBY
+  end
 end
 
 describe "text rewriter" do
