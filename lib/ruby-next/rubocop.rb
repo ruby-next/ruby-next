@@ -36,7 +36,7 @@ end
 module RuboCop
   class ProcessedSource
     module ParserClassExt
-      def parser_class(version)
+      def parser_class(version, *)
         return super unless version == RUBY_NEXT_VERSION
 
         require "parser/rubynext"
