@@ -22,3 +22,7 @@ release: test lint transpile
 	gem release ruby-next -t
 	git push
 	git push --tags
+
+ci-release: test lint transpile
+	gem release ruby-next-core
+	gem release ruby-next
