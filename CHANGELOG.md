@@ -2,6 +2,10 @@
 
 ## master
 
+## 1.0.3 (2024-04-18)
+
+- Fix RuboCop compatibility.
+
 ## 1.0.2 (2024-02-23)
 
 - Automatically mark context as dirty if `#safe_rewrite` modifies source code. ([@palkan][])
