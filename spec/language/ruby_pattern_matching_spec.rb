@@ -202,11 +202,13 @@ class TestPatternMatching < Test::Unit::TestCase
       end
     end
 
+    unless RUBY_ENGINE == "truffleruby"
     assert_syntax_error(%q{
       case 0
       in a | 0
       end
     }, /illegal variable in alternative pattern/)
+    end
   end
 
   def test_var_pattern
@@ -1281,7 +1283,7 @@ END
     end
 
     # https://github.com/jruby/jruby/issues/7854
-    unless defined?(JRUBY_VERSION)
+    unless defined?(JRUBY_VERSION) || RUBY_ENGINE == "truffleruby"
     assert_block do
       case {}
       in {}
@@ -1555,7 +1557,7 @@ END
   end
 
   # Ruby 2.7 doesn't have cache
-  unless RUBY_VERSION =~ /^2\.7\./
+  unless RUBY_VERSION =~ /^2\.7\./ || RUBY_ENGINE == "truffleruby"
 
   def test_deconstruct_cache
     assert_block do

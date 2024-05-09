@@ -512,6 +512,8 @@ ruby_version_is "2.7" do
       end
 
       it "does not support variable binding" do
+        next skip if RUBY_ENGINE == "truffleruby"
+
         -> {
           eval <<~RUBY
             case [0, 1]
@@ -642,6 +644,7 @@ ruby_version_is "2.7" do
         it "calls #deconstruct once for multiple patterns, caching the result" do
           # 2.7 doesn't cache
           next skip if RUBY_VERSION =~ /^2\.7\./
+          next skip if RUBY_ENGINE == "truffleruby"
 
           obj = Object.new
 
@@ -722,6 +725,8 @@ ruby_version_is "2.7" do
       end
 
       it "accepts a subclass of Array from #deconstruct" do
+        next skip if RUBY_ENGINE == "truffleruby"
+
         obj = Object.new
         def obj.deconstruct
           subarray = Class.new(Array).new(2)
