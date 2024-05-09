@@ -1285,7 +1285,7 @@ END
     # https://github.com/jruby/jruby/issues/7854
     unless defined?(JRUBY_VERSION) || RUBY_ENGINE == "truffleruby"
     assert_block do
-      case {}
+      case C.new({})
       in {}
         C.keys == nil
       end
