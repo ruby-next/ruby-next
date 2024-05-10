@@ -5,6 +5,9 @@
 # - Remove expected messages from SyntaxError
 # - Skip warnings specs
 # - Move `using refinery` inside `eval`
+#
+# Some test cases are skipped on TruffleRuby. Failing ruby/spec tests are tracked
+# in https://github.com/oracle/truffleruby/blob/master/spec/tags/language/pattern_matching_tags.txt
 
 require_relative '../spec_helper'
 

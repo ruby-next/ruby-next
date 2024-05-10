@@ -7,6 +7,9 @@
 #  - Comment some syntax specs (see notes)
 #  - Comment out class vars or replace with gvars
 #  - Extract refeniments modules from the test class and refinements test at the end of the file
+#
+# Some test cases are skipped on TruffleRuby. Failing MRI tests are tracked
+# in https://github.com/oracle/truffleruby/blob/master/test/mri/excludes/TestPatternMatching.rb
 
 require_relative '../test_unit_to_mspec'
 
