@@ -51,7 +51,7 @@ jobs:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true
     - name: Restore transpiled files
-      uses: actions/download-artifact@v1
+      uses: actions/download-artifact@v4.1.7
       with:
         name: ruby-next-transpiled
         path: lib/.rbnext
@@ -79,7 +79,7 @@ jobs:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true
     - name: Restore transpiled files
-      uses: actions/download-artifact@v1
+      uses: actions/download-artifact@v4.1.7
       with:
         name: ruby-next-transpiled
         path: lib/.rbnext
@@ -107,7 +107,7 @@ jobs:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true
     - name: Restore transpiled files
-      uses: actions/download-artifact@v1
+      uses: actions/download-artifact@v4.1.7
       with:
         name: ruby-next-transpiled
         path: lib/.rbnext
