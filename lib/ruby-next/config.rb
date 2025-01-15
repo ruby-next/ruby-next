@@ -10,10 +10,10 @@ module RubyNext
   # Defines last minor version for every major version
   LAST_MINOR_VERSIONS = {
     2 => 8, # 2.8 is required for backward compatibility: some gems already uses it
-    3 => 4
+    3 => 5
   }.freeze
 
-  LATEST_VERSION = [3, 4].freeze
+  LATEST_VERSION = [3, 5].freeze
 
   # A virtual version number used for proposed features
   NEXT_VERSION = "1995.next.0"

@@ -2,6 +2,10 @@
 
 ## master
 
+## 1.1.0 (2025-01-15)
+
+- Prepare for Ruby 3.5.
+
 ## 1.0.3 (2024-04-18)
 
 - Fix RuboCop compatibility.
