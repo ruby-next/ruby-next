@@ -10,7 +10,7 @@ module RubyNext
     def on_send(node)
       receiver, mid, *children = *node
 
-      return super(node) unless mid == :eval && receiver.nil? && children.size == 1
+      return super unless mid == :eval && receiver.nil? && children.size == 1
 
       context.track!(self)
 

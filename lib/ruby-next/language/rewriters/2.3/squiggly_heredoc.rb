@@ -9,7 +9,7 @@ module RubyNext
         MIN_SUPPORTED_VERSION = Gem::Version.new("2.3.0")
 
         def on_str(node)
-          node = super(node) if defined?(super_method)
+          node = super if defined?(super_method)
           return node unless node.loc.respond_to?(:heredoc_body) && node.loc.expression.source.include?("<<~")
 
           context.track! self

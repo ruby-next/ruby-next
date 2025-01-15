@@ -38,7 +38,7 @@ module RubyNext
 
         def on_pin(node)
           @has_pin_vars = node.children.first.type != :lvar
-          super(node)
+          super
         end
 
         private

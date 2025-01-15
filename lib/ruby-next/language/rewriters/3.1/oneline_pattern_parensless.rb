@@ -30,7 +30,7 @@ module RubyNext
             insert_before(pattern.loc.expression, left_p)
             insert_after(pattern.loc.expression, right_p)
           else
-            super(node)
+            super
           end
         end
 

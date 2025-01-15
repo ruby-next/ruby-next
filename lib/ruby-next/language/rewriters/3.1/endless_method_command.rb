@@ -11,13 +11,13 @@ module RubyNext
         def process_def(node)
           return node unless command?(node)
 
-          super(node)
+          super
         end
 
         def process_defs(node)
           return node unless command?(node)
 
-          super(node)
+          super
         end
 
         private

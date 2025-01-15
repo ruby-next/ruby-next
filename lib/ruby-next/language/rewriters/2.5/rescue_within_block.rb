@@ -18,7 +18,7 @@ module RubyNext
             node && (node.type == :rescue || node.type == :ensure)
           end
 
-          return super(block_node) unless exception_node
+          return super unless exception_node
 
           context.track! self
 

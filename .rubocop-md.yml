@@ -11,3 +11,6 @@ AllCops:
 Layout/InitialIndentation:
   Exclude:
     - 'CHANGELOG.md'
+
+Lint/ConstantReassignment:
+  Enabled: false

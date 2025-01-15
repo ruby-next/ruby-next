@@ -20,7 +20,7 @@ module RubyNext
     module InstanceEval # :nodoc:
       refine Object do
         def instance_eval(*args, &block)
-          return super(*args, &block) if block
+          return super if block
 
           source = args.shift
           new_source = ::RubyNext::Language::Runtime.transform(source, using: false)
@@ -33,7 +33,7 @@ module RubyNext
     module ClassEval
       refine Module do
         def module_eval(*args, &block)
-          return super(*args, &block) if block
+          return super if block
 
           source = args.shift
           new_source = ::RubyNext::Language::Runtime.transform(source, using: false)
@@ -43,7 +43,7 @@ module RubyNext
         end
 
         def class_eval(*args, &block)
-          return super(*args, &block) if block
+          return super if block
 
           source = args.shift
           new_source = ::RubyNext::Language::Runtime.transform(source, using: false)

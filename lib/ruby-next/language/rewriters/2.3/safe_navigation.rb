@@ -11,7 +11,7 @@ module RubyNext
         SAFE_LVAR = :__safe_lvar__
 
         def on_csend(node)
-          node = super(node)
+          node = super # rubocop:disable Lint/ShadowedArgument
 
           context.track! self
 
@@ -32,7 +32,7 @@ module RubyNext
         end
 
         def on_block(node)
-          return super(node) unless node.children[0].type == :csend
+          return super unless node.children[0].type == :csend
 
           context.track!(self)
 
@@ -40,7 +40,7 @@ module RubyNext
         end
 
         def on_numblock(node)
-          return super(node) unless node.children[0].type == :csend
+          return super unless node.children[0].type == :csend
 
           context.track!(self)
 
@@ -48,7 +48,7 @@ module RubyNext
         end
 
         def on_op_asgn(node)
-          return super(node) unless node.children[0].type == :csend
+          return super unless node.children[0].type == :csend
 
           context.track!(self)
 

@@ -9,7 +9,7 @@ module RubyNext
         MIN_SUPPORTED_VERSION = Gem::Version.new("2.4.0")
 
         def on_send(node)
-          return super(node) unless node.children[1] == :__dir__
+          return super unless node.children[1] == :__dir__
 
           context.track! self
 

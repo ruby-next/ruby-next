@@ -30,7 +30,7 @@ module RubyNext
 
         def on_find_pattern(node)
           @has_find_pattern = true
-          super(node)
+          super
         end
 
         private

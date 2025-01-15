@@ -17,19 +17,24 @@ jobs:
       # Use Next parser to ignore _1 is reserved errors when transpiling
       RUBY_NEXT_EDGE: true
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 3.1
+        ruby-version: 3.3
         bundler-cache: true
+    - name: Make sure .rbnext dir is present
+      run: |
+        mkdir -p lib/.rbnext
+        touch lib/.rbnext/.keep
     - name: Transpile Ruby Next
       run: |
         make transpile
     - name: Store transpiled files
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v4
       with:
         name: ruby-next-transpiled
         path: lib/.rbnext
+        include-hidden-files: true
 
   jruby-test:
     needs: transpile
@@ -45,13 +50,13 @@ jobs:
       BUNDLE_RETRY: 3
       CI: true
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: jruby
         bundler-cache: true
     - name: Restore transpiled files
-      uses: actions/download-artifact@v1
+      uses: actions/download-artifact@v4
       with:
         name: ruby-next-transpiled
         path: lib/.rbnext

@@ -41,7 +41,7 @@ module RubyNext
 
         def on_match_var(node)
           @has_vars_pattern = true if node.children[0].is_a?(::Parser::AST::Node)
-          super(node)
+          super
         end
 
         private

@@ -11,7 +11,7 @@ module RubyNext
         def on_def(node)
           return process_def(node) if endless?(node)
 
-          super(node)
+          super
         end
 
         def process_def(node)
@@ -34,7 +34,7 @@ module RubyNext
 
         def on_defs(node)
           return process_defs(node) if endless?(node)
-          super(node)
+          super
         end
 
         def process_defs(node)

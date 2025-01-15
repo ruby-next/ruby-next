@@ -166,7 +166,7 @@ module RuboCop
         def on_pair(node)
           return if node.children[0].loc.last_column == node.children[1].loc.last_column
 
-          super(node)
+          super
         end
       end)
     end

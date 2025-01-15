@@ -17,7 +17,7 @@ module RubyNext
 
           context.track! self
 
-          node = super(node)
+          node = super
 
           replace(farg.loc.expression, "*#{REST}, &#{BLOCK}")
 
@@ -33,14 +33,14 @@ module RubyNext
 
         def on_send(node)
           fargs = extract_fargs(node)
-          return super(node) unless fargs
+          return super unless fargs
 
           process_fargs(node, fargs)
         end
 
         def on_super(node)
           fargs = extract_fargs(node)
-          return super(node) unless fargs
+          return super unless fargs
 
           process_fargs(node, fargs)
         end

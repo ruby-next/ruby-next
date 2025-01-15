@@ -6,7 +6,7 @@ module Test
   end
 
   def super_delegate(...)
-    super(...)
+    super
   end
 
   def anoblock(&)
@@ -14,6 +14,6 @@ module Test
   end
 
   def super_anoblock(&)
-    super(&)
+    super
   end
 end

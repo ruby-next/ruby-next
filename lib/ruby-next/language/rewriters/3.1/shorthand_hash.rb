@@ -9,7 +9,7 @@ module RubyNext
         MIN_SUPPORTED_VERSION = Gem::Version.new("3.1.0")
 
         def on_pair(node)
-          return super(node) unless (node.children[0].loc.last_column == node.children[1].loc.last_column) &&
+          return super unless (node.children[0].loc.last_column == node.children[1].loc.last_column) &&
             (node.children[1].loc.first_line == node.children[1].loc.last_line)
 
           context.track! self
