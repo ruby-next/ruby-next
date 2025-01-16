@@ -132,10 +132,10 @@ describe "ruby-next nextify" do
   it "generates one version if --rewrite is provided" do
     run_ruby_next(
       "nextify #{File.join(__dir__, "dummy")} --proposed " \
-      "--rewrite=endless-range --rewrite=pattern-matching"
+      "--rewrite=endless-range --rewrite=pattern-matching --rewrite=method-reference"
     ) do |_status, _output, err|
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "match_pattern.rb")).should equal true
-      File.exist?(File.join(__dir__, "dummy", ".rbnext", "method_reference.rb")).should equal false
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "method_reference.rb")).should equal true
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "transpile_me.rb")).should equal true
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "endless_pattern.rb")).should equal true
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "namespaced", "endless_nameless.rb")).should equal true
@@ -157,12 +157,12 @@ describe "ruby-next nextify" do
   it "generates one version if --rewrite is provided with rewriter from edge along with --edge option" do
     run_ruby_next(
       "nextify #{File.join(__dir__, "dummy")} " \
-      "--rewrite=endless-method --edge",
+      "--rewrite=endless-method --rewrite=method-reference --edge",
       env: {"RUBY_NEXT_EDGE" => "0", "RUBY_NEXT_PROPOSED" => "1"}
     ) do |_status, _output, err|
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "namespaced", "pattern_matching.rb")).should equal true
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "match_pattern.rb")).should equal false
-      File.exist?(File.join(__dir__, "dummy", ".rbnext", "method_reference.rb")).should equal false
+      File.exist?(File.join(__dir__, "dummy", ".rbnext", "method_reference.rb")).should equal true
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "transpile_me.rb")).should equal false
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "endless_pattern.rb")).should equal false
       File.exist?(File.join(__dir__, "dummy", ".rbnext", "namespaced", "endless_nameless.rb")).should equal false

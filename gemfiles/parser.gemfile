@@ -1,5 +1,5 @@
 if ENV["LOCAL_PARSER"]
-  gem "ruby-next-parser", path: ENV["LOCAL_PARSER"]
+  gem "ruby-next-parser", ">= 3.4.0.2", path: ENV["LOCAL_PARSER"]
 else
-  gem "ruby-next-parser"
+  gem "ruby-next-parser", ">= 3.4.0.2"
 end

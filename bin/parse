@@ -15,6 +15,17 @@ contents =
     ARGV[0]
   end
 
+require "optparse"
+
+OptionParser.new do |opts|
+  opts.banner = "Usage: parse filepath_or_code [options]"
+
+  opts.on("--next", "Use Ruby Next parser") do
+    require "parser/rubynext"
+    RubyNext::Language.parser_class = ::Parser::RubyNext
+  end
+end.parse!
+
 ast = RubyNext::Language.parse(contents)
 puts ast
 puts "\n // Parsed with #{RubyNext::Language.parser_class}"

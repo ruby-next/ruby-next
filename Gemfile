@@ -18,6 +18,6 @@ if ENV["PRISM"] == "true"
   if File.directory?("../prism")
     gem "prism", path: "../prism"
   else
-    gem "prism", "~> 0.21"
+    gem "prism", "~> 1.0"
   end
 end
