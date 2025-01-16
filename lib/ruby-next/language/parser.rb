@@ -4,7 +4,7 @@ begin
   require "prism"
   require "prism/translation/parser"
 rescue LoadError
-  require "parser/ruby33"
+  require "parser/ruby34"
 end
 
 module RubyNext
@@ -83,7 +83,7 @@ module RubyNext
           Language.const_set(:PrismParser, clazz)
         end
       else
-        ::Parser::Ruby33
+        ::Parser::Ruby34
       end
     end
   end
