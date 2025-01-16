@@ -364,6 +364,20 @@ If the command fails we warn the end user.
 
 This feature, _auto-transpiling_, is **disabled** by default (will likely be enabled in future versions). You can enable it by calling `RubyNext::Language.setup_gem_load_path(transpile: true)`.
 
+### Dependency-less setup
+
+If you want to avoid adding `ruby-next-core` to your gem's dependencies, you can tweak the `$LOAD_PATH` yourself. It's much easier to do if you go with a single transpiled version per source file (i.e., use `--single-version` or specify particular rewriters using the `--rewrite` option of the `ruby-next nextify` command). If so, you can drop the following snippet to your gem's entrypoint:
+
+```ruby
+# lib/my_gem.rb
+$LOAD_PATH.unshift "#{__dir__}/.rbnext"
+
+# Then go `require` statements
+# ...
+```
+
+That's it! Keep in mind that in this cases there is no auto-transpiling support (so, you may want to keep the transpiled files in the repository to allow installing the gem from source).
+
 ## Runtime usage
 
 It is also possible to transpile Ruby source code in run-time via Ruby Next.
@@ -552,7 +566,7 @@ require "ruby-next/language/runtime"
 
 ### Supported edge features
 
-- Implicit `it` block parameter ([#19890](https://bugs.ruby-lang.org/issues/18980)).
+None yet.
 
 ### Supported proposed features
 
