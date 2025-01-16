@@ -49,7 +49,6 @@ Pry.prepend(Module.new do
       obj.instance_eval do
         def eval(code, *args)
           new_code = ::RubyNext::Language::Runtime.transform(code, using: false)
-
           super(new_code, *args)
         end
 
@@ -70,7 +69,7 @@ Pry::Code.singleton_class.prepend(Module.new do
     true
   rescue Parser::SyntaxError => ex
     case ex.message
-    when /unexpected token \$end/
+    when /(unexpected token \$end|unexpected end-of-input)/
       false
     else
       true
