@@ -36,6 +36,15 @@ end
 module RuboCop
   class ProcessedSource
     module ParserClassExt
+      require "ruby-next/language"
+      TEXT_REWRITERS = RubyNext::Language.rewriters.select(&:text?)
+
+      def parse(src, *args)
+        # We must apply text rewriters before parsing
+        src = RubyNext::Language.send(:text_rewrite, src, rewriters: TEXT_REWRITERS, using: false, context: RubyNext::Language::TransformContext.new(path: path))
+        super
+      end
+
       def parser_class(version, *)
         return super unless version == RUBY_NEXT_VERSION
 

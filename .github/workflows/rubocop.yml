@@ -16,5 +16,7 @@ jobs:
         ruby-version: 3.3
         bundler-cache: true
     - name: Lint Markdown files with RuboCop
+      env:
+        RUBY_NEXT_PROPOSED: true
       run: |
         bundle exec rubocop

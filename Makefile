@@ -9,7 +9,7 @@ test-all:
 	CORE_EXT=generated bundle exec bin/mspec :language :core
 
 lint:
-	bundle exec rubocop
+	RUBY_NEXT_PROPOSED=true bundle exec rubocop
 
 transpile:
 	bundle exec bin/ruby-next nextify --transpile-mode=rewrite --min-version=2.0 lib/ -V
