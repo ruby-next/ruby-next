@@ -16,11 +16,15 @@ jobs:
       CI: true
       PRISM: true
       STABLE_RUBY: true
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: ["3.3", "3.4"]
     steps:
     - uses: actions/checkout@v4
     - uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 3.4
+        ruby-version: ${{ matrix.ruby }}
         bundler-cache: true
     - name: Run MSpec
       run: |

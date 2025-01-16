@@ -27,11 +27,19 @@ module RubyNext
 
             using(Module.new do
               refine RubyNext::Utils::A do
-                include(Module.new do
-                  def i_am_refinement
-                    "yes, you are!"
-                  end
-                end)
+                if RUBY_VERSION >= "3.3.0"
+                  import_methods(Module.new do
+                    def i_am_refinement
+                      "yes, you are!"
+                    end
+                  end)
+                else
+                  include(Module.new do
+                    def i_am_refinement
+                      "yes, you are!"
+                    end
+                  end)
+                end
               end
             end)
 

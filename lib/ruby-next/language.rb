@@ -285,6 +285,17 @@ module RubyNext
     require "ruby-next/language/rewriters/2.6/endless_range"
     rewriters << Rewriters::EndlessRange
 
+    require "ruby-next/language/rewriters/3.4/it_param"
+
+    # We must add `it` rewriter before nubmered params rewriter to allow it to transform the source code further
+    number_params = rewriters.index(Rewriters::NumberedParams)
+
+    if number_params
+      rewriters.insert(number_params, Rewriters::ItParam)
+    else
+      rewriters << Rewriters::ItParam
+    end
+
     if RubyNext.edge_syntax?
       require "ruby-next/language/rewriters/edge"
     end

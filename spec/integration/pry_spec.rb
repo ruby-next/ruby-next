@@ -47,7 +47,7 @@ describe "pry" do
       MockPryDriver.read('h1 = { "a" => 100, "b" => 200 }')
       MockPryDriver.read('h2 = { "b" => 254, "c" => 300 }')
       MockPryDriver.read("h1.merge(h2)")
-      assert_equal MockPryDriver.last_result, '{"a"=>100, "b"=>254, "c"=>300}'
+      assert_equal MockPryDriver.last_result, {"a" => 100, "b" => 254, "c" => 300}.inspect
 
       # Array#intersection added in 2.7:
       MockPryDriver.read("[0, 1, 2, 3].intersection([0, 1, 2], [0, 1, 3])")
@@ -56,7 +56,7 @@ describe "pry" do
       # Hash#except added in 3.0:
       MockPryDriver.read("hash = { a: true, b: false, c: nil }")
       MockPryDriver.read("hash.except(:a, :b)")
-      assert_equal MockPryDriver.last_result, "{:c=>nil}"
+      assert_equal MockPryDriver.last_result, {c: nil}.inspect
 
       next skip if RUBY_VERSION >= "3.0.0"
 

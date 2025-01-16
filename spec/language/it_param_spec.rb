@@ -18,6 +18,8 @@ ruby_version_is "3.4" do
     end
 
     it "do not overwrite already defined local variable" do
+      # FIXME: We do not support shadowing, 'cause it doesn't play well with Prism
+      next skip unless RUBY_VERSION >= "3.4.0"
       it = 42
       proc { it }.call("a").should == 42
     end
