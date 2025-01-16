@@ -5,7 +5,7 @@ module RubyNext
     module Rewriters
       class ArgsForwardLeading < ArgsForward
         NAME = "args-forward-leading"
-        SYNTAX_PROBE = "obj = Object.new; def obj.foo(...) super(1, ...); end"
+        SYNTAX_PROBE = "Module.new { def foo(...) super(1, ...); end }"
         MIN_SUPPORTED_VERSION = Gem::Version.new("3.0.0")
 
         attr_reader :leading_farg

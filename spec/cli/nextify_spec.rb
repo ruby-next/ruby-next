@@ -303,8 +303,8 @@ describe "ruby-next nextify" do
       "nextify --list-rewriters",
       env: {"RUBY_NEXT_PROPOSED" => "0", "RUBY_NEXT_EDGE" => "0"}
     ) do |_status, output, err|
-      output.should include('args-forward ("obj = Object.new; def obj.foo(...) super(...); end")')
-      output.should include('args-forward-leading ("obj = Object.new; def obj.foo(...) super(1, ...); end")')
+      output.should include('args-forward ("Module.new { def foo(...) super(...); end }")')
+      output.should include('args-forward-leading ("Module.new { def foo(...) super(1, ...); end }")')
       output.should include('numbered-params ("proc { _1 }.call(1)")')
       output.should include('pattern-matching ("case 0; in 0; true; else; 1; end")')
       output.should include('pattern-matching-find-pattern ("case 0; in [*,0,*]; true; else; 1; end")')

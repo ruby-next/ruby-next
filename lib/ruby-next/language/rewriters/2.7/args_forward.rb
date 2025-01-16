@@ -5,7 +5,7 @@ module RubyNext
     module Rewriters
       class ArgsForward < Base
         NAME = "args-forward"
-        SYNTAX_PROBE = "obj = Object.new; def obj.foo(...) super(...); end"
+        SYNTAX_PROBE = "Module.new { def foo(...) super(...); end }"
         MIN_SUPPORTED_VERSION = Gem::Version.new("2.7.0")
 
         REST = :__rest__
