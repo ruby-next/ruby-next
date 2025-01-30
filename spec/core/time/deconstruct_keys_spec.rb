@@ -23,7 +23,11 @@ ruby_version_is "3.2" do
     it "it raises error when argument is neither nil nor array" do
       d = Time.new(2022, 10, 5, 13, 30)
 
-      -> { d.deconstruct_keys(1) }.should raise_error(TypeError, "wrong argument type Integer (expected Array or nil)")
+      if RUBY_VERSION < "2.4"
+         -> { d.deconstruct_keys(1) }.should raise_error(TypeError, "wrong argument type Fixnum (expected Array or nil)")
+      else
+        -> { d.deconstruct_keys(1) }.should raise_error(TypeError, "wrong argument type Integer (expected Array or nil)")
+      end
       -> { d.deconstruct_keys("asd") }.should raise_error(TypeError, "wrong argument type String (expected Array or nil)")
       -> { d.deconstruct_keys(:x) }.should raise_error(TypeError, "wrong argument type Symbol (expected Array or nil)")
       -> { d.deconstruct_keys({}) }.should raise_error(TypeError, "wrong argument type Hash (expected Array or nil)")

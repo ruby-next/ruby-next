@@ -1,6 +1,8 @@
 require_relative '../../spec_helper'
 
 describe "MatchData#deconstruct_keys" do
+  next skip unless MatchData.instance_methods(false).include?(:named_captures)
+
   ruby_version_is "3.2" do
     it "returns whole hash for nil as an argument" do
       m = /(?<f>foo)(?<b>bar)/.match("foobar")

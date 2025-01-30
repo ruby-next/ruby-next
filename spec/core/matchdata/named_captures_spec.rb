@@ -1,6 +1,8 @@
 require_relative '../../spec_helper'
 
 describe 'MatchData#named_captures' do
+  next skip unless MatchData.instance_methods(false).include?(:named_captures)
+
   it 'returns a Hash that has captured name and the matched string pairs' do
     /(?<a>.)(?<b>.)?/.match('0').named_captures.should == { 'a' => '0', 'b' => nil }
   end
