@@ -55,6 +55,9 @@ jobs:
           - ruby: 2.4
             core_ext: backports
             core_strategy: backports
+          - ruby: 2.3
+            core_ext: backports
+            core_strategy: backports
     env:
       CORE_EXT: ${{ matrix.core_ext }}
       RUBY_NEXT_CORE_STRATEGY: ${{ matrix.core_strategy }}
