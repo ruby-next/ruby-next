@@ -2,6 +2,10 @@
 
 ## master
 
+## 1.1.1 (2025-01-30)
+
+- Fix Ruby 2.3 support.
+
 ## 1.1.0 (2025-01-15)
 
 - Prepare for Ruby 3.5.
