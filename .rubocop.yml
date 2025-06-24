@@ -64,3 +64,6 @@ Style/ArgumentsForwarding:
 
 Style/RedundantHeredocDelimiterQuotes:
   Enabled: false
+
+Style/ItBlockParameter:
+  Enabled: false

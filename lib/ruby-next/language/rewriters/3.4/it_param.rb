@@ -50,7 +50,7 @@ module RubyNext
         end
 
         def it?(node)
-          node.is_a?(Parser::AST::Node) && (
+          (node.is_a?(Parser::AST::Node) &&
             node.type == :send && node.children[0].nil? && node.children[1] == :it && node.children[2].nil?
           ) || ( # Prism version
             node.type == :lvar && node.children[0] == :it
