@@ -19,7 +19,8 @@ ruby_version_is "3.4" do
 
     it "do not overwrite already defined local variable" do
       # FIXME: We do not support shadowing, 'cause it doesn't play well with Prism
-      next skip unless RUBY_VERSION >= "3.4.0"
+      # JRuby doesn't support it yet, but claims RUBY_VERSION ~> 3.4
+      next skip unless (RUBY_VERSION >= "3.4.0" && !defined?(JRUBY_VERSION))
       it = 42
       proc { it }.call("a").should == 42
     end
@@ -29,6 +30,7 @@ ruby_version_is "3.4" do
     end
 
     it "raises SyntaxError when block parameters are specified explicitly" do
+      next skip unless (RUBY_VERSION >= "3.4.0" && !defined?(JRUBY_VERSION))
       -> { eval("-> () { it }")         }.should raise_error(SyntaxError, /ordinary parameter is defined/)
       -> { eval("-> (x) { it }")        }.should raise_error(SyntaxError, /ordinary parameter is defined/)
 
