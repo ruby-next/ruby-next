@@ -2,6 +2,10 @@
 
 ## master
 
+## 1.1.2 (2025-06-24)
+
+- Fix transpiling `it` with modern Prism.
+
 ## 1.1.1 (2025-01-30)
 
 - Fix Ruby 2.3 support.
