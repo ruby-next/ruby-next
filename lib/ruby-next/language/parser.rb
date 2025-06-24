@@ -77,7 +77,8 @@ module RubyNext
           # Use this callback to ignore some parse-level errors, such as parsing numbered parameters
           # when transpiling for older Ruby versions
           def valid_error?(error)
-            !error.message.include?("is reserved for numbered parameters")
+            !error.message.include?("is reserved for numbered parameters") &&
+              !error.message.include?("ordinary parameter is defined")
           end
         end.tap do |clazz|
           Language.const_set(:PrismParser, clazz)
