@@ -11,28 +11,40 @@ module RubyNext
         MIN_SUPPORTED_VERSION = Gem::Version.new("3.4.0")
 
         def on_block(node)
-          proc_or_lambda, args, body = *node.children
+          _proc_or_lambda, _args, body = *node.children
 
           return super unless block_has_it?(body)
 
-          context.track! self
+          process_block(node)
+        end
 
-          new_body = s(:begin,
-            s(:lvasgn, :it, s(:lvar, :_1)),
-            body)
+        def on_itblock(node)
+          _proc_or_lambda, _args, body = *node.children
 
-          insert_before(body.loc.expression, "it = _1;")
+          return super unless block_has_it?(body)
 
-          process(
-            node.updated(:numblock, [
-              proc_or_lambda,
-              args,
-              new_body
-            ])
-          )
+          process_block(node)
         end
 
         private
+
+        def process_block(node)
+          context.track! self
+
+          proc_or_lambda, _args, body = *node.children
+
+          if proc_or_lambda.type == :lambda
+            insert_before(node.loc.begin, "(it)")
+          else
+            insert_after(node.loc.begin, " |it|")
+          end
+
+          node.updated(:block, [
+            proc_or_lambda,
+            s(:args, s(:procarg0, s(:arg, :it))),
+            process(body)
+          ])
+        end
 
         # It's important to check if the current block refers to `it` variable somewhere
         # (and not within a nested block), so we don't declare numbered params
@@ -44,7 +56,7 @@ module RubyNext
             return true if it?(child)
 
             if child.is_a?(Parser::AST::Node)
-              tree.unshift(*child.children.select { |c| c.is_a?(Parser::AST::Node) && c.type != :block && c.type != :numblock })
+              tree.unshift(*child.children.select { |c| c.is_a?(Parser::AST::Node) && c.type != :block && c.type != :numblock && c.type != :itblock })
             end
           end
         end
