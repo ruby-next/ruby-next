@@ -8,6 +8,7 @@ require_relative "../../spec_helper"
 describe "Enumerator.produce" do
   it "raises without arguments" do
     assert_raise(ArgumentError) { Enumerator.produce }
+    assert_raise(ArgumentError) { Enumerator.produce(a: 1, b: 1) {} }
   end
 
   it "without initial object" do
@@ -28,13 +29,24 @@ describe "Enumerator.produce" do
     assert_equal [1, 2], passed_args
   end
 
-  it "with initial keyword arguments" do
-    passed_args = []
-    enum = Enumerator.produce(a: 1, b: 1) { |obj| passed_args << obj; obj.shift if obj.respond_to?(:shift)}
-    assert_instance_of(Enumerator, enum)
+  it "with size keyword argument" do
+    enum = Enumerator.produce(1, size: 10) { |obj| obj.succ }
+    assert_equal 10, enum.size
+    assert_equal [1, 2, 3], enum.take(3)
+
+    enum = Enumerator.produce(1, size: -> { 5 }) { |obj| obj.succ }
+    assert_equal 5, enum.size
+
+    enum = Enumerator.produce(1, size: nil) { |obj| obj.succ }
+    assert_equal nil, enum.size
+
+    enum = Enumerator.produce(1, size: Float::INFINITY) { |obj| obj.succ }
     assert_equal Float::INFINITY, enum.size
-    assert_equal [{b: 1}, [1], :a, nil], enum.take(4)
-    assert_equal [{b: 1}, [1], :a], passed_args
+
+    # Without initial value but with size
+    enum = Enumerator.produce(size: 3) { |obj| (obj || 0).succ }
+    assert_equal 3, enum.size
+    assert_equal [1, 2, 3], enum.take(3)
   end
 
   it "raising StopIteration" do

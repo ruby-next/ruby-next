@@ -2,6 +2,8 @@
 
 ## master
 
+- Added `Enumerator.produce` w/ `size:` support (Ruby 4.0).
+
 ## 1.1.2 (2025-06-24)
 
 - Fix transpiling `it` with modern Prism.

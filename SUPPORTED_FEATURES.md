@@ -58,6 +58,10 @@ The possible translation depends on the _end_ type which could hardly be inferre
 
 ## Core APIs
 
+### 4.0
+
+- `Enumerator.produce(*, size:, &)` [#21701](https://bugs.ruby-lang.org/issues/21701)
+
 ### 3.3
 
 - `MatchData#named_captures(symbolize_names: true)` ([#19591](https://bugs.ruby-lang.org/issues/19591))
