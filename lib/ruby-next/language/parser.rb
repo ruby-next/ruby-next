@@ -34,11 +34,26 @@ module RubyNext
       end
     end
 
+    if defined?(::Prism::Translation::Parser::Builder)
+      class PrismBuilder < ::Prism::Translation::Parser::Builder
+        modernize
+
+        unless method_defined?(:match_pattern_p)
+          include BuilderExt
+        end
+
+        def check_reserved_for_numparam(name, loc)
+          # We don't want to raise SyntaxError, 'cause we want to use _x vars for older Rubies.
+          # The exception should be raised by Ruby itself for versions supporting numbered parameters
+        end
+      end
+    end
+
     class << self
-      attr_accessor :parser_class, :parser_syntax_errors
+      attr_accessor :parser_class, :parser_syntax_errors, :builder_class
 
       def parser
-        parser_class.new(Builder.new).tap do |prs|
+        parser_class.new(builder_class.new).tap do |prs|
           prs.diagnostics.tap do |diagnostics|
             diagnostics.all_errors_are_fatal = true
           end
@@ -67,6 +82,7 @@ module RubyNext
     end
 
     self.parser_syntax_errors = [::Parser::SyntaxError]
+    self.builder_class = Builder
 
     # Set up default parser
     unless parser_class
@@ -82,6 +98,8 @@ module RubyNext
           end
         end.tap do |clazz|
           Language.const_set(:PrismParser, clazz)
+
+          self.builder_class = PrismBuilder
         end
       else
         ::Parser::Ruby34
