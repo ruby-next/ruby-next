@@ -523,7 +523,7 @@ ruby_version_is "2.7" do
             in [0, 0] | [0, a]
             end
           RUBY
-        }.should raise_error(SyntaxError, /illegal variable in alternative pattern/)
+        }.should raise_error(SyntaxError, /variable.+in alternative pattern/)
       end
 
       it "support underscore prefixed variables in alternation" do
@@ -1469,7 +1469,7 @@ ruby_version_is "2.7" do
               in 0 | @a
               end
             RUBY
-          }.should raise_error(SyntaxError, /illegal variable in alternative pattern/)
+          }.should raise_error(SyntaxError, /variable.+in alternative pattern/)
 
           -> {
             Module.new do
@@ -1479,7 +1479,7 @@ ruby_version_is "2.7" do
                 end
               RUBY
             end
-          }.should raise_error(SyntaxError, /illegal variable in alternative pattern/)
+          }.should raise_error(SyntaxError, /variable.+in alternative pattern/)
 
           -> {
             eval <<~RUBY
@@ -1487,7 +1487,7 @@ ruby_version_is "2.7" do
               in 0 | $a
               end
             RUBY
-          }.should raise_error(SyntaxError, /illegal variable in alternative pattern/)
+          }.should raise_error(SyntaxError, /variable.+in alternative pattern/)
         end
       end
     end

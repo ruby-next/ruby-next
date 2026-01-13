@@ -210,7 +210,7 @@ class TestPatternMatching < Test::Unit::TestCase
       case 0
       in a | 0
       end
-    }, /illegal variable in alternative pattern/)
+    }, /variable.+in alternative pattern/)
     end
   end
 
