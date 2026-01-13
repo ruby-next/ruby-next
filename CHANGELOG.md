@@ -2,6 +2,8 @@
 
 ## master
 
+## 1.2.0 (2026-01-13)
+
 - Add `String#strip` etc w/ selectors.
 
 - Add `Array#rfind`.

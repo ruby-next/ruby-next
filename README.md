@@ -45,7 +45,8 @@ Read more about the motivation behind the Ruby Next in this post: [Ruby Next: Ma
 
 ## Talks
 
-- [Ruby Next: Make old Rubies quack like a new one](https://noti.st/palkan/j3i2Dr/ruby-next-make-old-rubies-quack-like-a-new-one) (RubyConf 2019)
+- [Ruby Mixology 101: adding shots of PHP, Elixir, and more](https://evilmartians.com/events/ruby-mixology-101) (RubyKaigi 2024)
+- [Ruby Next: Make old Rubies quack like a new one](https://evilmartians.com/events/ruby-next-make-old-ruby-quack-like-a-new-one) (RubyConf 2019)
 
 ## Examples
 
