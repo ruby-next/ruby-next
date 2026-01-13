@@ -17,7 +17,7 @@ jobs:
       RUBY_NEXT_EDGE: true
       CI: true
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: 3.4
@@ -50,7 +50,7 @@ jobs:
       BUNDLE_PATH: /home/runner/bundle
       CI: true
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
@@ -78,7 +78,7 @@ jobs:
       BUNDLE_PATH: /home/runner/bundle
       CI: true
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
@@ -106,7 +106,7 @@ jobs:
       BUNDLE_PATH: /home/runner/bundle
       CI: true
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}

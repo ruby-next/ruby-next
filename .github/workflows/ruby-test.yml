@@ -17,7 +17,7 @@ jobs:
       # Use Next parser to ignore _1 is reserved errors when transpiling
       RUBY_NEXT_EDGE: true
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v6
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: 3.3
@@ -43,7 +43,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: ["3.0", "3.1", "3.2", "3.3", "3.4"]
+        ruby: ["3.0", "3.1", "3.2", "3.3", "3.4", "4.0"]
         core_ext: ["false", "gem", "generated"]
     env:
       CORE_EXT: ${{ matrix.core_ext }}
@@ -52,7 +52,7 @@ jobs:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
       CI: true
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v6
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}

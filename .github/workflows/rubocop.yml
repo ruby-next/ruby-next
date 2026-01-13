@@ -10,12 +10,12 @@ jobs:
   rubocop:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 3.3
+        ruby-version: 3.4
         bundler-cache: true
-    - name: Lint Markdown files with RuboCop
+    - name: Lint with RuboCop
       env:
         RUBY_NEXT_PROPOSED: true
       run: |
