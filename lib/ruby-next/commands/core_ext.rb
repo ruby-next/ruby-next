@@ -13,7 +13,7 @@ module RubyNext
 
       def run
         log "Select core extensions for Ruby v#{min_version}" \
-            "#{filter ? " and matching #{filter.inspect}" : ""}"
+            "#{" and matching #{filter.inspect}" if filter}"
 
         matching_patches.then do |patches|
           next print_list(patches) if list?

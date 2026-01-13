@@ -56,12 +56,12 @@ RubyNext::Core.singleton_class.module_eval do
       end
 
       import.each do |(definition, file, lino)|
-        Kernel.eval definition, bind, file, lino
+        ::Kernel.eval definition, bind, file, lino # rubocop:disable Security/Eval
       end
 
       # Copy constants (they could be accessed from methods)
       other.constants.each do |name|
-        Kernel.eval "#{name} = #{other}::#{name}", bind # rubocop:disable Style/EvalWithLocation
+        ::Kernel.eval "#{name} = #{other}::#{name}", bind # rubocop:disable Style/EvalWithLocation,Security/Eval
       end
     end
   end
