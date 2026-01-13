@@ -64,6 +64,8 @@ The possible translation depends on the _end_ type which could hardly be inferre
 
 - `Enumerator.produce(*, size:, &)` ([#21701](https://bugs.ruby-lang.org/issues/21701))
 
+- `String#strip`, `#lstrip`, `#rstrip` (and `!` variants) with character selectors ([#21552](https://bugs.ruby-lang.org/issues/21552))
+
 ### 3.3
 
 - `MatchData#named_captures(symbolize_names: true)` ([#19591](https://bugs.ruby-lang.org/issues/19591))

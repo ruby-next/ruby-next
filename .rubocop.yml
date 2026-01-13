@@ -67,3 +67,6 @@ Style/RedundantHeredocDelimiterQuotes:
 
 Style/ItBlockParameter:
   Enabled: false
+
+Style/ModuleMemberExistenceCheck:
+   Enabled: false

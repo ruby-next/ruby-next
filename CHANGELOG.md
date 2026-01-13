@@ -2,6 +2,8 @@
 
 ## master
 
+- Add `String#strip` etc w/ selectors.
+
 - Add `Array#rfind`.
 
 - Add `Enumerator.produce` w/ `size:` support (Ruby 4.0).

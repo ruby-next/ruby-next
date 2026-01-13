@@ -32,7 +32,7 @@ module RubyNext
                 end
               end
               .then do |new_source|
-              restore(new_source)
+                restore(new_source)
             end
           end
 

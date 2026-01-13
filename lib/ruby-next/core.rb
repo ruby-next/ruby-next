@@ -165,6 +165,7 @@ require "ruby-next/core/array/rfind"
 require "ruby-next/core/hash/merge"
 
 require "ruby-next/core/string/split"
+require "ruby-next/core/string/strip"
 
 require "ruby-next/core/symbol/start_with"
 require "ruby-next/core/symbol/end_with"

@@ -8,7 +8,8 @@ else
 end
 
 begin
-  Enumerator.produce(1, 2)
-rescue ArgumentError => e
+  "".strip(1, 2)
+rescue TypeError => e
+  puts e.message
   puts "TRACE: #{e.backtrace.first}"
 end
