@@ -160,6 +160,7 @@ require "ruby-next/core/enumerable/filter_map"
 require "ruby-next/core/enumerator/produce"
 
 require "ruby-next/core/array/difference_union_intersection"
+require "ruby-next/core/array/rfind"
 
 require "ruby-next/core/hash/merge"
 

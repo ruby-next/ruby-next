@@ -60,7 +60,9 @@ The possible translation depends on the _end_ type which could hardly be inferre
 
 ### 4.0
 
-- `Enumerator.produce(*, size:, &)` [#21701](https://bugs.ruby-lang.org/issues/21701)
+- `Array#rfind` ([#21678](https://bugs.ruby-lang.org/issues/21678))
+
+- `Enumerator.produce(*, size:, &)` ([#21701](https://bugs.ruby-lang.org/issues/21701))
 
 ### 3.3
 
