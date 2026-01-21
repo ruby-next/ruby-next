@@ -5,10 +5,11 @@ module RubyNext
     module KernelEval
       if Utils.refine_modules?
         refine Kernel do
-          def eval(source, bind = nil, *args)
+          def eval(source, bind = nil, *args, **kwargs)
             new_source = ::RubyNext::Language::Runtime.transform(
               source,
-              using: bind&.receiver == TOPLEVEL_BINDING.receiver || bind&.receiver&.is_a?(Module)
+              using: bind&.receiver == TOPLEVEL_BINDING.receiver || bind&.receiver&.is_a?(Module),
+              **kwargs
             )
             RubyNext.debug_source(new_source, "(#{caller_locations(1, 1).first})")
             super(new_source, bind, *args)
