@@ -13,7 +13,8 @@ module RubyNext
         def on_block(node)
           _proc_or_lambda, _args, body = *node.children
 
-          return super unless block_has_it?(body)
+          return super if block_has_it_argument?(node)
+          return super unless block_has_it_reference?(body)
 
           process_block(node)
         end
@@ -21,7 +22,7 @@ module RubyNext
         def on_itblock(node)
           _proc_or_lambda, _args, body = *node.children
 
-          return super unless block_has_it?(body)
+          return super unless block_has_it_reference?(body)
 
           process_block(node)
         end
@@ -46,9 +47,13 @@ module RubyNext
           ])
         end
 
+        def block_has_it_argument?(node)
+          node.children[1] == s(:args, s(:procarg0, s(:arg, :it)))
+        end
+
         # It's important to check if the current block refers to `it` variable somewhere
         # (and not within a nested block), so we don't declare numbered params
-        def block_has_it?(node)
+        def block_has_it_reference?(node)
           # traverse node children deeply
           tree = [node]
 
