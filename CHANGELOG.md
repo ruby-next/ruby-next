@@ -2,6 +2,8 @@
 
 ## master
 
+- Fix `it-param` rewriter to treat an explicit `it` parameter as a fixed point. ([@viralpraxis][])
+
 ## 1.2.0 (2026-01-13)
 
 - Add `String#strip` etc w/ selectors.
@@ -428,3 +430,4 @@ p a #=> 1
 [@skryukov]: https://github.com/skryukov
 [@prog-supdex]: https://github.com/prog-supdex
 [@saturnflyer]: https://github.com/saturnflyer
+[@viralpraxis]: https://github.com/viralpraxis
