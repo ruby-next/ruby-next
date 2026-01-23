@@ -4,7 +4,7 @@ require_relative '../spec_helper'
 
 using RubyNext::Language::Eval
 
-ruby_version_is "3.4"... do
+ruby_version_is "3.4"..."" do
   describe "it parameter" do
     it "provides default parameters it in a block" do
       -> { it }.call("a").should == "a"
@@ -58,7 +58,7 @@ ruby_version_is "3.4"... do
     end
 
     it "treats an explicit `it` parameter as a fixed point" do
-      eval("1.then { |it| it.succ }", rewriters: [RubyNext::Language::Rewriters::ItParam]).should == 2
+      eval("+'x'.tap { |it| it.succ! }", rewriters: [RubyNext::Language::Rewriters::ItParam]).should == "y"
     end
   end
 end
