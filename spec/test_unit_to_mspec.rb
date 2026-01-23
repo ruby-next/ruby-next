@@ -106,12 +106,13 @@ module TestUnitToMspec
       module ::Kernel
         alias_method :eval_without_transpile, :eval
 
-        def eval(src, bind = nil, *other)
+        def eval(src, bind = nil, *other, **kwargs)
           source = src.gsub(/def test_([\w_]+)/, 'it "\1" do')
           source.gsub!(/class Test(\w+).+$/, 'describe "\1" do')
           new_source = ::RubyNext::Language::Runtime.transform(
             source,
-            using: bind&.receiver == TOPLEVEL_BINDING.receiver || bind&.receiver&.is_a?(Module)
+            using: bind&.receiver == TOPLEVEL_BINDING.receiver || bind&.receiver&.is_a?(Module),
+            **kwargs
           )
           RubyNext.debug_source(new_source, "(#{caller_locations(1, 1).first})")
           eval_without_transpile new_source, bind, *other
