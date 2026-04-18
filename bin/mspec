@@ -3,6 +3,7 @@
 unless File.directory?('mspec/lib')
   $stdout.puts "Cloning mspec..."
   system("git clone https://github.com/ruby/mspec.git mspec")
+  system("git -C mspec checkout 9f83eeadf2311394d7809e60842f0026bd8e137d")
 end
 
 $:.unshift File.expand_path(File.join(__dir__, '..', 'mspec', 'lib'))
