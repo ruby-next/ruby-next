@@ -32,8 +32,8 @@ Read more about the motivation behind the Ruby Next in this post: [Ruby Next: Ma
      </a>
 </td>
 <td>
-     <a href="http://www.digitalfukuoka.jp/topics/169">
-          <img src="http://www.digitalfukuoka.jp/javascripts/kcfinder/upload/images/excellence.jpg" width="200">
+     <a href="https://web.archive.org/web/20220501094423/https://digitalfukuoka.jp/topics/169">
+          <img src="./assets/images/fukuoka_ruby_award_2022.png" width="200">
      </a>
 </td>
 </tr>
