@@ -14,7 +14,8 @@ gem "bootsnap", platform: [:mri, :truffleruby]
 gem "pry", "> 0.13.1"
 
 if RUBY_VERSION >= "3.4.0"
-  gem "irb"
+  # irb >1.16 breaks jruby builds on CI ??
+  gem "irb", "1.16.0"
 end
 
 # Using next-gen Ruby parser
