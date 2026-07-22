@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Checking gem specs doesn't work in ruby.wasm
-unless RUBY_PLATFORM.match?(/wasm/)
+unless RUBY_PLATFORM.include?("wasm")
   gem "ruby-next-parser", ">= 2.8.0.3"
   gem "unparser", ">= 0.4.7"
 end
