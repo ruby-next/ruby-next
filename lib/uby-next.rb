@@ -4,12 +4,13 @@
 ENV["RUBY_NEXT_EDGE"] = "1"
 ENV["RUBY_NEXT_PROPOSED"] = "1"
 
+require "ruby-next/language"
+RubyNext::Language.include_patterns << File.join(Dir.pwd, ".rb")
 require "ruby-next/language/runtime"
+
 require "ruby-next/core/runtime"
 
 using RubyNext
-
-RubyNext::Language.include_patterns << File.join(Dir.pwd, ".rb")
 
 require "stringio"
 

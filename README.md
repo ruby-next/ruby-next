@@ -392,8 +392,10 @@ Runtime mode is backed by [require-hooks][require-hooks]—a standalone gem whic
 You can customize target files via the `include_patterns` and `exclude_patterns` configuration options:
 
 ```ruby
+requre "ruby-next/language"
 RubyNext::Language.include_patterns << "path/to/other/dir/*.rb"
 RubyNext::Language.exclude_patterns << "path/to/other/dir/subdir/*"
+requre "ruby-next/language/runtime"
 ```
 
 **NOTE:** Directories MUST be configured before requiring `ruby-next/language/runtime`.
