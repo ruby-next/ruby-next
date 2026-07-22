@@ -55,6 +55,10 @@ Lint/LiteralAsCondition:
   Exclude:
     - 'spec/**/*'
 
+Lint/Void:
+  Exclude:
+    - 'spec/integration/fixtures/**/*.rb'
+
 Style/GlobalVars:
   Exclude:
     - 'spec/**/*'
