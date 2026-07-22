@@ -51,6 +51,12 @@ module RuboCop
         require "parser/rubynext"
         Parser::RubyNext
       end
+
+      def default_parser_engine(version)
+        return super unless version == RUBY_NEXT_VERSION
+
+        :parser_whitequark
+      end
     end
 
     prepend ParserClassExt

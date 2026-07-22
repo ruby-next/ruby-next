@@ -19,7 +19,8 @@ Gem::Specification.new do |s|
     "changelog_uri" => "https://github.com/ruby-next/ruby-next/blob/master/CHANGELOG.md",
     "documentation_uri" => "https://github.com/ruby-next/ruby-next/blob/master/README.md",
     "homepage_uri" => "https://github.com/ruby-next/ruby-next",
-    "source_code_uri" => "https://github.com/ruby-next/ruby-next"
+    "source_code_uri" => "https://github.com/ruby-next/ruby-next",
+    "rubygems_mfa_required" => "true"
   }
 
   s.license = "MIT"
