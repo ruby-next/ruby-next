@@ -18,6 +18,9 @@ if RUBY_VERSION >= "3.4.0"
   gem "irb", "1.16.0"
 end
 
+# JRuby can't build rbs which newer rdoc depends on
+gem "rdoc", "< 8.0", platform: :jruby
+
 # Using next-gen Ruby parser
 if ENV["PRISM"] == "true"
   if File.directory?("../prism")
