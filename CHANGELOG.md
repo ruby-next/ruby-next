@@ -2,6 +2,8 @@
 
 ## master
 
+## 1.2.1 (2026-07-22)
+
 - Fix RuboCop integration (enforce `:parser_whitequark` mode when using `next` version). ([@palkan][])
 
 - Fix `it-param` rewriter to treat an explicit `it` parameter as a fixed point. ([@viralpraxis][])
