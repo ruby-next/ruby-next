@@ -32,9 +32,7 @@ module RubyNext
   end
 end
 
-RequireHooks.source_transform(
-  patterns: RubyNext::Language.include_patterns,
-  exclude_patterns: RubyNext::Language.exclude_patterns
-) do |path, contents|
+RequireHooks.source_transform do |path, contents|
+  next contents unless RubyNext::Language.transformable?(path)
   RubyNext::Language::Runtime.load(path, contents)
 end
